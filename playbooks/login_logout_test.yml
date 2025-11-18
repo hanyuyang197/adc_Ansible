@@ -1,0 +1,26 @@
+---
+- name: 测试ADC设备登录和登出
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    adc_ip: "10.5.116.35"
+    adc_username: "admin"
+    adc_password: "admin"
+  
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ adc_ip }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+    
+    - name: 显示登录结果
+      debug:
+        var: login_result
+    
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ login_result.authkey }}"
+      when: login_result is succeeded

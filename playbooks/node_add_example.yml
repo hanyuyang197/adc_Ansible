@@ -1,0 +1,122 @@
+---
+- name: 示例 - 添加ADC节点
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    adc_ip: "10.5.116.35"
+    adc_username: "admin"
+    adc_password: "admin"
+  
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ adc_ip }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+    
+    - name: 显示登录结果
+      debug:
+        var: login_result
+    
+    - name: 添加第一个节点
+      adc_node:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "add_node"
+        tc_name: ""
+        graceful_time: 0
+        graceful_delete: 0
+        graceful_disable: 0
+        graceful_persist: 0
+        name: "192.168.1.123"
+        host: "192.168.1.123"
+        domain_ip_version: 0
+        weight: 1
+        healthcheck: ""
+        upnum: 0
+        status: 1
+        conn_limit: 123
+        template: "192.168.1.123"
+        conn_rate_limit: 2011
+        cl_log: "1"
+        desc_rserver: ""
+        ports:
+          - port_number: 80
+            protocol: 0
+            status: 1
+            weight: 1
+            conn_limit: 0
+            conn_limit_log: 1
+            graceful_time: 0
+            graceful_delete: 0
+            graceful_disable: 0
+            graceful_persist: 0
+            phm_profile: ""
+            healthcheck: ""
+            upnum: 0
+            nat_strategy: ""
+      register: add_node_result_1
+      when: login_result is succeeded
+    
+    - name: 显示第一个节点添加结果
+      debug:
+        var: add_node_result_1
+      when: add_node_result_1 is defined
+    
+    - name: 添加第二个节点
+      adc_node:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "add_node"
+        tc_name: ""
+        graceful_time: 0
+        graceful_delete: 0
+        graceful_disable: 0
+        graceful_persist: 0
+        name: "192.168.1.124"
+        host: "192.168.1.124"
+        domain_ip_version: 0
+        weight: 1
+        healthcheck: ""
+        upnum: 0
+        status: 1
+        conn_limit: 124
+        template: "192.168.1.124"
+        conn_rate_limit: 2012
+        cl_log: "1"
+        desc_rserver: ""
+        ports:
+          - port_number: 8080
+            protocol: 0
+            status: 1
+            weight: 1
+            conn_limit: 0
+            conn_limit_log: 1
+            graceful_time: 0
+            graceful_delete: 0
+            graceful_disable: 0
+            graceful_persist: 0
+            phm_profile: ""
+            healthcheck: ""
+            upnum: 0
+            nat_strategy: ""
+      register: add_node_result_2
+      when: login_result is succeeded
+    
+    - name: 显示第二个节点添加结果
+      debug:
+        var: add_node_result_2
+      when: add_node_result_2 is defined
+    
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+    
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

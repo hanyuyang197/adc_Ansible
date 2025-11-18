@@ -1,0 +1,6 @@
+[adc_servers]
+10.5.116.35 ansible_connection=local
+
+[adc_servers:vars]
+adc_username=admin
+adc_password=admin
