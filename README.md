@@ -17,7 +17,8 @@ adc_Ansible/
 └── playbooks/                 # Ansible剧本
     ├── login_logout_test.yml  # 登录登出测试剧本
     ├── node_add_example.yml   # 节点添加示例剧本
-    └── node_management_test.yml # 节点管理测试剧本
+    ├── node_edit_example.yml  # 节点编辑示例剧本
+    ├── node_management_test.yml # 节点管理测试剧本
 ```
 
 ## 环境要求
@@ -100,10 +101,34 @@ ansible-playbook playbooks/login_logout_test.yml
 ansible-playbook playbooks/node_add_example.yml
 ```
 
-### 3. 节点管理测试
+### 3. 编辑节点示例
+
+```bash
+ansible-playbook playbooks/node_edit_example.yml
+```
+
+### 4. 节点管理测试
 
 ```bash
 ansible-playbook playbooks/node_management_test.yml
+```
+
+### 5. 节点端口添加示例
+
+```bash
+ansible-playbook playbooks/node_port_add_example.yml
+```
+
+### 6. 节点端口编辑示例
+
+```bash
+ansible-playbook playbooks/node_port_edit_example.yml
+```
+
+### 7. 节点端口删除示例
+
+```bash
+ansible-playbook playbooks/node_port_delete_example.yml
 ```
 
 ## 模块说明
@@ -128,14 +153,46 @@ ansible-playbook playbooks/node_management_test.yml
 - **参数**：
   - `ip`：ADC设备IP地址（必需）
   - `authkey`：登录时获取的认证密钥（必需）
-  - `action`：操作类型，可选值：`get_nodes`、`add_node`、`remove_node`（必需）
+  - `action`：操作类型，可选值：`get_nodes`、`add_node`、`edit_node`、`delete_node`、`add_node_port`、`edit_node_port`、`delete_node_port`（必需）
   - `tc_name`：流量控制名称（可选）
   - `name`：节点名称（可选）
   - `host`：节点主机地址（可选）
   - `weight`：权重（可选，默认为1）
   - `status`：状态（可选，默认为1）
+  - `conn_limit`：连接限制（可选）
+  - `healthcheck`：健康检查名称（可选）
+  - `template`：模板名称（可选）
+  - `conn_rate_limit`：连接速率限制（可选）
+  - `desc_rserver`：节点描述（可选）
+  - `graceful_time`：软关机超时时间（可选）
+  - `graceful_delete`：删除节点触发软关机（可选）
+  - `graceful_disable`：禁用节点触发软关机（可选）
+  - `graceful_persist`：禁用节点触发软关机后会话保持表有效（可选）
+  - `slow_start_type`：暖启动类型（可选）
+  - `slow_start_recover`：暖启动恢复时间（可选）
+  - `slow_start_rate`：暖启动变化规则（可选）
+  - `slow_start_from`：暖启动初始量（可选）
+  - `slow_start_step`：暖启动增量（可选）
+  - `slow_start_interval`：暖启动间隔（可选）
+  - `slow_start_interval_num`：暖启动间隔数（可选）
+  - `slow_start_tail`：暖启动结束量（可选）
+  - `request_rate_limit`：请求速率限制（可选）
   - `ports`：端口列表（可选）
   - `node_id`：节点ID（删除节点时必需）
+  - `port_name`：端口名称（可选）
+  - `port_port_number`：端口端口号（可选）
+  - `port_protocol`：端口协议类型（可选）
+  - `port_status`：端口使能状态（可选）
+  - `port_weight`：端口权重（可选）
+  - `port_graceful_time`：软关机超时单位秒（可选）
+  - `port_graceful_delete`：删除节点触发软关机（可选）
+  - `port_graceful_disable`：禁用节点触发软关机（可选）
+  - `port_graceful_persist`：禁用节点触发软关机后会话保持表有效（可选）
+  - `port_conn_limit`：端口连接限制（可选）
+  - `port_phm_profile`：被动健康检查名称（可选）
+  - `port_healthcheck`：主动健康检查名称（可选）
+  - `port_upnum`：可用性要求（可选）
+  - `port_nat_strategy`：NAT策略名（可选）
 
 ## 常见问题及解决方案
 

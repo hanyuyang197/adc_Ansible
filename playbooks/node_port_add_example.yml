@@ -1,0 +1,43 @@
+---
+- name: 节点端口添加示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    adc_ip: "10.5.116.35"
+    adc_username: "admin"
+    adc_password: "admin"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ adc_ip }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 添加节点端口
+      adc_node:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "add_node_port"
+        name: "192.168.1.123"
+        port_port_number: 890
+        port_protocol: 0
+        port_status: 1
+        port_weight: 1
+        port_conn_limit: 8000000
+        port_graceful_time: 0
+        port_graceful_delete: 0
+        port_graceful_disable: 0
+        port_graceful_persist: 0
+        port_phm_profile: ""
+        port_healthcheck: ""
+        port_nat_strategy: ""
+      register: add_node_port_result
+      when: login_result is succeeded
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ login_result.authkey }}"
+      when: login_result is succeeded

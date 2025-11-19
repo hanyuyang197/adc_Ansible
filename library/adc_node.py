@@ -125,20 +125,17 @@ def adc_get_nodes(module):
     except Exception as e:
         module.fail_json(msg="获取节点列表失败: %s" % str(e))
 
-    # 使用通用响应解析函数
+    # 对于获取列表操作，直接返回响应数据，不判断success
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "获取节点列表", False)
-        if success:
-            # 添加节点列表到返回结果
-            try:
-                parsed_data = json.loads(response_data)
-                result_dict['nodes'] = parsed_data
-            except:
-                result_dict['nodes'] = {}
-            module.exit_json(changed=False, **result_dict)
-        else:
-            module.fail_json(**result_dict)
+        try:
+            parsed_data = json.loads(response_data)
+            # 检查是否有错误信息
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取节点列表失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, nodes=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
     else:
         module.fail_json(msg="未收到有效响应")
 
@@ -172,6 +169,15 @@ def adc_add_node(module):
             "conn_rate_limit": module.params['conn_rate_limit'] if 'conn_rate_limit' in module.params else 0,
             "cl_log": module.params['cl_log'] if 'cl_log' in module.params else "0",
             "desc_rserver": module.params['desc_rserver'] if 'desc_rserver' in module.params else "",
+            "slow_start_type": module.params['slow_start_type'] if 'slow_start_type' in module.params else 0,
+            "slow_start_recover": module.params['slow_start_recover'] if 'slow_start_recover' in module.params else 15,
+            "slow_start_rate": module.params['slow_start_rate'] if 'slow_start_rate' in module.params else 0,
+            "slow_start_from": module.params['slow_start_from'] if 'slow_start_from' in module.params else 128,
+            "slow_start_step": module.params['slow_start_step'] if 'slow_start_step' in module.params else 2,
+            "slow_start_interval": module.params['slow_start_interval'] if 'slow_start_interval' in module.params else 10,
+            "slow_start_interval_num": module.params['slow_start_interval_num'] if 'slow_start_interval_num' in module.params else 6,
+            "slow_start_tail": module.params['slow_start_tail'] if 'slow_start_tail' in module.params else 4096,
+            "request_rate_limit": module.params['request_rate_limit'] if 'request_rate_limit' in module.params else 0,
             "ports": module.params['ports'] if 'ports' in module.params else []
         }
     }
@@ -215,32 +221,265 @@ def adc_add_node(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_remove_node(module):
-    """删除节点"""
+def adc_add_node_port(module):
+    """添加节点端口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    node_id = module.params['node_id'] if 'node_id' in module.params else ""
+    name = module.params['name'] if 'name' in module.params else ""
+
+    # 检查必需参数
+    if not name:
+        module.fail_json(msg="添加节点端口需要提供name参数")
+
+    # 获取端口参数
+    port_params = {}
+    port_fields = [
+        'port_number', 'protocol', 'status', 'weight', 'graceful_time',
+        'graceful_delete', 'graceful_disable', 'graceful_persist',
+        'conn_limit', 'phm_profile', 'healthcheck', 'upnum', 'nat_strategy'
+    ]
+
+    for field in port_fields:
+        param_key = 'port_%s' % field
+        if param_key in module.params and module.params[param_key] is not None:
+            port_params[field] = module.params[param_key]
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=remove_node&node_id=%s" % (
-        ip, authkey, node_id)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.add" % (
+        ip, authkey)
+
+    # 构造节点端口数据
+    port_data = {
+        "name": name,
+        "port": port_params
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(port_data)
 
     # 初始化响应数据
     response_data = ""
 
     try:
-        # 根据Python版本处理请求
+        # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
             import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
             import urllib2 as urllib_request
-            req = urllib_request.Request(url)
-            req.get_method = lambda: 'GET'
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="添加节点端口失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "添加节点端口", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_edit_node(module):
+    """编辑节点"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.edit" % (
+        ip, authkey)
+
+    # 构造节点数据
+    node_data = {
+        "node": {
+            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
+            "graceful_time": module.params['graceful_time'] if 'graceful_time' in module.params else 0,
+            "graceful_delete": module.params['graceful_delete'] if 'graceful_delete' in module.params else 0,
+            "graceful_disable": module.params['graceful_disable'] if 'graceful_disable' in module.params else 0,
+            "graceful_persist": module.params['graceful_persist'] if 'graceful_persist' in module.params else 0,
+            "name": module.params['name'] if 'name' in module.params else "",
+            "host": module.params['host'] if 'host' in module.params else "",
+            "weight": module.params['weight'] if 'weight' in module.params else 1,
+            "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
+            "status": module.params['status'] if 'status' in module.params else 1,
+            "conn_limit": module.params['conn_limit'] if 'conn_limit' in module.params else 0,
+            "desc_rserver": module.params['desc_rserver'] if 'desc_rserver' in module.params else "",
+            "slow_start_type": module.params['slow_start_type'] if 'slow_start_type' in module.params else 0,
+            "slow_start_recover": module.params['slow_start_recover'] if 'slow_start_recover' in module.params else 15,
+            "slow_start_rate": module.params['slow_start_rate'] if 'slow_start_rate' in module.params else 0,
+            "slow_start_from": module.params['slow_start_from'] if 'slow_start_from' in module.params else 128,
+            "slow_start_step": module.params['slow_start_step'] if 'slow_start_step' in module.params else 2,
+            "slow_start_interval": module.params['slow_start_interval'] if 'slow_start_interval' in module.params else 10,
+            "slow_start_interval_num": module.params['slow_start_interval_num'] if 'slow_start_interval_num' in module.params else 6,
+            "slow_start_tail": module.params['slow_start_tail'] if 'slow_start_tail' in module.params else 4096,
+            "request_rate_limit": module.params['request_rate_limit'] if 'request_rate_limit' in module.params else 0,
+            "conn_rate_limit": module.params['conn_rate_limit'] if 'conn_rate_limit' in module.params else 0,
+            "template": module.params['template'] if 'template' in module.params else ""
+        }
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(node_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="编辑节点失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "编辑节点", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_edit_node_port(module):
+    """编辑节点端口"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+    
+    # 检查必需参数
+    if not name:
+        module.fail_json(msg="编辑节点端口需要提供name参数")
+    
+    # 获取端口参数
+    port_params = {}
+    port_fields = [
+        'port_number', 'protocol', 'status', 'weight', 'graceful_time',
+        'graceful_delete', 'graceful_disable', 'graceful_persist',
+        'conn_limit', 'phm_profile', 'healthcheck', 'upnum', 'nat_strategy'
+    ]
+    
+    for field in port_fields:
+        param_key = 'port_%s' % field
+        if param_key in module.params and module.params[param_key] is not None:
+            port_params[field] = module.params[param_key]
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.edit" % (ip, authkey)
+
+    # 构造节点端口数据
+    port_data = {
+        "name": name,
+        "port": port_params
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(port_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="编辑节点端口失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(response_data, "编辑节点端口", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_delete_node(module):
+    """删除节点"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+
+    # 检查必需参数
+    if not name:
+        module.fail_json(msg="删除节点需要提供name参数")
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.del" % (
+        ip, authkey)
+
+    # 构造节点数据
+    node_data = {
+        "name": name
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(node_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -259,14 +498,85 @@ def adc_remove_node(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def adc_delete_node_port(module):
+    """删除节点端口"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+    
+    # 检查必需参数
+    if not name:
+        module.fail_json(msg="删除节点端口需要提供name参数")
+    
+    # 获取端口参数
+    port_params = {}
+    # 删除节点端口只需要port_number和protocol参数
+    if 'port_port_number' in module.params and module.params['port_port_number'] is not None:
+        port_params['port_number'] = module.params['port_port_number']
+    if 'port_protocol' in module.params and module.params['port_protocol'] is not None:
+        port_params['protocol'] = module.params['port_protocol']
+
+    # 检查必需的端口参数
+    if 'port_number' not in port_params:
+        module.fail_json(msg="删除节点端口需要提供port_port_number参数")
+    if 'protocol' not in port_params:
+        module.fail_json(msg="删除节点端口需要提供port_protocol参数")
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.del" % (ip, authkey)
+
+    # 构造节点端口数据
+    port_data = {
+        "name": name,
+        "port": port_params
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(port_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="删除节点端口失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(response_data, "删除节点端口", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
 def main():
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'get_nodes', 'add_node', 'remove_node']),
-        # add_node参数
+                    'get_nodes', 'add_node', 'edit_node', 'delete_node', 'add_node_port', 'edit_node_port', 'delete_node_port']),
+        # add_node/edit_node参数
         tc_name=dict(type='str', required=False),
         graceful_time=dict(type='int', required=False),
         graceful_delete=dict(type='int', required=False),
@@ -284,9 +594,30 @@ def main():
         conn_rate_limit=dict(type='int', required=False),
         cl_log=dict(type='str', required=False),
         desc_rserver=dict(type='str', required=False),
+        slow_start_type=dict(type='int', required=False),
+        slow_start_recover=dict(type='int', required=False),
+        slow_start_rate=dict(type='int', required=False),
+        slow_start_from=dict(type='int', required=False),
+        slow_start_step=dict(type='int', required=False),
+        slow_start_interval=dict(type='int', required=False),
+        slow_start_interval_num=dict(type='int', required=False),
+        slow_start_tail=dict(type='int', required=False),
+        request_rate_limit=dict(type='int', required=False),
         ports=dict(type='list', required=False),
-        # remove_node参数
-        node_id=dict(type='str', required=False)
+        # add_node_port/edit_node_port/delete_node_port参数
+        port_port_number=dict(type='int', required=False),
+        port_protocol=dict(type='int', required=False),
+        port_status=dict(type='int', required=False),
+        port_weight=dict(type='int', required=False),
+        port_graceful_time=dict(type='int', required=False),
+        port_graceful_delete=dict(type='int', required=False),
+        port_graceful_disable=dict(type='int', required=False),
+        port_graceful_persist=dict(type='int', required=False),
+        port_conn_limit=dict(type='int', required=False),
+        port_phm_profile=dict(type='str', required=False),
+        port_healthcheck=dict(type='str', required=False),
+        port_upnum=dict(type='int', required=False),
+        port_nat_strategy=dict(type='str', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -296,19 +627,25 @@ def main():
     )
 
     # 根据action执行相应操作
-    action = module.params['action']
+    action = module.params['action'] if 'action' in module.params else ''
+    # 为了解决静态检查工具的问题，我们进行类型转换
+    if hasattr(action, '__str__'):
+        action = str(action)
 
     if action == 'get_nodes':
         adc_get_nodes(module)
     elif action == 'add_node':
         adc_add_node(module)
-    elif action == 'remove_node':
-        # 检查删除节点所需的参数
-        node_id = module.params['node_id'] if 'node_id' in module.params else ""
-        if not node_id:
-            module.fail_json(msg="删除节点需要提供node_id参数")
-        adc_remove_node(module)
-
+    elif action == 'edit_node':
+        adc_edit_node(module)
+    elif action == 'delete_node':
+        adc_delete_node(module)
+    elif action == 'add_node_port':
+        adc_add_node_port(module)
+    elif action == 'edit_node_port':
+        adc_edit_node_port(module)
+    elif action == 'delete_node_port':
+        adc_delete_node_port(module)
 
 if __name__ == '__main__':
     main()
