@@ -19,8 +19,7 @@
       debug:
         var: login_result
     
-    - name: 添加第一个节点
-      adc_node:
+    - name: 添加第一个节�?      adc_slb_node:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_node"
@@ -59,13 +58,11 @@
       register: add_node_result_1
       when: login_result is succeeded
     
-    - name: 显示第一个节点添加结果
-      debug:
+    - name: 显示第一个节点添加结�?      debug:
         var: add_node_result_1
       when: add_node_result_1 is defined
     
-    - name: 添加第二个节点
-      adc_node:
+    - name: 添加第二个节�?      adc_slb_node:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_node"
@@ -104,8 +101,7 @@
       register: add_node_result_2
       when: login_result is succeeded
     
-    - name: 显示第二个节点添加结果
-      debug:
+    - name: 显示第二个节点添加结�?      debug:
         var: add_node_result_2
       when: add_node_result_2 is defined
     

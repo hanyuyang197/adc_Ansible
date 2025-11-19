@@ -131,6 +131,48 @@ ansible-playbook playbooks/node_port_edit_example.yml
 ansible-playbook playbooks/node_port_delete_example.yml
 ```
 
+### 8. 节点列表示例 (slb.node.list)
+
+```bash
+ansible-playbook playbooks/node_list_example.yml
+```
+
+### 9. 获取节点详情示例 (slb.node.get)
+
+```bash
+ansible-playbook playbooks/node_get_example.yml
+```
+
+### 10. 服务池列表示例
+
+```bash
+ansible-playbook playbooks/pool_list_example.yml
+```
+
+### 11. 服务池添加示例
+
+```bash
+ansible-playbook playbooks/pool_add_example.yml
+```
+
+### 12. 服务池获取详情示例
+
+```bash
+ansible-playbook playbooks/pool_get_example.yml
+```
+
+### 13. 服务池编辑示例
+
+```bash
+ansible-playbook playbooks/pool_edit_example.yml
+```
+
+### 14. 服务池删除示例
+
+```bash
+ansible-playbook playbooks/pool_delete_example.yml
+```
+
 ## 模块说明
 
 ### adc_login模块
@@ -148,14 +190,13 @@ ansible-playbook playbooks/node_port_delete_example.yml
   - `authkey`：登录时获取的认证密钥（必需）
 - **返回**：登出结果
 
-### adc_node模块
+### adc_slb_node模块
 - **功能**：管理ADC节点
 - **参数**：
   - `ip`：ADC设备IP地址（必需）
   - `authkey`：登录时获取的认证密钥（必需）
-  - `action`：操作类型，可选值：`get_nodes`、`add_node`、`edit_node`、`delete_node`、`add_node_port`、`edit_node_port`、`delete_node_port`（必需）
-  - `tc_name`：流量控制名称（可选）
-  - `name`：节点名称（可选）
+  - `action`：操作类型，可选值：`get_nodes`、`list_nodes`、`get_node`、`add_node`、`edit_node`、`delete_node`、`add_node_port`、`edit_node_port`、`delete_node_port`（必需）
+  - `name`：节点名称（添加/编辑/删除节点及端口操作时必需）
   - `host`：节点主机地址（可选）
   - `weight`：权重（可选，默认为1）
   - `status`：状态（可选，默认为1）
@@ -178,8 +219,6 @@ ansible-playbook playbooks/node_port_delete_example.yml
   - `slow_start_tail`：暖启动结束量（可选）
   - `request_rate_limit`：请求速率限制（可选）
   - `ports`：端口列表（可选）
-  - `node_id`：节点ID（删除节点时必需）
-  - `port_name`：端口名称（可选）
   - `port_port_number`：端口端口号（可选）
   - `port_protocol`：端口协议类型（可选）
   - `port_status`：端口使能状态（可选）
@@ -193,6 +232,24 @@ ansible-playbook playbooks/node_port_delete_example.yml
   - `port_healthcheck`：主动健康检查名称（可选）
   - `port_upnum`：可用性要求（可选）
   - `port_nat_strategy`：NAT策略名（可选）
+
+### adc_slb_pool模块
+- **功能**：管理ADC服务池
+- **参数**：
+  - `ip`：ADC设备IP地址（必需）
+  - `authkey`：登录时获取的认证密钥（必需）
+  - `action`：操作类型，可选值：`get_pools`、`get_pool`、`add_pool`、`edit_pool`、`delete_pool`（必需）
+  - `name`：服务池名称（添加/编辑/删除/获取详情时必需）
+  - `protocol`：服务池协议，0为TCP，1为UDP（可选，默认为0）
+  - `lb_method`：负载均衡算法（可选，默认为0）
+  - `upnum`：可用性要求（可选，默认为0）
+  - `healthcheck`：健康检查名称（可选，默认为空字符串）
+  - `desc_pool`：服务池描述（可选，默认为空字符串）
+  - `action_on_service_down`：服务池故障重置（可选，默认为0）
+  - `aux_node_log`：优先级日志（可选，默认为0）
+  - `up_members_at_least_status`：优先级规则状态（可选）
+  - `up_members_at_least_num`：最少正常成员数（可选）
+  - `up_members_at_least_type`：优先级规则类型（可选）
 
 ## 常见问题及解决方案
 

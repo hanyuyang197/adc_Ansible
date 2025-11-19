@@ -1,5 +1,5 @@
 ---
-- name: 节点端口添加示例
+- name: 服务池列表示例
   hosts: adc_servers
   gather_facts: no
   vars:
@@ -19,31 +19,28 @@
       debug:
         var: login_result
 
-    - name: 添加节点端口
-      adc_slb_node:
+    - name: 获取服务池列表
+      adc_slb_pool:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
-        action: "add_node_port"
-        name: "192.168.1.123"
-        port_port_number: 890
-        port_protocol: 0
-        port_status: 1
-        port_weight: 1
-        port_conn_limit: 8000000
-        port_graceful_time: 0
-        port_graceful_delete: 0
-        port_graceful_disable: 0
-        port_graceful_persist: 0
-        port_phm_profile: ""
-        port_healthcheck: ""
-        port_nat_strategy: ""
-      register: add_node_port_result
+        action: "get_pools"
+        name: ""
+        protocol: 0
+        lb_method: 0
+        upnum: 0
+        healthcheck: ""
+        action_on_service_down: 0
+        aux_node_log: 0
+        up_members_at_least_status: 0
+        up_members_at_least_num: 0
+        up_members_at_least_type: 0
+      register: get_pools_result
       when: login_result is succeeded
 
-    - name: 显示添加节点端口结果
+    - name: 显示服务池列表结果
       debug:
-        var: add_node_port_result
-      when: add_node_port_result is defined
+        var: get_pools_result
+      when: get_pools_result is defined
 
     - name: 登出ADC设备
       adc_logout:

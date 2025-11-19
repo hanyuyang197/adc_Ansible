@@ -15,8 +15,12 @@
         password: "{{ adc_password }}"
       register: login_result
 
+    - name: 显示登录结果
+      debug:
+        var: login_result
+
     - name: 编辑节点端口
-      adc_node:
+      adc_slb_node:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
         action: "edit_node_port"
@@ -36,8 +40,19 @@
       register: edit_node_port_result
       when: login_result is succeeded
 
+    - name: 显示编辑节点端口结果
+      debug:
+        var: edit_node_port_result
+      when: edit_node_port_result is defined
+
     - name: 登出ADC设备
       adc_logout:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
+      register: logout_result
       when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

@@ -20,7 +20,7 @@
         var: login_result
     
     - name: 获取节点列表
-      adc_node:
+      adc_slb_node:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
         action: "get_nodes"
@@ -33,7 +33,7 @@
       when: get_nodes_result is defined
     
     - name: 添加节点
-      adc_node:
+      adc_slb_node:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_node"
@@ -87,7 +87,7 @@
       when: add_node_result is defined
     
     - name: 编辑节点
-      adc_node:
+      adc_slb_node:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
         action: "edit_node"
@@ -123,7 +123,7 @@
       when: edit_node_result is defined
     
     - name: 再次获取节点列表
-      adc_node:
+      adc_slb_node:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
         action: "get_nodes"

@@ -20,7 +20,7 @@
         var: login_result
     
     - name: 编辑节点
-      adc_node:
+      adc_slb_node:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
         action: "edit_node"
