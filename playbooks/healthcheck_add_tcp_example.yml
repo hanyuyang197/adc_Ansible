@@ -1,5 +1,5 @@
 ---
-- name: 服务池删除示例
+- name: 添加TCP健康检查示例
   hosts: adc_servers
   gather_facts: no
   vars:
@@ -19,28 +19,34 @@
       debug:
         var: login_result
 
-    - name: 删除服务池
-      adc_slb_pool:
+    - name: 添加TCP健康检查
+      adc_slb_healthcheck:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
-        action: "delete_pool"
-        name: "test_pool"
-        protocol: 0
-        lb_method: 0
-        upnum: 0
-        healthcheck: ""
-        action_on_service_down: 0
-        aux_node_log: 0
-        up_members_at_least_status: 0
-        up_members_at_least_num: 1
-        up_members_at_least_type: 0
-      register: delete_pool_result
+        action: "add_healthcheck"
+        name: "tcp_healthcheck"
+        hc_type: "tcp"
+        retry: 3
+        interval: 5
+        timeout: 5
+        up_check_cnt: 1
+        wait_all_retry: 0
+        description: "TCP health check"
+        auto_disable: 0
+        alias_ipv4_src: "6.156.1.31"
+        alias_ipv6_src: "3000:6:156:1::31"
+        interface: "Ethernet 0/1"
+        alias_ipv4: "1.2.3.4"
+        alias_port: 8080
+        alias_ipv6: "2001::1"
+        port: 8080
+      register: add_hc_result
       when: login_result is succeeded
 
-    - name: 显示删除服务池结果
+    - name: 显示添加健康检查结果
       debug:
-        var: delete_pool_result
-      when: delete_pool_result is defined
+        var: add_hc_result
+      when: add_hc_result is defined
 
     - name: 登出ADC设备
       adc_logout:

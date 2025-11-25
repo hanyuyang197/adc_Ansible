@@ -1,0 +1,77 @@
+---
+- name: 添加FTP类型虚拟服务示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    adc_ip: "10.5.116.35"
+    adc_username: "admin"
+    adc_password: "admin"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ adc_ip }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 显示登录结果
+      debug:
+        var: login_result
+
+    - name: 添加FTP类型虚拟服务
+      adc_slb_va_vs:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "add_vs"
+        va_name: "test_ipv4_va"
+        name: "ftpvs"
+        protocol: 9
+        port: 21
+        pool: ""  # 明确定义pool，会包含在请求中
+        connection_limit_status: 0
+        connection_limit_number: 8000000
+        vs_enable_intf: ""
+        path_persist: 1
+        status: 1
+        desc_vport: ""
+        snat_on_vip: 0
+        auto_snat: 0
+        # vs_acl_id未定义，因此不会包含在请求中
+        # aclnamev6未定义，因此不会包含在请求中
+        # erules未定义，因此不会包含在请求中
+        send_reset: 0
+        connection_mirror: 0
+        no_dest_nat: 0
+        traffic_control: ""
+        force_update_mac: 1
+        syncookie: 0
+        source_nat: ""
+        tcp_profile: ""  # FTP类型必填参数
+        srcip_persist: ""
+        policy_profile: ""
+        aclsnats: []
+        immediate_action_on_service_down: 0
+        vport_template_name: "default"
+        service_last_hop: ""
+        snat_port_preserve_enable: 0
+        snat_port_preserve_type: 0
+      register: add_vs_result
+      when: login_result is succeeded
+
+    - name: 显示添加虚拟服务结果
+      debug:
+        var: add_vs_result
+      when: add_vs_result is defined
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

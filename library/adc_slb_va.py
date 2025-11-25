@@ -95,13 +95,13 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
         return False, result_dict
 
 
-def adc_get_pools(module):
-    """获取服务池列表"""
+def adc_list_vas(module):
+    """获取虚拟地址列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.list" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.list" % (
         ip, authkey)
 
     # 初始化响应数据
@@ -124,7 +124,7 @@ def adc_get_pools(module):
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="获取服务池列表失败: %s" % str(e))
+        module.fail_json(msg="获取虚拟地址列表失败: %s" % str(e))
 
     # 对于获取列表操作，直接返回响应数据，不判断success
     if response_data:
@@ -132,36 +132,35 @@ def adc_get_pools(module):
             parsed_data = json.loads(response_data)
             # 检查是否有错误信息
             if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取服务池列表失败", response=parsed_data)
+                module.fail_json(msg="获取虚拟地址列表失败", response=parsed_data)
             else:
-                module.exit_json(changed=False, pools=parsed_data)
+                module.exit_json(changed=False, virtual_addresses=parsed_data)
         except Exception as e:
             module.fail_json(msg="解析响应失败: %s" % str(e))
     else:
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_pool(module):
-    """获取服务池详情"""
+def adc_get_va(module):
+    """获取虚拟地址详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
     if not name:
-        module.fail_json(msg="获取服务池详情需要提供name参数")
+        module.fail_json(msg="获取虚拟地址详情需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.get" % (
-        ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.get" % (ip, authkey)
 
     # 构造请求数据
-    pool_data = {
+    va_data = {
         "name": name
     }
 
     # 转换为JSON格式
-    post_data = json.dumps(pool_data)
+    post_data = json.dumps(va_data)
 
     # 初始化响应数据
     response_data = ""
@@ -185,7 +184,7 @@ def adc_get_pool(module):
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="获取服务池详情失败: %s" % str(e))
+        module.fail_json(msg="获取虚拟地址详情失败: %s" % str(e))
 
     # 对于获取详情操作，直接返回响应数据，不判断success
     if response_data:
@@ -193,52 +192,72 @@ def adc_get_pool(module):
             parsed_data = json.loads(response_data)
             # 检查是否有错误信息
             if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取服务池详情失败", response=parsed_data)
+                module.fail_json(msg="获取虚拟地址详情失败", response=parsed_data)
             else:
-                module.exit_json(changed=False, pool=parsed_data)
+                module.exit_json(changed=False, virtual_address=parsed_data)
         except Exception as e:
             module.fail_json(msg="解析响应失败: %s" % str(e))
     else:
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_pool(module):
-    """添加服务池"""
+def adc_add_va(module):
+    """添加虚拟地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    va_type = module.params['va_type'] if 'va_type' in module.params else "ipv4"
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.add" % (
-        ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.add" % (ip, authkey)
 
-    # 构造服务池数据
-    pool_data = {
-        "pool": {
+    # 构造虚拟地址数据
+    va_data = {
+        "virtual_address": {
+            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
             "name": module.params['name'] if 'name' in module.params else "",
-            "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
-            "lb_method": module.params['lb_method'] if 'lb_method' in module.params else 0,
-            "upnum": module.params['upnum'] if 'upnum' in module.params else 0,
-            "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
-            "desc_pool": module.params['desc_pool'] if 'desc_pool' in module.params else "",
-            "action_on_service_down": module.params['action_on_service_down'] if 'action_on_service_down' in module.params else 0,
-            "aux_node_log": module.params['aux_node_log'] if 'aux_node_log' in module.params else 0
+            "status": module.params['status'] if 'status' in module.params else 1,
+            "arp_status": module.params['arp_status'] if 'arp_status' in module.params else 1,
+            "vrid": module.params['vrid'] if 'vrid' in module.params else 0,
+            "redistribution": module.params['redistribution'] if 'redistribution' in module.params else 0,
+            "policy_profile": module.params['policy_profile'] if 'policy_profile' in module.params else "",
+            "natlog_profile": module.params['natlog_profile'] if 'natlog_profile' in module.params else "",
+            "virtual_services": module.params['virtual_services'] if 'virtual_services' in module.params else []
         }
     }
 
-    # 处理up_members_at_least参数
-    up_members_at_least = {}
-    if 'up_members_at_least_status' in module.params and module.params['up_members_at_least_status'] is not None:
-        up_members_at_least['status'] = module.params['up_members_at_least_status']
-    if 'up_members_at_least_num' in module.params and module.params['up_members_at_least_num'] is not None:
-        up_members_at_least['num'] = module.params['up_members_at_least_num']
-    if 'up_members_at_least_type' in module.params and module.params['up_members_at_least_type'] is not None:
-        up_members_at_least['type'] = module.params['up_members_at_least_type']
-
-    if up_members_at_least:
-        pool_data['pool']['up-members-at-least'] = up_members_at_least
+    # 根据类型添加特定参数
+    if va_type == "ipv4" or va_type == "ipv6":
+        # IPv4/IPv6类型的虚拟地址
+        if 'address' in module.params and module.params['address']:
+            va_data['virtual_address']['address'] = module.params['address']
+        if 'icmp_probe' in module.params and module.params['icmp_probe'] is not None:
+            va_data['virtual_address']['icmp_probe'] = module.params['icmp_probe']
+    elif va_type == "subnet":
+        # 子网类型的虚拟地址
+        subnet_data = {}
+        if 'subnet_address' in module.params and module.params['subnet_address']:
+            subnet_data['address'] = module.params['subnet_address']
+        if 'subnet_mask_len' in module.params and module.params['subnet_mask_len'] is not None:
+            subnet_data['mask_len'] = module.params['subnet_mask_len']
+        if subnet_data:
+            va_data['virtual_address']['subnet'] = subnet_data
+        if 'icmp_probe' in module.params and module.params['icmp_probe'] is not None:
+            va_data['virtual_address']['icmp_probe'] = module.params['icmp_probe']
+    elif va_type == "acl_ipv4":
+        # IPv4 ACL类型的虚拟地址
+        if 'acl_id' in module.params and module.params['acl_id'] is not None:
+            va_data['virtual_address']['acl_id'] = module.params['acl_id']
+        if 'icmp_probe' in module.params and module.params['icmp_probe'] is not None:
+            va_data['virtual_address']['icmp_probe'] = module.params['icmp_probe']
+    elif va_type == "acl_ipv6":
+        # IPv6 ACL类型的虚拟地址
+        if 'acl_name' in module.params and module.params['acl_name']:
+            va_data['virtual_address']['acl_name'] = module.params['acl_name']
+        if 'icmp_disable' in module.params and module.params['icmp_disable'] is not None:
+            va_data['virtual_address']['icmp_disable'] = module.params['icmp_disable']
 
     # 转换为JSON格式
-    post_data = json.dumps(pool_data)
+    post_data = json.dumps(va_data)
 
     # 初始化响应数据
     response_data = ""
@@ -262,12 +281,12 @@ def adc_add_pool(module):
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="添加服务池失败: %s" % str(e))
+        module.fail_json(msg="添加虚拟地址失败: %s" % str(e))
 
     # 使用通用响应解析函数
     if response_data:
         success, result_dict = format_adc_response_for_ansible(
-            response_data, "添加服务池", True)
+            response_data, "添加虚拟地址", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -276,55 +295,56 @@ def adc_add_pool(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_pool(module):
-    """编辑服务池"""
+def adc_edit_va(module):
+    """编辑虚拟地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
     if not name:
-        module.fail_json(msg="编辑服务池需要提供name参数")
+        module.fail_json(msg="编辑虚拟地址需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.edit" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.edit" % (
         ip, authkey)
 
-    # 构造服务池数据
-    pool_data = {
-        "pool": {
+    # 构造虚拟地址数据
+    va_data = {
+        "virtual_address": {
             "name": name,
-            "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
-            "lb_method": module.params['lb_method'] if 'lb_method' in module.params else 0,
-            "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
-            "desc_pool": module.params['desc_pool'] if 'desc_pool' in module.params else "",
-            "action_on_service_down": module.params['action_on_service_down'] if 'action_on_service_down' in module.params else 0,
-            "aux_node_log": module.params['aux_node_log'] if 'aux_node_log' in module.params else 0
+            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
+            "status": module.params['status'] if 'status' in module.params else 1,
+            "arp_status": module.params['arp_status'] if 'arp_status' in module.params else 1,
+            "vrid": module.params['vrid'] if 'vrid' in module.params else 0,
+            "redistribution": module.params['redistribution'] if 'redistribution' in module.params else 0,
+            "policy_profile": module.params['policy_profile'] if 'policy_profile' in module.params else "",
+            "natlog_profile": module.params['natlog_profile'] if 'natlog_profile' in module.params else ""
         }
     }
 
-    # 处理up_members_at_least参数
-    if 'up_members_at_least_status' in module.params and module.params['up_members_at_least_status'] is not None:
-        if 'up-members-at-least' not in pool_data['pool']:
-            pool_data['pool']['up-members-at-least'] = {}
-        pool_data['pool']['up-members-at-least']['status'] = module.params['up_members_at_least_status']
-
-    if 'up_members_at_least_num' in module.params and module.params['up_members_at_least_num'] is not None:
-        if 'up-members-at-least' not in pool_data['pool']:
-            pool_data['pool']['up-members-at-least'] = {}
-        pool_data['pool']['up-members-at-least']['num'] = module.params['up_members_at_least_num']
-
-    if 'up_members_at_least_type' in module.params and module.params['up_members_at_least_type'] is not None:
-        if 'up-members-at-least' not in pool_data['pool']:
-            pool_data['pool']['up-members-at-least'] = {}
-        pool_data['pool']['up-members-at-least']['type'] = module.params['up_members_at_least_type']
-
-    # 处理upnum参数
-    if 'upnum' in module.params and module.params['upnum'] is not None:
-        pool_data['pool']['upnum'] = module.params['upnum']
+    # 添加可选参数
+    if 'address' in module.params and module.params['address']:
+        va_data['virtual_address']['address'] = module.params['address']
+    if 'icmp_probe' in module.params and module.params['icmp_probe'] is not None:
+        va_data['virtual_address']['icmp_probe'] = module.params['icmp_probe']
+    if 'subnet_address' in module.params and module.params['subnet_address']:
+        subnet_data = {}
+        subnet_data['address'] = module.params['subnet_address']
+        if 'subnet_mask_len' in module.params and module.params['subnet_mask_len'] is not None:
+            subnet_data['mask_len'] = module.params['subnet_mask_len']
+        va_data['virtual_address']['subnet'] = subnet_data
+    if 'acl_id' in module.params and module.params['acl_id'] is not None:
+        va_data['virtual_address']['acl_id'] = module.params['acl_id']
+    if 'acl_name' in module.params and module.params['acl_name']:
+        va_data['virtual_address']['acl_name'] = module.params['acl_name']
+    if 'icmp_disable' in module.params and module.params['icmp_disable'] is not None:
+        va_data['virtual_address']['icmp_disable'] = module.params['icmp_disable']
+    if 'virtual_services' in module.params and module.params['virtual_services']:
+        va_data['virtual_address']['virtual_services'] = module.params['virtual_services']
 
     # 转换为JSON格式
-    post_data = json.dumps(pool_data)
+    post_data = json.dumps(va_data)
 
     # 初始化响应数据
     response_data = ""
@@ -348,12 +368,12 @@ def adc_edit_pool(module):
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="编辑服务池失败: %s" % str(e))
+        module.fail_json(msg="编辑虚拟地址失败: %s" % str(e))
 
     # 使用通用响应解析函数
     if response_data:
         success, result_dict = format_adc_response_for_ansible(
-            response_data, "编辑服务池", True)
+            response_data, "编辑虚拟地址", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -362,27 +382,26 @@ def adc_edit_pool(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_pool(module):
-    """删除服务池"""
+def adc_delete_va(module):
+    """删除虚拟地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
     if not name:
-        module.fail_json(msg="删除服务池需要提供name参数")
+        module.fail_json(msg="删除虚拟地址需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.del" % (
-        ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.del" % (ip, authkey)
 
-    # 构造服务池数据
-    pool_data = {
+    # 构造虚拟地址数据
+    va_data = {
         "name": name
     }
 
     # 转换为JSON格式
-    post_data = json.dumps(pool_data)
+    post_data = json.dumps(va_data)
 
     # 初始化响应数据
     response_data = ""
@@ -406,12 +425,12 @@ def adc_delete_pool(module):
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="删除服务池失败: %s" % str(e))
+        module.fail_json(msg="删除虚拟地址失败: %s" % str(e))
 
     # 使用通用响应解析函数
     if response_data:
         success, result_dict = format_adc_response_for_ansible(
-            response_data, "删除服务池", True)
+            response_data, "删除虚拟地址", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -420,115 +439,73 @@ def adc_delete_pool(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_pool_node(module):
-    """添加节点到服务池"""
+def adc_list_va_stats(module):
+    """获取虚拟地址状态列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    pool_name = module.params['pool_name'] if 'pool_name' in module.params else ""
-    node = module.params['node'] if 'node' in module.params else ""
-    port = module.params['port'] if 'port' in module.params else 0
-    protocol = module.params['protocol'] if 'protocol' in module.params else 0
-    priority = module.params['priority'] if 'priority' in module.params else 1
-    weight = module.params['weight'] if 'weight' in module.params else 1
-    status = module.params['status'] if 'status' in module.params else 1
-    conn_limit = module.params['conn_limit'] if 'conn_limit' in module.params else 0
-
-    # 检查必需参数
-    if not pool_name:
-        module.fail_json(msg="添加节点到服务池需要提供pool_name参数")
-    if not node:
-        module.fail_json(msg="添加节点到服务池需要提供node参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.add" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.stat.list" % (
         ip, authkey)
-
-    # 构造请求数据
-    pool_data = {
-        "name": pool_name,
-        "member": {
-            "nodename": node,
-            "server": node,
-            "port": port,
-            "protocol": protocol,
-            "priority": priority,
-            "weight": weight,
-            "status": status,
-            "conn_limit": conn_limit
-        }
-    }
-
-    # 转换为JSON格式
-    post_data = json.dumps(pool_data)
 
     # 初始化响应数据
     response_data = ""
 
     try:
-        # 根据Python版本处理编码
+        # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
             import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
             import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="添加节点到服务池失败: %s" % str(e))
+        module.fail_json(msg="获取虚拟地址状态列表失败: %s" % str(e))
 
-    # 使用通用响应解析函数
+    # 对于获取列表操作，直接返回响应数据，不判断success
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "添加节点到服务池", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
+        try:
+            parsed_data = json.loads(response_data)
+            # 检查是否有错误信息
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取虚拟地址状态列表失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, va_stats=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
     else:
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_pool_node(module):
-    """从服务池删除节点"""
+def adc_get_va_stat(module):
+    """获取虚拟地址状态详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    pool_name = module.params['pool_name'] if 'pool_name' in module.params else ""
-    node = module.params['node'] if 'node' in module.params else ""
-    port = module.params['port'] if 'port' in module.params else 0
-    protocol = module.params['protocol'] if 'protocol' in module.params else 0
+    name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
-    if not pool_name:
-        module.fail_json(msg="从服务池删除节点需要提供pool_name参数")
-    if not node:
-        module.fail_json(msg="从服务池删除节点需要提供node参数")
+    if not name:
+        module.fail_json(msg="获取虚拟地址状态详情需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.del" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.stat.get" % (
         ip, authkey)
 
     # 构造请求数据
-    pool_data = {
-        "name": pool_name,
-        "member": {
-            "nodename": node,
-            "server": node,
-            "port": port,
-            "protocol": protocol
-        }
+    va_data = {
+        "name": name
     }
 
     # 转换为JSON格式
-    post_data = json.dumps(pool_data)
+    post_data = json.dumps(va_data)
 
     # 初始化响应数据
     response_data = ""
@@ -552,16 +529,19 @@ def adc_delete_pool_node(module):
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="从服务池删除节点失败: %s" % str(e))
+        module.fail_json(msg="获取虚拟地址状态详情失败: %s" % str(e))
 
-    # 使用通用响应解析函数
+    # 对于获取详情操作，直接返回响应数据，不判断success
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "从服务池删除节点", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
+        try:
+            parsed_data = json.loads(response_data)
+            # 检查是否有错误信息
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取虚拟地址状态详情失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, va_stat=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
     else:
         module.fail_json(msg="未收到有效响应")
 
@@ -572,28 +552,28 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'get_pools', 'get_pool', 'add_pool', 'edit_pool', 'delete_pool', 'add_pool_node', 'delete_pool_node']),
-        # 服务池参数
+                    'list_vas', 'get_va', 'add_va', 'edit_va', 'delete_va', 'list_va_stats', 'get_va_stat']),
+        # 虚拟地址参数
         name=dict(type='str', required=False),
-        protocol=dict(type='int', required=False),
-        lb_method=dict(type='int', required=False),
-        upnum=dict(type='int', required=False),
-        healthcheck=dict(type='str', required=False),
-        desc_pool=dict(type='str', required=False),
-        action_on_service_down=dict(type='int', required=False),
-        aux_node_log=dict(type='int', required=False),
-        # up_members_at_least参数
-        up_members_at_least_status=dict(type='int', required=False),
-        up_members_at_least_num=dict(type='int', required=False),
-        up_members_at_least_type=dict(type='int', required=False),
-        # 服务池成员参数
-        pool_name=dict(type='str', required=False),
-        node=dict(type='str', required=False),
-        port=dict(type='int', required=False),
-        priority=dict(type='int', required=False),
-        weight=dict(type='int', required=False),
+        va_type=dict(type='str', required=False, choices=[
+                     'ipv4', 'ipv6', 'subnet', 'acl_ipv4', 'acl_ipv6']),
+        tc_name=dict(type='str', required=False),
+        address=dict(type='str', required=False),
         status=dict(type='int', required=False),
-        conn_limit=dict(type='int', required=False)
+        arp_status=dict(type='int', required=False),
+        icmp_probe=dict(type='int', required=False),
+        icmp_disable=dict(type='int', required=False),
+        vrid=dict(type='int', required=False),
+        redistribution=dict(type='int', required=False),
+        policy_profile=dict(type='str', required=False),
+        natlog_profile=dict(type='str', required=False),
+        virtual_services=dict(type='list', required=False),
+        # 子网类型参数
+        subnet_address=dict(type='str', required=False),
+        subnet_mask_len=dict(type='int', required=False),
+        # ACL类型参数
+        acl_id=dict(type='int', required=False),
+        acl_name=dict(type='str', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -603,25 +583,25 @@ def main():
     )
 
     # 根据action执行相应操作
+    action = module.params['action'] if 'action' in module.params else ''
     # 为了解决静态检查工具的问题，我们进行类型转换
-    action = module.params['action']
     if hasattr(action, '__str__'):
         action = str(action)
-    
-    if action == 'get_pools':
-        adc_get_pools(module)
-    elif action == 'get_pool':
-        adc_get_pool(module)
-    elif action == 'add_pool':
-        adc_add_pool(module)
-    elif action == 'edit_pool':
-        adc_edit_pool(module)
-    elif action == 'delete_pool':
-        adc_delete_pool(module)
-    elif action == 'add_pool_node':
-        adc_add_pool_node(module)
-    elif action == 'delete_pool_node':
-        adc_delete_pool_node(module)
+
+    if action == 'list_vas':
+        adc_list_vas(module)
+    elif action == 'get_va':
+        adc_get_va(module)
+    elif action == 'add_va':
+        adc_add_va(module)
+    elif action == 'edit_va':
+        adc_edit_va(module)
+    elif action == 'delete_va':
+        adc_delete_va(module)
+    elif action == 'list_va_stats':
+        adc_list_va_stats(module)
+    elif action == 'get_va_stat':
+        adc_get_va_stat(module)
 
 
 if __name__ == '__main__':

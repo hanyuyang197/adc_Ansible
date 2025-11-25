@@ -1,5 +1,5 @@
 ---
-- name: 服务池删除示例
+- name: 虚拟地址状态列表示例
   hosts: adc_servers
   gather_facts: no
   vars:
@@ -19,28 +19,18 @@
       debug:
         var: login_result
 
-    - name: 删除服务池
-      adc_slb_pool:
+    - name: 获取虚拟地址状态列表
+      adc_slb_va:
         ip: "{{ adc_ip }}"
         authkey: "{{ login_result.authkey }}"
-        action: "delete_pool"
-        name: "test_pool"
-        protocol: 0
-        lb_method: 0
-        upnum: 0
-        healthcheck: ""
-        action_on_service_down: 0
-        aux_node_log: 0
-        up_members_at_least_status: 0
-        up_members_at_least_num: 1
-        up_members_at_least_type: 0
-      register: delete_pool_result
+        action: "list_va_stats"
+      register: list_va_stats_result
       when: login_result is succeeded
 
-    - name: 显示删除服务池结果
+    - name: 显示虚拟地址状态列表结果
       debug:
-        var: delete_pool_result
-      when: delete_pool_result is defined
+        var: list_va_stats_result
+      when: list_va_stats_result is defined
 
     - name: 登出ADC设备
       adc_logout:
