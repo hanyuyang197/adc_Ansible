@@ -829,6 +829,7 @@ ansible-galaxy collection install horizon.modules.horizon_modules
 在新环境中部署和运行请参考 [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) 文件。
 
 为方便使用，我们还提供了以下工具：
+
 - 环境变量设置脚本：
   - 基础版: [setup_ansible_env.sh](setup_ansible_env.sh) (Linux/macOS), [setup_ansible_env.bat](setup_ansible_env.bat) (Windows)
   - 增强版: [enhanced_setup_ansible_env.sh](enhanced_setup_ansible_env.sh) (Linux/macOS), [enhanced_setup_ansible_env.bat](enhanced_setup_ansible_env.bat) (Windows)
