@@ -6,21 +6,23 @@ import json
 import sys
 
 # ADC API响应解析函数
+
+
 def format_adc_response_for_ansible(response_data, action="", changed_default=True):
     """
     格式化ADC响应为Ansible模块返回格式
-    
+
     Args:
         response_data (str/dict): API响应数据
         action (str): 执行的操作名称
         changed_default (bool): 默认的changed状态
-    
+
     Returns:
         tuple: (success, result_dict)
             - success (bool): 操作是否成功
             - result_dict (dict): Ansible模块返回字典
     """
-    
+
     # 初始化返回结果
     result = {
         'success': False,
@@ -29,39 +31,40 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
         'errmsg': '',
         'data': {}
     }
-    
+
     try:
         # 如果是字符串，尝试解析为JSON
         if isinstance(response_data, str):
             parsed_data = json.loads(response_data)
         else:
             parsed_data = response_data
-            
+
         result['data'] = parsed_data
-        
+
         # 提取基本字段
         result['result'] = parsed_data.get('result', '')
         result['errcode'] = parsed_data.get('errcode', '')
         result['errmsg'] = parsed_data.get('errmsg', '')
-        
+
         # 判断操作是否成功
         if result['result'].lower() == 'success':
             result['success'] = True
         else:
             # 处理幂等性问题 - 检查错误信息中是否包含"已存在"等表示已存在的关键词
-            errmsg = result['errmsg'].lower() if isinstance(result['errmsg'], str) else str(result['errmsg']).lower()
+            errmsg = result['errmsg'].lower() if isinstance(
+                result['errmsg'], str) else str(result['errmsg']).lower()
             if any(keyword in errmsg for keyword in ['已存在', 'already exists', 'already exist', 'exists']):
                 # 幂等性处理：如果是因为已存在而导致的"失败"，实际上算成功
                 result['success'] = True
                 result['result'] = 'success (already exists)'
-                
+
     except json.JSONDecodeError as e:
         result['errmsg'] = "JSON解析失败: %s" % str(e)
         result['errcode'] = 'JSON_PARSE_ERROR'
     except Exception as e:
         result['errmsg'] = "响应解析异常: %s" % str(e)
         result['errcode'] = 'PARSE_EXCEPTION'
-    
+
     # 格式化为Ansible返回格式
     if result['success']:
         # 操作成功
@@ -70,12 +73,12 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
             'msg': '%s操作成功' % action if action else '操作成功',
             'response': result['data']
         }
-        
+
         # 如果是幂等性成功（已存在），调整消息
         if 'already exists' in result['result']:
             result_dict['changed'] = False
             result_dict['msg'] = '%s操作成功（资源已存在，无需更改）' % action if action else '操作成功（资源已存在，无需更改）'
-            
+
         return True, result_dict
     else:
         # 操作失败
@@ -103,14 +106,16 @@ def adc_add_vs(module):
         module.fail_json(msg="添加虚拟服务需要提供va_name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.add" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.add" % (
+        ip, authkey)
 
     # 构造虚拟服务数据 - 包含所有必填参数
     vs_data = {
         "name": va_name,
         "virtual_service": {
             "name": module.params['name'] if 'name' in module.params else "",
-            "protocol": module.params['protocol'] if 'protocol' in module.params else 2,  # 默认TCP
+            # 默认TCP
+            "protocol": module.params['protocol'] if 'protocol' in module.params else 2,
             "port": module.params['port'] if 'port' in module.params else 80,
             "vs_enable_intf": module.params['vs_enable_intf'] if 'vs_enable_intf' in module.params else "",
             "status": module.params['status'] if 'status' in module.params else 1,
@@ -144,15 +149,15 @@ def adc_add_vs(module):
     # 只有当pool在参数中定义时才添加到请求中
     if 'pool' in module.params and module.params['pool']:
         vs_data['virtual_service']['pool'] = module.params['pool']
-        
+
     # 只有当vs_acl_id在参数中定义时才添加到请求中
     if 'vs_acl_id' in module.params and module.params['vs_acl_id'] is not None:
         vs_data['virtual_service']['vs_acl_id'] = module.params['vs_acl_id']
-        
+
     # 只有当aclnamev6在参数中定义时才添加到请求中
     if 'aclnamev6' in module.params and module.params['aclnamev6']:
         vs_data['virtual_service']['aclnamev6'] = module.params['aclnamev6']
-        
+
     # 只有当erules在参数中定义且不为空时才添加到请求中
     if 'erules' in module.params and module.params['erules']:
         vs_data['virtual_service']['erules'] = module.params['erules']
@@ -163,7 +168,7 @@ def adc_add_vs(module):
         connection_limit['status'] = module.params['connection_limit_status']
     if 'connection_limit_number' in module.params and module.params['connection_limit_number'] is not None:
         connection_limit['connection_limit_number'] = module.params['connection_limit_number']
-    
+
     if connection_limit:
         vs_data['virtual_service']['connection_limit'] = connection_limit
 
@@ -295,7 +300,8 @@ def adc_add_vs(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "添加虚拟服务", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "添加虚拟服务", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -315,7 +321,8 @@ def adc_edit_vs(module):
         module.fail_json(msg="编辑虚拟服务需要提供va_name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.edit" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.edit" % (
+        ip, authkey)
 
     # 构造虚拟服务数据 - 包含所有必填参数
     vs_data = {
@@ -356,15 +363,15 @@ def adc_edit_vs(module):
     # 只有当pool在参数中定义时才添加到请求中
     if 'pool' in module.params and module.params['pool']:
         vs_data['virtual_service']['pool'] = module.params['pool']
-        
+
     # 只有当vs_acl_id在参数中定义时才添加到请求中
     if 'vs_acl_id' in module.params and module.params['vs_acl_id'] is not None:
         vs_data['virtual_service']['vs_acl_id'] = module.params['vs_acl_id']
-        
+
     # 只有当aclnamev6在参数中定义时才添加到请求中
     if 'aclnamev6' in module.params and module.params['aclnamev6']:
         vs_data['virtual_service']['aclnamev6'] = module.params['aclnamev6']
-        
+
     # 只有当erules在参数中定义且不为空时才添加到请求中
     if 'erules' in module.params and module.params['erules']:
         vs_data['virtual_service']['erules'] = module.params['erules']
@@ -375,7 +382,7 @@ def adc_edit_vs(module):
         connection_limit['status'] = module.params['connection_limit_status']
     if 'connection_limit_number' in module.params and module.params['connection_limit_number'] is not None:
         connection_limit['connection_limit_number'] = module.params['connection_limit_number']
-    
+
     if connection_limit:
         vs_data['virtual_service']['connection_limit'] = connection_limit
 
@@ -516,7 +523,8 @@ def adc_edit_vs(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "编辑虚拟服务", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "编辑虚拟服务", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -536,7 +544,8 @@ def adc_delete_vs(module):
         module.fail_json(msg="删除虚拟服务需要提供va_name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.del" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.del" % (
+        ip, authkey)
 
     # 构造虚拟服务数据
     vs_data = {
@@ -576,7 +585,8 @@ def adc_delete_vs(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "删除虚拟服务", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "删除虚拟服务", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -596,7 +606,8 @@ def adc_get_vs(module):
         module.fail_json(msg="获取虚拟服务详情需要提供va_name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.get" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.get" % (
+        ip, authkey)
 
     # 构造请求数据
     vs_data = {

@@ -1,0 +1,33 @@
+---
+- name: Get Client SSL Profile Details
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # # adc_username: "{{ adc_username }}"  # 循环引用已修复  # 循环引用已修复
+    # # adc_password: "{{ adc_password }}"  # 循环引用已修复  # 循环引用已修复
+
+    profile_name: "test_ssl_client_profile"
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: Get client SSL profile details
+      adc_slb_sslclient:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: get_profile
+        name: "{{ profile_name }}"
+      register: result
+
+    - name: Display client SSL profile details
+      debug:
+        var: result.result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

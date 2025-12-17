@@ -1,0 +1,50 @@
+---
+- name: 添加IPv6静态路由示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # adc_ip变量已移除，使用inventory_hostname替代
+    adc_username: "admin"
+    adc_password: "admin"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 显示登录结果
+      debug:
+        var: login_result
+
+    - name: 添加IPv6静态路由
+      adc_network_route_static_ipv6:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "add_route"
+        destination: "2003::"
+        prefix_len: 65
+        gateway: "2001::62"
+        distance: 1
+        pool: "pool1"
+      register: add_route_result
+      when: login_result is succeeded
+
+    - name: 显示添加IPv6静态路由结果
+      debug:
+        var: add_route_result
+      when: add_route_result is defined
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

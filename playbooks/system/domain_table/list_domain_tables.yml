@@ -1,0 +1,29 @@
+---
+- name: 获取域名解析自定义列表
+  hosts: adc_devices
+  gather_facts: no
+  vars:
+    # adc_username: "{{ adc_username }}"  # 循环引用已修复
+    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+
+    adc_ip: "{{ inventory_hostname }}"
+    adc_authkey: "{{ login_result.authkey }}"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 获取域名解析自定义列表
+      adc_system_domain_table:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: list_domain_tables
+      register: result
+
+    - name: 显示域名解析自定义列表
+      debug:
+        var: result

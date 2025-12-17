@@ -1,0 +1,29 @@
+---
+- name: 获取主机名IPv6地址
+  hosts: adc_devices
+  gather_facts: no
+  vars:
+    # adc_username: "{{ adc_username }}"  # 循环引用已修复
+    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+
+    adc_ip: "{{ inventory_hostname }}"
+    adc_authkey: "{{ login_result.authkey }}"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 获取主机名IPv6地址
+      adc_system_hostname:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: get_hostname_ipv6
+      register: result
+
+    - name: 显示IPv6地址信息
+      debug:
+        var: result

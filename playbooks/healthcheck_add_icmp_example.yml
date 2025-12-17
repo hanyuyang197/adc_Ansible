@@ -3,14 +3,14 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    adc_ip: "10.5.116.35"
+    # adc_ip变量已移除，使用inventory_hostname替代
     adc_username: "admin"
     adc_password: "admin"
 
   tasks:
     - name: 登录ADC设备
       adc_login:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         username: "{{ adc_username }}"
         password: "{{ adc_password }}"
       register: login_result
@@ -21,7 +21,7 @@
 
     - name: 添加ICMP健康检查
       adc_slb_healthcheck:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_healthcheck"
         name: "ping_healthcheck"
@@ -31,7 +31,6 @@
         timeout: 5
         up_check_cnt: 1
         wait_all_retry: 1
-        description: "ICMP health check"
         auto_disable: 0
         alias_ipv4_src: "6.156.1.31"
         alias_ipv6_src: "3000:6:156:1::31"
@@ -50,7 +49,7 @@
 
     - name: 登出ADC设备
       adc_logout:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
       register: logout_result
       when: login_result is succeeded

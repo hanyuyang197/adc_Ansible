@@ -1,0 +1,19 @@
+---
+- name: 获取包含common分区的SMTP模板列表示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    adc_ip: "{{ inventory_hostname }}"
+    login_result: "{{ hostvars['localhost']['login_result'] }}"
+
+  tasks:
+    - name: 获取包含common分区的SMTP模板列表
+      adc_slb_profile_smtp:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "list_profiles_withcommon"
+      register: result
+
+    - name: 显示结果
+      debug:
+        var: result

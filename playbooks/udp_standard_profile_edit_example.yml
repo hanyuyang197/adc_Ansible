@@ -1,0 +1,33 @@
+---
+- name: 编辑UDP模板
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # adc_ip变量已移除，使用inventory_hostname替代  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 编辑UDP模板
+      adc_slb_profile_udp_standard:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "edit_profile"
+        name: "test_udp_profile"
+        timeout: 240
+        aging: "fast"
+        delayed_timeout: 15
+        node_reselect: 1
+      register: result
+
+    - name: 显示结果
+      debug:
+        var: result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

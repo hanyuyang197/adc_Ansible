@@ -1,0 +1,34 @@
+---
+- name: 添加域名解析自定义
+  hosts: adc_devices
+  gather_facts: no
+  vars:
+    # adc_username: "{{ adc_username }}"  # 循环引用已修复
+    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+
+    adc_ip: "{{ inventory_hostname }}"
+    adc_authkey: "{{ login_result.authkey }}"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 添加域名解析自定义
+      adc_system_domain_table:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: add_domain_table
+        name: "example.com"
+        ttl: 3600
+        primary_dns_server: "8.8.8.8"
+        standby_dns_server: "8.8.4.4"
+        ip_type: 1
+      register: result
+
+    - name: 显示添加结果
+      debug:
+        var: result

@@ -1,0 +1,31 @@
+---
+- name: List Server SSL Profiles
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # # adc_username: "{{ adc_username }}"  # 循环引用已修复  # 循环引用已修复
+    # # adc_password: "{{ adc_password }}"  # 循环引用已修复  # 循环引用已修复
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: Get list of server SSL profiles
+      adc_slb_sslserver:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: list_profiles
+      register: result
+
+    - name: Display server SSL profiles
+      debug:
+        var: result.result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

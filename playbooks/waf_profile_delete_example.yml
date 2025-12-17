@@ -1,0 +1,30 @@
+---
+- name: Delete WAF Profile
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # 从inventory文件获取变量，无需在此处定义
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: Delete WAF profile
+      adc_waf_profile:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: delete_profile
+        name: "test_waf_profile"
+      register: result
+
+    - name: Display result
+      debug:
+        var: result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

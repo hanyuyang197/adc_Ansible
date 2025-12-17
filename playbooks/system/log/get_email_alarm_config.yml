@@ -1,0 +1,34 @@
+---
+- name: Get email alarm configuration
+  hosts: adc_devices
+  gather_facts: no
+  vars:
+    # adc_username: "{{ adc_username }}"  # 循环引用已修复
+    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: Get email alarm configuration
+      adc_system_log_alarm:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        alarm_type: email
+        action: get
+      register: result
+
+    - name: Display email alarm configuration
+      debug:
+        var: result.email_config
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

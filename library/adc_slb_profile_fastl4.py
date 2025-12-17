@@ -1,0 +1,516 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from ansible.module_utils.basic import AnsibleModule
+import json
+import sys
+
+# ADC API响应解析函数
+def format_adc_response_for_ansible(response_data, action="", changed_default=True):
+    """
+    格式化ADC响应为Ansible模块返回格式
+
+    Args:
+        response_data (str/dict): API响应数据
+        action (str): 执行的操作名称
+        changed_default (bool): 默认的changed状态
+
+    Returns:
+        tuple: (success, result_dict)
+            - success (bool): 操作是否成功
+            - result_dict (dict): Ansible模块返回字典
+    """
+
+    # 初始化返回结果
+    result = {
+        'success': False,
+        'result': '',
+        'errcode': '',
+        'errmsg': '',
+        'data': {}
+    }
+
+    try:
+        # 如果是字符串，尝试解析为JSON
+        if isinstance(response_data, str):
+            parsed_data = json.loads(response_data)
+        else:
+            parsed_data = response_data
+
+        result['data'] = parsed_data
+
+        # 提取基本字段
+        result['result'] = parsed_data.get('result', '')
+        result['errcode'] = parsed_data.get('errcode', '')
+        result['errmsg'] = parsed_data.get('errmsg', '')
+
+        # 判断操作是否成功
+        if result['result'].lower() == 'success':
+            result['success'] = True
+        else:
+            # 处理幂等性问题 - 检查错误信息中是否包含"已存在"等表示已存在的关键词
+            errmsg = result['errmsg'].lower() if isinstance(
+                result['errmsg'], str) else str(result['errmsg']).lower()
+            if any(keyword in errmsg for keyword in ['已存在', 'already exists', 'already exist', 'exists']):
+                # 幂等性处理：如果是因为已存在而导致的"失败"，实际上算成功
+                result['success'] = True
+                result['result'] = 'success (already exists)'
+
+    except json.JSONDecodeError as e:
+        result['errmsg'] = "JSON解析失败: %s" % str(e)
+        result['errcode'] = 'JSON_PARSE_ERROR'
+    except Exception as e:
+        result['errmsg'] = "响应解析异常: %s" % str(e)
+        result['errcode'] = 'PARSE_EXCEPTION'
+
+    # 格式化为Ansible返回格式
+    if result['success']:
+        # 操作成功
+        result_dict = {
+            'changed': changed_default,
+            'msg': '%s操作成功' % action if action else '操作成功',
+            'response': result['data']
+        }
+
+        # 如果是幂等性成功（已存在），调整消息
+        if 'already exists' in result['result']:
+            result_dict['changed'] = False
+            result_dict['msg'] = '%s操作成功（资源已存在，无需更改）' % action if action else '操作成功（资源已存在，无需更改）'
+
+        return True, result_dict
+    else:
+        # 操作失败
+        result_dict = {
+            'changed': False,
+            'msg': '%s操作失败' % action if action else '操作失败',
+            'error': {
+                'result': result['result'],
+                'errcode': result['errcode'],
+                'errmsg': result['errmsg']
+            },
+            'response': result['data']
+        }
+        return False, result_dict
+
+
+def adc_list_fastl4_profiles(module):
+    """获取TCP代理模板列表"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.list" % (ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取TCP代理模板列表失败: %s" % str(e))
+
+    # 对于获取列表操作，直接返回响应数据，不判断success
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            # 检查是否有错误信息
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取TCP代理模板列表失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, profiles=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_list_fastl4_profiles_withcommon(module):
+    """获取包含common分区的TCP代理模板列表"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.list.withcommon" % (ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取包含common分区的TCP代理模板列表失败: %s" % str(e))
+
+    # 对于获取列表操作，直接返回响应数据，不判断success
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            # 检查是否有错误信息
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取包含common分区的TCP代理模板列表失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, profiles=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_get_fastl4_profile(module):
+    """获取TCP代理模板详情"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+
+    # 检查必需参数
+    if not name:
+        module.fail_json(msg="获取TCP代理模板详情需要提供name参数")
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.get" % (ip, authkey)
+
+    # 构造请求数据
+    profile_data = {
+        "name": name
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(profile_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取TCP代理模板详情失败: %s" % str(e))
+
+    # 对于获取详情操作，直接返回响应数据，不判断success
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            # 检查是否有错误信息
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取TCP代理模板详情失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, profile=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_add_fastl4_profile(module):
+    """添加TCP代理模板"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+
+    # 检查必需参数
+    if not name:
+        module.fail_json(msg="添加TCP代理模板需要提供name参数")
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.add" % (ip, authkey)
+
+    # 构造模板数据
+    profile_data = {
+        "name": name,
+        "description": module.params['description'] if 'description' in module.params else "",
+        "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
+        "timeout": module.params['timeout'] if 'timeout' in module.params else 1800,
+        "reset_timeout": module.params['reset_timeout'] if 'reset_timeout' in module.params else 15,
+        "half_close_timeout": module.params['half_close_timeout'] if 'half_close_timeout' in module.params else 120,
+        "retransmit_number": module.params['retransmit_number'] if 'retransmit_number' in module.params else 5,
+        "syn_retransmit_number": module.params['syn_retransmit_number'] if 'syn_retransmit_number' in module.params else 3,
+        "time_wait": module.params['time_wait'] if 'time_wait' in module.params else 8000,
+        "receive_buff": module.params['receive_buff'] if 'receive_buff' in module.params else 51200,
+        "send_buffer": module.params['send_buffer'] if 'send_buffer' in module.params else 51200,
+        "start_win_size": module.params['start_win_size'] if 'start_win_size' in module.params else 65530,
+        "nagle": module.params['nagle'] if 'nagle' in module.params else 1,
+        "window_scale": module.params['window_scale'] if 'window_scale' in module.params else 4,
+        "keep_alive_interval": module.params['keep_alive_interval'] if 'keep_alive_interval' in module.params else 61,
+        "keep_alive_retry": module.params['keep_alive_retry'] if 'keep_alive_retry' in module.params else 8,
+        "optts": module.params['optts'] if 'optts' in module.params else 1,
+        "tcp_accelerate_client": module.params['tcp_accelerate_client'] if 'tcp_accelerate_client' in module.params else 1,
+        "tcp_accelerate_client_cnwd": module.params['tcp_accelerate_client_cnwd'] if 'tcp_accelerate_client_cnwd' in module.params else 8,
+        "tcp_accelerate_server": module.params['tcp_accelerate_server'] if 'tcp_accelerate_server' in module.params else 1,
+        "tcp_accelerate_server_cnwd": module.params['tcp_accelerate_server_cnwd'] if 'tcp_accelerate_server_cnwd' in module.params else 8,
+        "mss": module.params['mss'] if 'mss' in module.params else 512,
+        "rstnode": module.params['rstnode'] if 'rstnode' in module.params else 1,
+        "rstclient": module.params['rstclient'] if 'rstclient' in module.params else 1,
+        "zero_window_timeout": module.params['zero_window_timeout'] if 'zero_window_timeout' in module.params else 1024,
+        "syn_rto_base": module.params['syn_rto_base'] if 'syn_rto_base' in module.params else 2346
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(profile_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="添加TCP代理模板失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(response_data, "添加TCP代理模板", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_edit_fastl4_profile(module):
+    """编辑TCP代理模板"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+
+    # 检查必需参数
+    if not name:
+        module.fail_json(msg="编辑TCP代理模板需要提供name参数")
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.edit" % (ip, authkey)
+
+    # 构造模板数据
+    profile_data = {
+        "name": name,
+        "description": module.params['description'] if 'description' in module.params else "",
+        "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
+        "timeout": module.params['timeout'] if 'timeout' in module.params else 1800,
+        "reset_timeout": module.params['reset_timeout'] if 'reset_timeout' in module.params else 15,
+        "half_close_timeout": module.params['half_close_timeout'] if 'half_close_timeout' in module.params else 120,
+        "retransmit_number": module.params['retransmit_number'] if 'retransmit_number' in module.params else 5,
+        "syn_retransmit_number": module.params['syn_retransmit_number'] if 'syn_retransmit_number' in module.params else 3,
+        "time_wait": module.params['time_wait'] if 'time_wait' in module.params else 8000,
+        "receive_buff": module.params['receive_buff'] if 'receive_buff' in module.params else 51200,
+        "send_buffer": module.params['send_buffer'] if 'send_buffer' in module.params else 51200,
+        "start_win_size": module.params['start_win_size'] if 'start_win_size' in module.params else 65530,
+        "nagle": module.params['nagle'] if 'nagle' in module.params else 1,
+        "window_scale": module.params['window_scale'] if 'window_scale' in module.params else 4,
+        "keep_alive_interval": module.params['keep_alive_interval'] if 'keep_alive_interval' in module.params else 61,
+        "keep_alive_retry": module.params['keep_alive_retry'] if 'keep_alive_retry' in module.params else 8,
+        "optts": module.params['optts'] if 'optts' in module.params else 1,
+        "tcp_accelerate_client": module.params['tcp_accelerate_client'] if 'tcp_accelerate_client' in module.params else 1,
+        "tcp_accelerate_client_cnwd": module.params['tcp_accelerate_client_cnwd'] if 'tcp_accelerate_client_cnwd' in module.params else 8,
+        "tcp_accelerate_server": module.params['tcp_accelerate_server'] if 'tcp_accelerate_server' in module.params else 1,
+        "tcp_accelerate_server_cnwd": module.params['tcp_accelerate_server_cnwd'] if 'tcp_accelerate_server_cnwd' in module.params else 8,
+        "mss": module.params['mss'] if 'mss' in module.params else 512,
+        "rstnode": module.params['rstnode'] if 'rstnode' in module.params else 1,
+        "rstclient": module.params['rstclient'] if 'rstclient' in module.params else 1,
+        "zero_window_timeout": module.params['zero_window_timeout'] if 'zero_window_timeout' in module.params else 1024,
+        "syn_rto_base": module.params['syn_rto_base'] if 'syn_rto_base' in module.params else 2346
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(profile_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="编辑TCP代理模板失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(response_data, "编辑TCP代理模板", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_delete_fastl4_profile(module):
+    """删除TCP代理模板"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+
+    # 检查必需参数
+    if not name:
+        module.fail_json(msg="删除TCP代理模板需要提供name参数")
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.del" % (ip, authkey)
+
+    # 构造请求数据
+    profile_data = {
+        "name": name
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(profile_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="删除TCP代理模板失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(response_data, "删除TCP代理模板", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def main():
+    # 定义模块参数
+    module_args = dict(
+        ip=dict(type='str', required=True),
+        authkey=dict(type='str', required=True, no_log=True),
+        action=dict(type='str', required=True, choices=[
+            'list_profiles', 'list_profiles_withcommon', 'get_profile', 'add_profile', 'edit_profile', 'delete_profile']),
+        # TCP代理模板参数
+        name=dict(type='str', required=False),
+        description=dict(type='str', required=False),
+        fin_timeout=dict(type='int', required=False),
+        timeout=dict(type='int', required=False),
+        reset_timeout=dict(type='int', required=False),
+        half_close_timeout=dict(type='int', required=False),
+        retransmit_number=dict(type='int', required=False),
+        syn_retransmit_number=dict(type='int', required=False),
+        time_wait=dict(type='int', required=False),
+        receive_buff=dict(type='int', required=False),
+        send_buffer=dict(type='int', required=False),
+        start_win_size=dict(type='int', required=False),
+        nagle=dict(type='int', required=False),
+        window_scale=dict(type='int', required=False),
+        keep_alive_interval=dict(type='int', required=False),
+        keep_alive_retry=dict(type='int', required=False),
+        optts=dict(type='int', required=False),
+        tcp_accelerate_client=dict(type='int', required=False),
+        tcp_accelerate_client_cnwd=dict(type='int', required=False),
+        tcp_accelerate_server=dict(type='int', required=False),
+        tcp_accelerate_server_cnwd=dict(type='int', required=False),
+        mss=dict(type='int', required=False),
+        rstnode=dict(type='int', required=False),
+        rstclient=dict(type='int', required=False),
+        zero_window_timeout=dict(type='int', required=False),
+        syn_rto_base=dict(type='int', required=False)
+    )
+
+    # 创建AnsibleModule实例
+    module = AnsibleModule(
+        argument_spec=module_args,
+        supports_check_mode=False
+    )
+
+    # 根据action执行相应操作
+    action = module.params['action']
+    
+    if action == 'list_profiles':
+        adc_list_fastl4_profiles(module)
+    elif action == 'list_profiles_withcommon':
+        adc_list_fastl4_profiles_withcommon(module)
+    elif action == 'get_profile':
+        adc_get_fastl4_profile(module)
+    elif action == 'add_profile':
+        adc_add_fastl4_profile(module)
+    elif action == 'edit_profile':
+        adc_edit_fastl4_profile(module)
+    elif action == 'delete_profile':
+        adc_delete_fastl4_profile(module)
+
+
+if __name__ == '__main__':
+    main()

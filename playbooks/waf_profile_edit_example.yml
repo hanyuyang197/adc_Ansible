@@ -1,0 +1,44 @@
+---
+- name: Edit WAF Profile
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # 从inventory文件获取变量，无需在此处定义
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: Edit WAF profile
+      adc_waf_profile:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: edit_profile
+        name: "test_waf_profile"
+        rule_name: "wrule_123.txt"
+        white_url_list: ["^/"]
+        black_url_list: ["^/"]
+        uri_stick_check: 1
+        mode: 2
+        behavior: 1
+        enable: 1
+        logging: 1
+        injection_sql: 1
+        injection_xss: 1
+        disable_len_check: 0
+        headers_mlen: 8192
+        url_mlen: 28030
+        cookie_mlen: 65535
+      register: result
+
+    - name: Display result
+      debug:
+        var: result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

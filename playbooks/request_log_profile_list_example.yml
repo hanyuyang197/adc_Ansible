@@ -1,0 +1,19 @@
+---
+- name: 列出请求日志模板示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    adc_ip: "{{ inventory_hostname }}"
+    login_result: "{{ hostvars['localhost']['login_result'] }}"
+  
+  tasks:
+    - name: 列出请求日志模板
+      adc_slb_profile_request_log:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "list_profiles"
+      register: result
+    
+    - name: 显示结果
+      debug:
+        var: result

@@ -1,0 +1,70 @@
+---
+- name: 编辑TCP代理模板示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # adc_ip变量已移除，使用inventory_hostname替代
+    adc_username: "admin"
+    adc_password: "admin"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 显示登录结果
+      debug:
+        var: login_result
+
+    - name: 编辑TCP代理模板
+      adc_slb_profile_fastl4:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "edit_profile"
+        name: "test_profile"
+        fin_timeout: 35
+        timeout: 1900
+        reset_timeout: 20
+        half_close_timeout: 130
+        retransmit_number: 6
+        syn_retransmit_number: 4
+        time_wait: 9000
+        receive_buff: 61200
+        send_buffer: 61200
+        start_win_size: 65531
+        nagle: 1
+        window_scale: 5
+        keep_alive_interval: 62
+        keep_alive_retry: 9
+        optts: 1
+        tcp_accelerate_client: 1
+        tcp_accelerate_client_cnwd: 9
+        tcp_accelerate_server: 1
+        tcp_accelerate_server_cnwd: 9
+        mss: 513
+        rstnode: 1
+        rstclient: 1
+        zero_window_timeout: 1025
+        syn_rto_base: 2347
+      register: edit_profile_result
+      when: login_result is succeeded
+
+    - name: 显示编辑TCP代理模板结果
+      debug:
+        var: edit_profile_result
+      when: edit_profile_result is defined
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

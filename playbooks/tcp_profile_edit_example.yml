@@ -1,0 +1,58 @@
+---
+- name: 编辑TCP模板示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # adc_ip变量已移除，使用inventory_hostname替代
+    adc_username: "admin"
+    adc_password: "admin"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 显示登录结果
+      debug:
+        var: login_result
+
+    - name: 编辑TCP模板
+      adc_slb_profile_tcp:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "edit_profile"
+        name: "test_tcp_profile"
+        timeout: 1900
+        reset_timeout: 20
+        start_win_size: 65531
+        half_close_timeout: 130
+        insertcip: 0
+        generate_isn: 0
+        rstnode: 0
+        rstclient: 0
+        timestamp: 3
+        loose_initiation: 1
+        loose_close: 1
+        time_wait: 9000
+      register: edit_profile_result
+      when: login_result is succeeded
+
+    - name: 显示编辑TCP模板结果
+      debug:
+        var: edit_profile_result
+      when: edit_profile_result is defined
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

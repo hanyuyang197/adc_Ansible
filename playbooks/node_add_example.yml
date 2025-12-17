@@ -3,14 +3,14 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    adc_ip: "10.5.116.35"
+    # adc_ip变量已移除，使用inventory_hostname替代
     adc_username: "admin"
     adc_password: "admin"
   
   tasks:
     - name: 登录ADC设备
       adc_login:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         username: "{{ adc_username }}"
         password: "{{ adc_password }}"
       register: login_result
@@ -19,8 +19,9 @@
       debug:
         var: login_result
     
-    - name: 添加第一个节�?      adc_slb_node:
-        ip: "{{ adc_ip }}"
+    - name: 添加第一个节点
+      adc_slb_node:
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_node"
         tc_name: ""
@@ -58,12 +59,14 @@
       register: add_node_result_1
       when: login_result is succeeded
     
-    - name: 显示第一个节点添加结�?      debug:
+    - name: 显示第一个节点添加结果
+      debug:
         var: add_node_result_1
       when: add_node_result_1 is defined
     
-    - name: 添加第二个节�?      adc_slb_node:
-        ip: "{{ adc_ip }}"
+    - name: 添加第二个节点
+      adc_slb_node:
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_node"
         tc_name: ""
@@ -101,13 +104,14 @@
       register: add_node_result_2
       when: login_result is succeeded
     
-    - name: 显示第二个节点添加结�?      debug:
+    - name: 显示第二个节点添加结果
+      debug:
         var: add_node_result_2
       when: add_node_result_2 is defined
     
     - name: 登出ADC设备
       adc_logout:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
       register: logout_result
       when: login_result is succeeded

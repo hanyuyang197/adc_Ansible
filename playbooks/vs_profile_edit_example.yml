@@ -1,0 +1,42 @@
+---
+- name: 编辑虚拟服务模板
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # adc_ip变量已移除，使用inventory_hostname替代  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 编辑虚拟服务模板
+      adc_slb_profile_vs:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "edit_profile"
+        name: "test_vs_profile"
+        ignored_tcp_msl: 0
+        reset_unknown_conn: 1
+        reset_l7_on_failover: 0
+        syn_otherflags: 1
+        conn_limit_switch: 1
+        conn_limit: 2000
+        conn_over_limit_action: 1
+        log_conn_limit_exceed: 0
+        conn_rate_limit_switch: 1
+        conn_rate_limit: 200
+        conn_rate_over_limit_action: 1
+        conn_rate_unit: 2
+        log_conn_rate_limit_exceed: 0
+      register: result
+
+    - name: 显示结果
+      debug:
+        var: result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

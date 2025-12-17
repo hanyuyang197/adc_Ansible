@@ -1,0 +1,36 @@
+---
+- name: 编辑SMTP配置
+  hosts: adc_devices
+  gather_facts: no
+  vars:
+    # adc_username: "{{ adc_username }}"  # 循环引用已修复
+    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+
+    adc_ip: "{{ inventory_hostname }}"
+    adc_authkey: "{{ login_result.authkey }}"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 编辑SMTP配置
+      adc_system_smtp:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: set_smtp_config
+        server: "smtp.example.com"
+        port: 25
+        emailto: "admin@example.com"
+        emailfrom: "adc@example.com"
+        auth: 1
+        user: "smtpuser"
+        password: "smtppassword"
+      register: result
+
+    - name: 显示编辑结果
+      debug:
+        var: result

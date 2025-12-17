@@ -3,7 +3,7 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    adc_ip: "10.5.116.35"
+    # adc_ip变量已移除，使用inventory_hostname替代
     adc_username: "admin"
     adc_password: "admin"
 
@@ -13,7 +13,7 @@
     #####################################################################
     - name: 登录ADC设备
       adc_login:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         username: "{{ adc_username }}"
         password: "{{ adc_password }}"
       register: login_result
@@ -27,7 +27,7 @@
     #####################################################################
     - name: 添加HTTP健康检查
       adc_slb_healthcheck:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_healthcheck"
         name: "http_healthcheck_test"
@@ -65,7 +65,7 @@
     #####################################################################
     - name: 添加第一个节点
       adc_slb_node:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_node"
         tc_name: ""
@@ -119,7 +119,7 @@
 
     - name: 添加第二个节点
       adc_slb_node:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_node"
         tc_name: ""
@@ -176,7 +176,7 @@
     #####################################################################
     - name: 添加服务池
       adc_slb_pool:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_pool"
         name: "http_pool_test"
@@ -202,7 +202,7 @@
     #####################################################################
     - name: 将第一个节点添加到服务池
       adc_slb_pool:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_pool_node"
         pool_name: "http_pool_test"
@@ -223,7 +223,7 @@
 
     - name: 将第二个节点添加到服务池
       adc_slb_pool:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_pool_node"
         pool_name: "http_pool_test"
@@ -247,7 +247,7 @@
     #####################################################################
     - name: 添加IPv4虚拟地址
       adc_slb_va:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_va"
         va_type: "ipv4"
@@ -275,7 +275,7 @@
     #####################################################################
     - name: 添加HTTP虚拟服务
       adc_slb_va_vs:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_vs"
         va_name: "10.0.0.100_test"
@@ -324,7 +324,7 @@
     #####################################################################
     - name: 获取节点列表
       adc_slb_node:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "list_nodes"
       register: list_nodes_result
@@ -337,7 +337,7 @@
 
     - name: 获取服务池列表
       adc_slb_pool:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "list_pools"
       register: list_pools_result
@@ -350,7 +350,7 @@
 
     - name: 获取虚拟地址列表
       adc_slb_va:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "list_vas"
       register: list_vas_result
@@ -363,7 +363,7 @@
 
     - name: 获取健康检查列表
       adc_slb_healthcheck:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "list_healthchecks"
       register: list_hcs_result
@@ -379,7 +379,7 @@
     #####################################################################
     - name: 删除虚拟服务
       adc_slb_va_vs:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "delete_vs"
         va_name: "10.0.0.100_test"
@@ -396,7 +396,7 @@
 
     - name: 删除虚拟地址
       adc_slb_va:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "delete_va"
         name: "10.0.0.100_test"
@@ -410,7 +410,7 @@
 
     - name: 从服务池中删除节点
       adc_slb_pool:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "delete_pool_node"
         pool_name: "http_pool_test"
@@ -422,7 +422,7 @@
 
     - name: 从服务池中删除第二个节点
       adc_slb_pool:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "delete_pool_node"
         pool_name: "http_pool_test"
@@ -434,7 +434,7 @@
 
     - name: 删除服务池
       adc_slb_pool:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "delete_pool"
         name: "http_pool_test"
@@ -448,7 +448,7 @@
 
     - name: 删除节点
       adc_slb_node:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "delete_node"
         name: "192.168.1.101_test"
@@ -457,7 +457,7 @@
 
     - name: 删除第二个节点
       adc_slb_node:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "delete_node"
         name: "192.168.1.102_test"
@@ -471,7 +471,7 @@
 
     - name: 删除健康检查
       adc_slb_healthcheck:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "delete_healthcheck"
         name: "http_healthcheck_test"
@@ -488,7 +488,7 @@
     #####################################################################
     - name: 登出ADC设备
       adc_logout:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
       register: logout_result
       when: login_result is succeeded

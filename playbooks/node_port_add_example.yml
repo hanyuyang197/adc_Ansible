@@ -1,16 +1,16 @@
 ---
-- name: 节点端口添加示例
+- name: 添加节点端口示例
   hosts: adc_servers
   gather_facts: no
   vars:
-    adc_ip: "10.5.116.35"
+    # adc_ip变量已移除，使用inventory_hostname替代
     adc_username: "admin"
     adc_password: "admin"
 
   tasks:
     - name: 登录ADC设备
       adc_login:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         username: "{{ adc_username }}"
         password: "{{ adc_password }}"
       register: login_result
@@ -20,23 +20,24 @@
         var: login_result
 
     - name: 添加节点端口
-      adc_slb_node:
-        ip: "{{ adc_ip }}"
+      adc_slb_node_port:
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_node_port"
-        name: "192.168.1.123"
-        port_port_number: 890
-        port_protocol: 0
-        port_status: 1
-        port_weight: 1
-        port_conn_limit: 8000000
-        port_graceful_time: 0
-        port_graceful_delete: 0
-        port_graceful_disable: 0
-        port_graceful_persist: 0
-        port_phm_profile: ""
-        port_healthcheck: ""
-        port_nat_strategy: ""
+        name: "test_node"
+        port_number: 8080
+        protocol: 0
+        status: 1
+        weight: 1
+        conn_limit: 8000000
+        graceful_time: 0
+        graceful_delete: 0
+        graceful_disable: 0
+        graceful_persist: 0
+        phm_profile: ""
+        healthcheck: ""
+        upnum: 0
+        nat_strategy: ""
       register: add_node_port_result
       when: login_result is succeeded
 
@@ -47,7 +48,7 @@
 
     - name: 登出ADC设备
       adc_logout:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
       register: logout_result
       when: login_result is succeeded

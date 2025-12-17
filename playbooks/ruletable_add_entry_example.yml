@@ -1,0 +1,39 @@
+---
+- name: Add Rule Table Entries
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    ruletable_name: "test_ruletable"
+    # # adc_username: "{{ adc_username }}"  # 循环引用已修复  # 循环引用已修复
+    # # adc_password: "{{ adc_password }}"  # 循环引用已修复  # 循环引用已修复
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: Add entries to rule table
+      adc_slb_ruletable:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: add_ruletable_entry
+        name: "{{ ruletable_name }}"
+        entrys:
+          - ip: "1.2.3.4/32"
+            id: 1
+            age: 0
+          - ip: "1.2.3.5/32"
+            id: 2
+            age: 123
+      register: result
+
+    - name: Display result
+      debug:
+        var: result.result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

@@ -1,0 +1,49 @@
+---
+- name: 添加端口列表模板示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # adc_ip变量已移除，使用inventory_hostname替代
+    adc_username: "admin"
+    adc_password: "admin"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 显示登录结果
+      debug:
+        var: login_result
+
+    - name: 添加端口列表模板
+      adc_network_port_list_profile:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "add_profile"
+        name: "port_list_2"
+        port:
+          - start_port: 10001
+            end_port: 10002
+      register: add_profile_result
+      when: login_result is succeeded
+
+    - name: 显示添加端口列表模板结果
+      debug:
+        var: add_profile_result
+      when: add_profile_result is defined
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

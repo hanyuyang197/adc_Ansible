@@ -1,0 +1,31 @@
+---
+- name: 获取指定虚拟服务模板详情
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # 从inventory文件获取变量，无需在此处定义
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 获取指定虚拟服务模板详情
+      adc_slb_profile_vs:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "get_profile"
+        name: "test_vs_profile"
+      register: result
+
+    - name: 显示结果
+      debug:
+        var: result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

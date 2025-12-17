@@ -1,0 +1,20 @@
+---
+- name: 删除SIP模板示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    adc_ip: "{{ inventory_hostname }}"
+    login_result: "{{ hostvars['localhost']['login_result'] }}"
+
+  tasks:
+    - name: 删除SIP模板
+      adc_slb_profile_sip:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "delete_profile"
+        name: "test_sip_profile"
+      register: result
+
+    - name: 显示结果
+      debug:
+        var: result

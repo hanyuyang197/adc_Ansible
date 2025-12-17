@@ -1,0 +1,39 @@
+---
+- name: 添加DNS日志模板
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # 从inventory文件获取变量，无需在此处定义
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 添加DNS日志模板
+      adc_slb_profile_dnslog:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "add_profile"
+        name: "test_dnslog_profile"
+        host: "8.8.8.8"
+        facility: 16
+        severity: 7
+        src_port: 514
+        enable_local_record: 1
+        dst_port: 514
+        query: 1
+        response: 1
+      register: result
+
+    - name: 显示结果
+      debug:
+        var: result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

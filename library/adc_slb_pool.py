@@ -607,7 +607,7 @@ def main():
     action = module.params['action']
     if hasattr(action, '__str__'):
         action = str(action)
-    
+
     if action == 'get_pools':
         adc_get_pools(module)
     elif action == 'get_pool':

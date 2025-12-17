@@ -1,0 +1,310 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from ansible.module_utils.basic import AnsibleModule
+import json
+import sys
+
+
+def format_adc_response_for_ansible(response_data, action="", is_modify_action=False):
+    """
+    格式化ADC API响应数据为Ansible模块所需的格式
+
+    Args:
+        response_data (str): ADC API返回的响应数据
+        action (str): 执行的操作名称
+        is_modify_action (bool): 是否为修改类操作
+
+    Returns:
+        tuple: (success_bool, result_dict)
+    """
+    try:
+        # 解析JSON响应
+        result = json.loads(response_data)
+
+        # 检查是否包含错误信息
+        if 'errcode' in result and result['errcode'] != 0:
+            # 操作失败
+            result_dict = {
+                'changed': False,
+                'msg': '%s操作失败' % action if action else '操作失败',
+                'error': {
+                    'result': result.get('result', ''),
+                    'errcode': result.get('errcode', ''),
+                    'errmsg': result.get('errmsg', '')
+                },
+                'response': result.get('data', {})
+            }
+            return False, result_dict
+        elif 'errcode' in result and result['errcode'] == 0:
+            # 操作成功
+            result_dict = {
+                'changed': is_modify_action,  # 修改类操作标记为changed
+                'msg': '%s操作成功' % action if action else '操作成功',
+                'response': result.get('data', {})
+            }
+
+            # 如果是幂等性成功（已存在），调整消息
+            if 'result' in result and 'already exists' in result['result']:
+                result_dict['changed'] = False
+                result_dict['msg'] = '%s操作成功（资源已存在，无需更改）' % action if action else '操作成功（资源已存在，无需更改）'
+
+            return True, result_dict
+        else:
+            # 未知格式的响应
+            result_dict = {
+                'changed': is_modify_action,
+                'msg': '%s操作完成' % action if action else '操作完成',
+                'response': result
+            }
+            return True, result_dict
+
+    except Exception as e:
+        # 解析失败
+        result_dict = {
+            'changed': False,
+            'msg': '解析响应失败: %s' % str(e),
+            'raw_response': response_data if isinstance(response_data, str) else str(response_data)
+        }
+        return False, result_dict
+
+
+def adc_save_config(module):
+    """保存配置"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=save" % (ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="保存配置失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "保存配置", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_reboot_system(module):
+    """系统重启"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    save = module.params['save']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.action.reboot" % (
+        ip, authkey)
+
+    # 构造重启数据
+    reboot_data = {}
+
+    # 添加可选参数
+    if save is not None:
+        reboot_data["save"] = save
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = json.dumps(reboot_data)
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            post_data = json.dumps(reboot_data)
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="系统重启失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "系统重启", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_reload_config(module):
+    """重新加载配置"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    save = module.params['save']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.action.reload" % (
+        ip, authkey)
+
+    # 构造重新加载数据
+    reload_data = {}
+
+    # 添加可选参数
+    if save is not None:
+        reload_data["save"] = save
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = json.dumps(reload_data)
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            post_data = json.dumps(reload_data)
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="重新加载配置失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "重新加载配置", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_shutdown_system(module):
+    """系统关机"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    save = module.params['save']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.action.shutdown" % (
+        ip, authkey)
+
+    # 构造关机数据
+    shutdown_data = {}
+
+    # 添加可选参数
+    if save is not None:
+        shutdown_data["save"] = save
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = json.dumps(shutdown_data)
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            post_data = json.dumps(shutdown_data)
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="系统关机失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "系统关机", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def main():
+    # 定义模块参数
+    module_args = dict(
+        ip=dict(type='str', required=True),
+        authkey=dict(type='str', required=True, no_log=True),
+        action=dict(type='str', required=True, choices=[
+            'save_config', 'reboot_system', 'reload_config', 'shutdown_system']),
+        # 系统操作参数
+        save=dict(type='int', required=False)
+    )
+
+    # 创建AnsibleModule实例
+    module = AnsibleModule(
+        argument_spec=module_args,
+        supports_check_mode=False
+    )
+
+    # 根据action执行相应操作
+    action = module.params['action']
+
+    if action == 'save_config':
+        adc_save_config(module)
+    elif action == 'reboot_system':
+        adc_reboot_system(module)
+    elif action == 'reload_config':
+        adc_reload_config(module)
+    elif action == 'shutdown_system':
+        adc_shutdown_system(module)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,23 @@
+---
+- name: 编辑FTP模板示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    adc_ip: "{{ inventory_hostname }}"
+    login_result: "{{ hostvars['localhost']['login_result'] }}"
+  
+  tasks:
+    - name: 编辑FTP模板
+      adc_slb_profile_ftp:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "edit_profile"
+        name: "test_ftp_profile"
+        active_mode_port: 21
+        disable_active_mode: 1
+        disable_passive_mode: 1
+      register: result
+    
+    - name: 显示结果
+      debug:
+        var: result

@@ -3,14 +3,14 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    adc_ip: "10.5.116.35"
+    # adc_ip变量已移除，使用inventory_hostname替代
     adc_username: "admin"
     adc_password: "admin"
 
   tasks:
     - name: 登录ADC设备
       adc_login:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         username: "{{ adc_username }}"
         password: "{{ adc_password }}"
       register: login_result
@@ -21,7 +21,7 @@
 
     - name: 添加IPv4类型虚拟地址
       adc_slb_va:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_va"
         va_type: "ipv4"
@@ -46,7 +46,7 @@
 
     - name: 登出ADC设备
       adc_logout:
-        ip: "{{ adc_ip }}"
+        ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
       register: logout_result
       when: login_result is succeeded

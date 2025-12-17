@@ -1,0 +1,29 @@
+---
+- name: List WAF Profiles
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # 从inventory文件获取变量，无需在此处定义
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: Get list of WAF profiles
+      adc_waf_profile:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: list_profiles
+      register: result
+
+    - name: Display WAF profiles
+      debug:
+        var: result.result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

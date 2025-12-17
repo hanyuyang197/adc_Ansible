@@ -1,0 +1,83 @@
+---
+- name: 添加HTTP模板示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # adc_ip变量已移除，使用inventory_hostname替代
+    adc_username: "admin"
+    adc_password: "admin"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 显示登录结果
+      debug:
+        var: login_result
+
+    - name: 添加HTTP模板
+      adc_slb_profile_http:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "add_profile"
+        name: "test_http_profile"
+        fallback_url: ""
+        force_reselect: 0
+        clientip_insert: ""
+        clientip_insert_replace: 0
+        retry_503: 0
+        websocket: 0
+        node_select_fail_response_504: 1
+        cookie_encrypt_name: ""
+        cookie_encrypt_password: "123456"
+        req_header_del: []
+        rsp_header_del: []
+        req_header_insert: []
+        rsp_header_insert: []
+        url_class: []
+        host_class: []
+        url_hash: 0
+        url_hash_len: 0
+        url_hash_offset: 0
+        redirect_modify: []
+        redirect_modify_https: 0
+        redirect_modify_https_port: 0
+        cookie_select: 0
+        cookie_expire: 0
+        cookie_expire_enable: 0
+        compress: 0
+        compress_keep_header: 0
+        compress_level: 1
+        compress_min_len: 0
+        chunking_request: 0
+        chunking_response: 0
+        compress_content_type: []
+        compress_content_type_exclude: []
+        compress_url_exclude: []
+        req_header_insert_cert: []
+        req_url_insert_cert: []
+        req_cookie_insert_cert: []
+        client_cert_code: []
+      register: add_profile_result
+      when: login_result is succeeded
+
+    - name: 显示添加HTTP模板结果
+      debug:
+        var: add_profile_result
+      when: add_profile_result is defined
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

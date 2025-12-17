@@ -1,0 +1,32 @@
+---
+- name: 设置时间配置
+  hosts: adc_devices
+  gather_facts: no
+  vars:
+    # adc_username: "{{ adc_username }}"  # 循环引用已修复
+    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+
+    adc_ip: "{{ inventory_hostname }}"
+    adc_authkey: "{{ login_result.authkey }}"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 设置时间配置
+      adc_system_time:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: set_time
+        date: "12/25/2024"
+        time: "10:30:00"
+        tzone: "(GMT+08:00)Beijing, Chongqing, Hong Kong, Urumqi"
+      register: result
+
+    - name: 显示设置结果
+      debug:
+        var: result

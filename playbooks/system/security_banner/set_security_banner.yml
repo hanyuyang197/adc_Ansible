@@ -1,0 +1,31 @@
+---
+- name: 设置登录安全标识
+  hosts: adc_devices
+  gather_facts: no
+  vars:
+    # adc_username: "{{ adc_username }}"  # 循环引用已修复
+    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+
+    adc_ip: "{{ inventory_hostname }}"
+    adc_authkey: "{{ login_result.authkey }}"
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 设置登录安全标识
+      adc_system_security_banner:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: set_security_banner
+        login_banner: "Welcome to Horizon ADC System"
+        login_success_banner: "[type ? for help]"
+      register: result
+
+    - name: 显示设置结果
+      debug:
+        var: result

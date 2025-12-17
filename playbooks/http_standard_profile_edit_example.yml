@@ -1,0 +1,60 @@
+---
+- name: 编辑HTTP模板
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    # adc_ip变量已移除，使用inventory_hostname替代  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 编辑HTTP模板
+      adc_slb_profile_http_standard:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "edit_profile"
+        name: "test_http_profile"
+        fallback_url: ""
+        force_reselect: 1
+        clientip_insert: "X-Real-IP"
+        clientip_insert_replace: 1
+        retry_503: 3
+        websocket: 1
+        node_select_fail_response_504: 0
+        cookie_encrypt_name: "session"
+        cookie_encrypt_password: "password"
+        req_header_del: []
+        rsp_header_del: []
+        req_header_insert: []
+        rsp_header_insert: []
+        url_hash: 1
+        url_hash_len: 32
+        url_hash_offset: 0
+        redirect_modify: []
+        redirect_modify_https: 1
+        redirect_modify_https_port: 443
+        cookie_select: 1
+        cookie_expire: 3600
+        cookie_expire_enable: 1
+        compress: 1
+        compress_keep_header: 1
+        compress_level: 5
+        compress_min_len: 128
+        chunking_request: 1
+        chunking_response: 1
+        compress_content_type: []
+        compress_content_type_exclude: []
+        compress_url_exclude: []
+      register: result
+
+    - name: 显示结果
+      debug:
+        var: result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

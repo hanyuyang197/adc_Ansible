@@ -1,0 +1,38 @@
+---
+- name: Set email alarm configuration
+  hosts: adc_devices
+  gather_facts: no
+  vars:
+    # adc_username: "{{ adc_username }}"  # 循环引用已修复
+    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: Set email alarm configuration
+      adc_system_log_alarm:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        alarm_type: email
+        action: set
+        delay_send_buff: 120
+        delay_send_time: 110
+        send_event: [2, 4, 5]
+        send_level: 5
+      register: result
+
+    - name: Display result
+      debug:
+        var: result
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"

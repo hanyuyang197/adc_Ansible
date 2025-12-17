@@ -1,0 +1,29 @@
+---
+- name: Clear NAT logs
+  hosts: adc_devices
+  gather_facts: no
+  vars:
+    # adc_username: "{{ adc_username }}"  # 循环引用已修复
+    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: Clear NAT logs
+      adc_system_log_get:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: clear
+        log_type: nat
+      register: clear_result
+
+    - name: Display clear result
+      debug:
+        var: clear_result.result

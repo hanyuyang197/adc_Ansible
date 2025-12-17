@@ -1,0 +1,19 @@
+---
+- name: 获取SIP模板列表示例
+  hosts: adc_servers
+  gather_facts: no
+  vars:
+    adc_ip: "{{ inventory_hostname }}"
+    login_result: "{{ hostvars['localhost']['login_result'] }}"
+
+  tasks:
+    - name: 获取SIP模板列表
+      adc_slb_profile_sip:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "list_profiles"
+      register: result
+
+    - name: 显示结果
+      debug:
+        var: result

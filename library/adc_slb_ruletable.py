@@ -1,0 +1,282 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from ansible.module_utils.basic import AnsibleModule
+try:
+    import urllib2
+    import json
+except ImportError:
+    pass
+
+DOCUMENTATION = '''
+---
+module: adc_slb_ruletable
+short_description: Manage ADC SLB Rule Tables
+description:
+    - Manage ADC SLB Rule Tables including add, edit, delete, list and get operations
+version_added: "2.4"
+options:
+    ip:
+        description:
+            - The IP address of the ADC device
+        required: true
+    authkey:
+        description:
+            - The authentication key for the ADC device
+        required: true
+    action:
+        description:
+            - The action to perform (list_ruletables, list_ruletables_withcommon, get_ruletable, add_ruletable, edit_ruletable, delete_ruletable, add_ruletable_entry)
+        required: true
+        choices: ['list_ruletables', 'list_ruletables_withcommon', 'get_ruletable', 'add_ruletable', 'edit_ruletable', 'delete_ruletable', 'add_ruletable_entry']
+    name:
+        description:
+            - The name of the rule table
+        required: false
+    entrys:
+        description:
+            - Rule entries array
+        required: false
+        type: list
+author:
+    - Your Name
+'''
+
+EXAMPLES = '''
+# List all rule tables
+- adc_slb_ruletable:
+    ip: "192.168.1.1"
+    authkey: "your_auth_key"
+    action: "list_ruletables"
+
+# Get a specific rule table
+- adc_slb_ruletable:
+    ip: "192.168.1.1"
+    authkey: "your_auth_key"
+    action: "get_ruletable"
+    name: "my_ruletable"
+
+# Add a rule table
+- adc_slb_ruletable:
+    ip: "192.168.1.1"
+    authkey: "your_auth_key"
+    action: "add_ruletable"
+    name: "my_ruletable"
+
+# Edit a rule table
+- adc_slb_ruletable:
+    ip: "192.168.1.1"
+    authkey: "your_auth_key"
+    action: "edit_ruletable"
+    name: "my_ruletable"
+
+# Delete a rule table
+- adc_slb_ruletable:
+    ip: "192.168.1.1"
+    authkey: "your_auth_key"
+    action: "delete_ruletable"
+    name: "my_ruletable"
+
+# Add rule table entries
+- adc_slb_ruletable:
+    ip: "192.168.1.1"
+    authkey: "your_auth_key"
+    action: "add_ruletable_entry"
+    name: "my_ruletable"
+    entrys:
+      - ip: "1.2.3.4/32"
+        id: 1
+        age: 0
+'''
+
+RETURN = '''
+result:
+    description: The response from the ADC device
+    returned: success
+    type: dict
+'''
+
+def send_request(url, data=None, method='GET'):
+    """Send HTTP request to ADC device"""
+    try:
+        if method == 'POST' and data:
+            data_json = json.dumps(data)
+            req = urllib2.Request(url, data=data_json)
+            req.add_header('Content-Type', 'application/json')
+        else:
+            req = urllib2.Request(url)
+        
+        response = urllib2.urlopen(req)
+        result = json.loads(response.read())
+        return result
+    except Exception as e:
+        return {'status': False, 'msg': str(e)}
+
+def adc_list_ruletables(module):
+    """List all rule tables"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.list" % (ip, authkey)
+    result = send_request(url)
+    return result
+
+def adc_list_ruletables_withcommon(module):
+    """List all rule tables including common partition"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.list.withcommon" % (ip, authkey)
+    result = send_request(url)
+    return result
+
+def adc_get_ruletable(module):
+    """Get a specific rule table"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name']
+    
+    if not name:
+        module.fail_json(msg="获取规则表需要提供name参数")
+    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.get" % (ip, authkey)
+    
+    data = {
+        "name": name
+    }
+    
+    result = send_request(url, data, method='POST')
+    return result
+
+def adc_add_ruletable(module):
+    """Add a new rule table"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name']
+    
+    # Check required parameters
+    if not name:
+        module.fail_json(msg="添加规则表需要提供name参数")
+    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.add" % (ip, authkey)
+    
+    # Construct rule table data
+    ruletable_data = {
+        "ruletable": {
+            "name": name
+        }
+    }
+    
+    # Send POST request
+    result = send_request(url, ruletable_data, method='POST')
+    return result
+
+def adc_edit_ruletable(module):
+    """Edit an existing rule table"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name']
+    
+    # Check required parameters
+    if not name:
+        module.fail_json(msg="编辑规则表需要提供name参数")
+    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.edit" % (ip, authkey)
+    
+    # Construct rule table data
+    ruletable_data = {
+        "name": name
+    }
+    
+    # Send POST request
+    result = send_request(url, ruletable_data, method='POST')
+    return result
+
+def adc_delete_ruletable(module):
+    """Delete a rule table"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name']
+    
+    # Check required parameters
+    if not name:
+        module.fail_json(msg="删除规则表需要提供name参数")
+    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.del" % (ip, authkey)
+    
+    # Construct rule table data
+    ruletable_data = {
+        "name": name
+    }
+    
+    # Send POST request
+    result = send_request(url, ruletable_data, method='POST')
+    return result
+
+def adc_add_ruletable_entry(module):
+    """Add entries to a rule table"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name']
+    entrys = module.params['entrys']
+    
+    # Check required parameters
+    if not name:
+        module.fail_json(msg="添加规则表条目需要提供name参数")
+    
+    if not entrys:
+        module.fail_json(msg="添加规则表条目需要提供entrys参数")
+    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.entry.add" % (ip, authkey)
+    
+    # Construct rule table entry data
+    ruletable_data = {
+        "name": name,
+        "entrys": entrys
+    }
+    
+    # Send POST request
+    result = send_request(url, ruletable_data, method='POST')
+    return result
+
+def main():
+    module = AnsibleModule(
+        argument_spec=dict(
+            ip=dict(type='str', required=True),
+            authkey=dict(type='str', required=True),
+            action=dict(type='str', required=True, choices=[
+                'list_ruletables', 'list_ruletables_withcommon', 'get_ruletable', 
+                'add_ruletable', 'edit_ruletable', 'delete_ruletable', 'add_ruletable_entry'
+            ]),
+            name=dict(type='str', required=False),
+            entrys=dict(type='list', required=False),
+        ),
+        supports_check_mode=False
+    )
+
+    action = module.params['action']
+    
+    if action == 'list_ruletables':
+        result = adc_list_ruletables(module)
+    elif action == 'list_ruletables_withcommon':
+        result = adc_list_ruletables_withcommon(module)
+    elif action == 'get_ruletable':
+        result = adc_get_ruletable(module)
+    elif action == 'add_ruletable':
+        result = adc_add_ruletable(module)
+    elif action == 'edit_ruletable':
+        result = adc_edit_ruletable(module)
+    elif action == 'delete_ruletable':
+        result = adc_delete_ruletable(module)
+    elif action == 'add_ruletable_entry':
+        result = adc_add_ruletable_entry(module)
+    else:
+        module.fail_json(msg="Unknown action: %s" % action)
+    
+    if result.get('status') is True:
+        module.exit_json(changed=True, result=result)
+    else:
+        module.fail_json(msg="Operation failed", result=result)
+
+if __name__ == '__main__':
+    main()
