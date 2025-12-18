@@ -750,28 +750,6 @@ ansible-playbook playbooks/waf_profile_list_example.yml
 ansible-playbook playbooks/waf_profile_get_example.yml
 ```
 
-### 126. 添加 WAF 模板示例
-
-```bash
-ansible-playbook playbooks/waf_profile_add_example.yml
-```
-
-### 127. 编辑 WAF 模板示例
-
-```bash
-ansible-playbook playbooks/waf_profile_edit_example.yml
-```
-
-### 128. 删除 WAF 模板示例
-
-```bash
-ansible-playbook playbooks/waf_profile_delete_example.yml
-```
-
-### 129. 测试指南
-
-详细测试说明请参考 [TEST_GUIDE.md](TEST_GUIDE.md) 文件。
-
 ## 打包和分发
 
 此项目可以打包为 Ansible 集合，便于分发和安装。
@@ -823,23 +801,6 @@ ansible-galaxy collection install horizon.modules.horizon_modules
 ```
 
 详细信息请参考 `PACKAGING.md` 文件。
-
-### 新环境部署
-
-在新环境中部署和运行请参考 [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) 文件。
-
-为方便使用，我们还提供了以下工具：
-
-- 环境变量设置脚本：
-  - 基础版: [setup_ansible_env.sh](setup_ansible_env.sh) (Linux/macOS), [setup_ansible_env.bat](setup_ansible_env.bat) (Windows)
-  - 增强版: [enhanced_setup_ansible_env.sh](enhanced_setup_ansible_env.sh) (Linux/macOS), [enhanced_setup_ansible_env.bat](enhanced_setup_ansible_env.bat) (Windows)
-- 环境诊断工具：
-  - Linux/macOS: [diagnose_ansible_env.sh](diagnose_ansible_env.sh)
-  - Windows: [diagnose_ansible_env.bat](diagnose_ansible_env.bat)
-
-### 参数优化
-
-所有模块均已优化参数处理逻辑，确保只发送 YAML 中明确指定的参数。详细说明请参考 [PARAMETER_OPTIMIZATION.md](PARAMETER_OPTIMIZATION.md)。
 
 ## 注意事项
 

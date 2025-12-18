@@ -3,17 +3,11 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
+
+
 def format_adc_response_for_ansible(response_data, action="", changed_default=False):
     """
     格式化ADC响应为Ansible模块返回格式
@@ -94,24 +88,22 @@ def adc_get_vs_stat(module):
     name = module.params['name'] if 'name' in module.params else ""
     protocol = module.params['protocol'] if 'protocol' in module.params else 12
     port = module.params['port'] if 'port' in module.params else 80
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="获取虚拟服务状态需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.stat.get" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.stat.get" % (
+        ip, authkey)
 
     # 构造请求数据
-    vs_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "virtual_service" in module.params and module.params["virtual_service"] is not None:
-        acl_data["virtual_service"] = {
+    vs_data = {
+        "name": name,
+        "virtual_service": {
             "protocol": protocol,
             "port": port
-       
+        }
     }
 
     # 转换为JSON格式
@@ -124,13 +116,17 @@ def adc_get_vs_stat(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -139,7 +135,8 @@ def adc_get_vs_stat(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "获取虚拟服务状态", False)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取虚拟服务状态", False)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -152,9 +149,10 @@ def adc_list_vs_stat_count(module):
     """获取虚拟服务状态汇总"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
+
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.stat.count.list" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.stat.count.list" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -163,12 +161,14 @@ def adc_list_vs_stat_count(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -178,7 +178,8 @@ def adc_list_vs_stat_count(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "获取虚拟服务状态汇总", False)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取虚拟服务状态汇总", False)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -208,7 +209,7 @@ def main():
 
     # 根据action执行相应操作
     action = module.params['action']
-    
+
     if action == 'get_vs_stat':
         adc_get_vs_stat(module)
     elif action == 'list_vs_stat_count':

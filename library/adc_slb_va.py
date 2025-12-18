@@ -3,14 +3,6 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -119,12 +111,14 @@ def adc_list_vas(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -161,11 +155,9 @@ def adc_get_va(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.get" % (ip, authkey)
 
     # 构造请求数据
-    va_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+    va_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(va_data)
@@ -177,15 +169,17 @@ def adc_get_va(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -217,20 +211,18 @@ def adc_add_va(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.add" % (ip, authkey)
 
     # 构造虚拟地址数据
-    va_data = {}
-    # 只添加明确指定的参数
-    if "virtual_address" in module.params and module.params["virtual_address"] is not None:
-        acl_data["virtual_address"] = module.params["virtual_address"]
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params['name'] if 'name' in module.params else ""
-#             "status": module.params['status'] if 'status' in module.params else 1,
+    va_data = {
+        "virtual_address": {
+            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
+            "name": module.params['name'] if 'name' in module.params else "",
+            "status": module.params['status'] if 'status' in module.params else 1,
             "arp_status": module.params['arp_status'] if 'arp_status' in module.params else 1,
             "vrid": module.params['vrid'] if 'vrid' in module.params else 0,
             "redistribution": module.params['redistribution'] if 'redistribution' in module.params else 0,
             "policy_profile": module.params['policy_profile'] if 'policy_profile' in module.params else "",
             "natlog_profile": module.params['natlog_profile'] if 'natlog_profile' in module.params else "",
             "virtual_services": module.params['virtual_services'] if 'virtual_services' in module.params else []
-       
+        }
     }
 
     # 根据类型添加特定参数
@@ -274,15 +266,17 @@ def adc_add_va(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -316,19 +310,17 @@ def adc_edit_va(module):
         ip, authkey)
 
     # 构造虚拟地址数据
-    va_data = {}
-    # 只添加明确指定的参数
-    if "virtual_address" in module.params and module.params["virtual_address"] is not None:
-        acl_data["virtual_address"] = module.params["virtual_address"]
-    if "tc_name" in module.params and module.params["tc_name"] is not None:
-        acl_data["tc_name"] = module.params['tc_name'] if 'tc_name' in module.params else ""
-#             "status": module.params['status'] if 'status' in module.params else 1,
+    va_data = {
+        "virtual_address": {
+            "name": name,
+            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
+            "status": module.params['status'] if 'status' in module.params else 1,
             "arp_status": module.params['arp_status'] if 'arp_status' in module.params else 1,
             "vrid": module.params['vrid'] if 'vrid' in module.params else 0,
             "redistribution": module.params['redistribution'] if 'redistribution' in module.params else 0,
             "policy_profile": module.params['policy_profile'] if 'policy_profile' in module.params else "",
             "natlog_profile": module.params['natlog_profile'] if 'natlog_profile' in module.params else ""
-       
+        }
     }
 
     # 添加可选参数
@@ -361,15 +353,17 @@ def adc_edit_va(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -402,11 +396,9 @@ def adc_delete_va(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.del" % (ip, authkey)
 
     # 构造虚拟地址数据
-    va_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+    va_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(va_data)
@@ -418,15 +410,17 @@ def adc_delete_va(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -461,12 +455,14 @@ def adc_list_va_stats(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -504,11 +500,9 @@ def adc_get_va_stat(module):
         ip, authkey)
 
     # 构造请求数据
-    va_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+    va_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(va_data)
@@ -520,15 +514,17 @@ def adc_get_va_stat(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -560,7 +556,7 @@ def main():
         # 虚拟地址参数
         name=dict(type='str', required=False),
         va_type=dict(type='str', required=False, choices=[
-                    'ipv4', 'ipv6', 'subnet', 'acl_ipv4', 'acl_ipv6']),
+                     'ipv4', 'ipv6', 'subnet', 'acl_ipv4', 'acl_ipv6']),
         tc_name=dict(type='str', required=False),
         address=dict(type='str', required=False),
         status=dict(type='int', required=False),
@@ -587,11 +583,10 @@ def main():
     )
 
     # 根据action执行相应操作
-        # 获取action参数并确保它是字符串类型
-    if 'action' in module.params and module.params['action'] is not None:
-        action = str(module.params['action'])
-    else:
-        action = 
+    action = module.params['action'] if 'action' in module.params else ''
+    # 为了解决静态检查工具的问题，我们进行类型转换
+    if hasattr(action, '__str__'):
+        action = str(action)
 
     if action == 'list_vas':
         adc_list_vas(module)

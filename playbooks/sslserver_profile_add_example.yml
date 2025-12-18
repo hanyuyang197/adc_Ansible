@@ -3,9 +3,6 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    # # adc_username: "{{ adc_username }}"  # 循环引用已修复  # 循环引用已修复
-    # # adc_password: "{{ adc_password }}"  # 循环引用已修复  # 循环引用已修复
-
     profile_name: "test_ssl_server_profile"
     cert_name: "test_cert"
     key_name: "test_key"

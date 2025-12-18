@@ -3,17 +3,11 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
+
+
 def format_adc_response_for_ansible(response_data, action="", changed_default=False):
     """
     格式化ADC响应为Ansible模块返回格式
@@ -91,9 +85,10 @@ def adc_list_slb_states(module):
     """获取SLB状态列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
+
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.states.list" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.states.list" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -102,12 +97,14 @@ def adc_list_slb_states(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -117,7 +114,8 @@ def adc_list_slb_states(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "获取SLB状态列表", False)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取SLB状态列表", False)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -130,9 +128,10 @@ def adc_clear_slb_session(module):
     """清除SLB会话"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
+
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.session.clear" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.session.clear" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -141,12 +140,14 @@ def adc_clear_slb_session(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -156,7 +157,8 @@ def adc_clear_slb_session(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "清除SLB会话", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "清除SLB会话", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -182,7 +184,7 @@ def main():
 
     # 根据action执行相应操作
     action = module.params['action']
-    
+
     if action == 'list_slb_states':
         adc_list_slb_states(module)
     elif action == 'clear_slb_session':

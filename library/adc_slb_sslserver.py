@@ -2,18 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from ansible.module_utils.basic import AnsibleModule
-import json
-# Python 2/3兼容性处理
 try:
-    # Python 2
-    import urllib2 as urllib_request
+    import urllib2
+    import json
 except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
-try:
-    # Python 2
-except ImportError:
+    pass
 
 DOCUMENTATION = '''
 ---
@@ -98,143 +91,148 @@ result:
     type: dict
 '''
 
+
 def send_request(url, data=None, method='GET'):
     """Send HTTP request to ADC device"""
     try:
         if method == 'POST' and data:
             data_json = json.dumps(data)
-        data_bytes = data_json.encode(\'utf-8\')
-        req = urllib_request.Request(url, data=data_bytes)
+            req = urllib2.Request(url, data=data_json)
             req.add_header('Content-Type', 'application/json')
         else:
-            req = urllib_request.Request(url)
-        
-        response = urllib_request.urlopen(req)
+            req = urllib2.Request(url)
+
+        response = urllib2.urlopen(req)
         result = json.loads(response.read())
         return result
     except Exception as e:
         return {'status': False, 'msg': str(e)}
 
+
 def adc_list_sslserver_profiles(module):
     """List all server SSL profiles"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.list" % (ip, authkey)
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.list" % (
+        ip, authkey)
     result = send_request(url)
     return result
+
 
 def adc_list_sslserver_profiles_withcommon(module):
     """List all server SSL profiles including common partition"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.list.withcommon" % (ip, authkey)
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.list.withcommon" % (
+        ip, authkey)
     result = send_request(url)
     return result
+
 
 def adc_get_sslserver_profile(module):
     """Get a specific server SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     if not name:
         module.fail_json(msg="获取服务端SSL卸载模板需要提供name参数")
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.get" % (ip, authkey)
-    
-    data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.get" % (
+        ip, authkey)
+
+    data = {
+        "name": name
+    }
+
     result = send_request(url, data, method='POST')
     return result
+
 
 def adc_add_sslserver_profile(module):
     """Add a new server SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # Check required parameters
     if not name:
         module.fail_json(msg="添加服务端SSL卸载模板需要提供name参数")
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.add" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.add" % (
+        ip, authkey)
+
     # Construct profile data
-    profile_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
-    
+    profile_data = {
+        "name": name
+    }
+
     # Only include parameters that are explicitly defined in YAML
     optional_params = ['cert', 'key']
-    
+
     for param in optional_params:
         if module.params[param] is not None:
             profile_data[param] = module.params[param]
-    
+
     # Send POST request
     result = send_request(url, profile_data, method='POST')
     return result
+
 
 def adc_edit_sslserver_profile(module):
     """Edit an existing server SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # Check required parameters
     if not name:
         module.fail_json(msg="编辑服务端SSL卸载模板需要提供name参数")
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.edit" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.edit" % (
+        ip, authkey)
+
     # Construct profile data
-    profile_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
-    
+    profile_data = {
+        "name": name
+    }
+
     # Only include parameters that are explicitly defined in YAML
     optional_params = ['cert', 'key']
-    
+
     for param in optional_params:
         if module.params[param] is not None:
             profile_data[param] = module.params[param]
-    
+
     # Send POST request
     result = send_request(url, profile_data, method='POST')
     return result
+
 
 def adc_delete_sslserver_profile(module):
     """Delete a server SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # Check required parameters
     if not name:
         module.fail_json(msg="删除服务端SSL卸载模板需要提供name参数")
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.del" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.sslserver.del" % (
+        ip, authkey)
+
     # Construct profile data
-    profile_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
-    
+    profile_data = {
+        "name": name
+    }
+
     # Send POST request
     result = send_request(url, profile_data, method='POST')
     return result
+
 
 def main():
     module = AnsibleModule(
@@ -242,7 +240,7 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True),
             action=dict(type='str', required=True, choices=[
-                'list_profiles', 'list_profiles_withcommon', 'get_profile', 
+                'list_profiles', 'list_profiles_withcommon', 'get_profile',
                 'add_profile', 'edit_profile', 'delete_profile'
             ]),
             name=dict(type='str', required=False),
@@ -253,7 +251,7 @@ def main():
     )
 
     action = module.params['action']
-    
+
     if action == 'list_profiles':
         result = adc_list_sslserver_profiles(module)
     elif action == 'list_profiles_withcommon':
@@ -268,11 +266,12 @@ def main():
         result = adc_delete_sslserver_profile(module)
     else:
         module.fail_json(msg="Unknown action: %s" % action)
-    
+
     if result.get('status') is True:
         module.exit_json(changed=True, result=result)
     else:
         module.fail_json(msg="Operation failed", result=result)
+
 
 if __name__ == '__main__':
     main()

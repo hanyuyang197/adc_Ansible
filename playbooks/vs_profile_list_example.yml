@@ -18,11 +18,11 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "list_profiles"
-      register: result
+      register: vs_profile_result
 
     - name: 显示结果
       debug:
-        var: result
+        var: vs_profile_result
 
     - name: 登出ADC设备
       adc_logout:

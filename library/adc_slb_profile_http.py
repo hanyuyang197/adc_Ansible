@@ -3,14 +3,6 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -119,12 +111,14 @@ def adc_list_http_profiles(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -153,7 +147,8 @@ def adc_list_http_profiles_withcommon(module):
     authkey = module.params['authkey']
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.list.withcommon" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.list.withcommon" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -162,12 +157,14 @@ def adc_list_http_profiles_withcommon(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -181,7 +178,8 @@ def adc_list_http_profiles_withcommon(module):
             parsed_data = json.loads(response_data)
             # 检查是否有错误信息
             if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取包含common分区的HTTP模板列表失败", response=parsed_data)
+                module.fail_json(msg="获取包含common分区的HTTP模板列表失败",
+                                 response=parsed_data)
             else:
                 module.exit_json(changed=False, profiles=parsed_data)
         except Exception as e:
@@ -201,14 +199,13 @@ def adc_get_http_profile(module):
         module.fail_json(msg="获取HTTP模板详情需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.get" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.get" % (
+        ip, authkey)
 
     # 构造请求数据
-    profile_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(profile_data.keys()):
-        if profile_data[key] is None or (isinstance(profile_data[key], str) and profile_data[key] == ""):
-            del profile_data[key]
+    profile_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -220,13 +217,17 @@ def adc_get_http_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -259,90 +260,51 @@ def adc_add_http_profile(module):
         module.fail_json(msg="添加HTTP模板需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.add" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.add" % (
+        ip, authkey)
 
     # 构造模板数据
-    profile_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        profile_data["name"] = module.params["name"]
-    if "description" in module.params and module.params["description"] is not None:
-        profile_data["description"] = module.params['description'] if 'description' in module.params else ""
-    # 添加其他可选参数
-    if "fallback_url" in module.params and module.params["fallback_url"] is not None:
-        profile_data["fallback_url"] = module.params['fallback_url'] if 'fallback_url' in module.params else ""
-    if "force_reselect" in module.params and module.params["force_reselect"] is not None:
-        profile_data["force_reselect"] = module.params['force_reselect'] if 'force_reselect' in module.params else 0
-    if "clientip_insert" in module.params and module.params["clientip_insert"] is not None:
-        profile_data["clientip_insert"] = module.params['clientip_insert'] if 'clientip_insert' in module.params else ""
-    if "clientip_insert_replace" in module.params and module.params["clientip_insert_replace"] is not None:
-        profile_data["clientip_insert_replace"] = module.params['clientip_insert_replace'] if 'clientip_insert_replace' in module.params else 0
-    if "retry_503" in module.params and module.params["retry_503"] is not None:
-        profile_data["retry_503"] = module.params['retry_503'] if 'retry_503' in module.params else 0
-    if "websocket" in module.params and module.params["websocket"] is not None:
-        profile_data["websocket"] = module.params['websocket'] if 'websocket' in module.params else 0
-    if "node_select_fail_response_504" in module.params and module.params["node_select_fail_response_504"] is not None:
-        profile_data["node_select_fail_response_504"] = module.params['node_select_fail_response_504'] if 'node_select_fail_response_504' in module.params else 1
-    if "cookie_encrypt_name" in module.params and module.params["cookie_encrypt_name"] is not None:
-        profile_data["cookie_encrypt_name"] = module.params['cookie_encrypt_name'] if 'cookie_encrypt_name' in module.params else ""
-    if "cookie_encrypt_password" in module.params and module.params["cookie_encrypt_password"] is not None:
-        profile_data["cookie_encrypt_password"] = module.params['cookie_encrypt_password'] if 'cookie_encrypt_password' in module.params else ""
-    if "req_header_del" in module.params and module.params["req_header_del"] is not None:
-        profile_data["req_header_del"] = module.params['req_header_del'] if 'req_header_del' in module.params else []
-    if "rsp_header_del" in module.params and module.params["rsp_header_del"] is not None:
-        profile_data["rsp_header_del"] = module.params['rsp_header_del'] if 'rsp_header_del' in module.params else []
-    if "req_header_insert" in module.params and module.params["req_header_insert"] is not None:
-        profile_data["req_header_insert"] = module.params['req_header_insert'] if 'req_header_insert' in module.params else []
-    if "rsp_header_insert" in module.params and module.params["rsp_header_insert"] is not None:
-        profile_data["rsp_header_insert"] = module.params['rsp_header_insert'] if 'rsp_header_insert' in module.params else []
-    if "url_class" in module.params and module.params["url_class"] is not None:
-        profile_data["url_class"] = module.params['url_class'] if 'url_class' in module.params else []
-    if "host_class" in module.params and module.params["host_class"] is not None:
-        profile_data["host_class"] = module.params['host_class'] if 'host_class' in module.params else []
-    if "url_hash" in module.params and module.params["url_hash"] is not None:
-        profile_data["url_hash"] = module.params['url_hash'] if 'url_hash' in module.params else 0
-    if "url_hash_len" in module.params and module.params["url_hash_len"] is not None:
-        profile_data["url_hash_len"] = module.params['url_hash_len'] if 'url_hash_len' in module.params else 0
-    if "url_hash_offset" in module.params and module.params["url_hash_offset"] is not None:
-        profile_data["url_hash_offset"] = module.params['url_hash_offset'] if 'url_hash_offset' in module.params else 0
-    if "redirect_modify" in module.params and module.params["redirect_modify"] is not None:
-        profile_data["redirect_modify"] = module.params['redirect_modify'] if 'redirect_modify' in module.params else []
-    if "redirect_modify_https" in module.params and module.params["redirect_modify_https"] is not None:
-        profile_data["redirect_modify_https"] = module.params['redirect_modify_https'] if 'redirect_modify_https' in module.params else 0
-    if "redirect_modify_https_port" in module.params and module.params["redirect_modify_https_port"] is not None:
-        profile_data["redirect_modify_https_port"] = module.params['redirect_modify_https_port'] if 'redirect_modify_https_port' in module.params else 0
-    if "cookie_select" in module.params and module.params["cookie_select"] is not None:
-        profile_data["cookie_select"] = module.params['cookie_select'] if 'cookie_select' in module.params else 0
-    if "cookie_expire" in module.params and module.params["cookie_expire"] is not None:
-        profile_data["cookie_expire"] = module.params['cookie_expire'] if 'cookie_expire' in module.params else 0
-    if "cookie_expire_enable" in module.params and module.params["cookie_expire_enable"] is not None:
-        profile_data["cookie_expire_enable"] = module.params['cookie_expire_enable'] if 'cookie_expire_enable' in module.params else 0
-    if "compress" in module.params and module.params["compress"] is not None:
-        profile_data["compress"] = module.params['compress'] if 'compress' in module.params else 0
-    if "compress_keep_header" in module.params and module.params["compress_keep_header"] is not None:
-        profile_data["compress_keep_header"] = module.params['compress_keep_header'] if 'compress_keep_header' in module.params else 0
-    if "compress_level" in module.params and module.params["compress_level"] is not None:
-        profile_data["compress_level"] = module.params['compress_level'] if 'compress_level' in module.params else 1
-    if "compress_min_len" in module.params and module.params["compress_min_len"] is not None:
-        profile_data["compress_min_len"] = module.params['compress_min_len'] if 'compress_min_len' in module.params else 0
-    if "chunking_request" in module.params and module.params["chunking_request"] is not None:
-        profile_data["chunking_request"] = module.params['chunking_request'] if 'chunking_request' in module.params else 0
-    if "chunking_response" in module.params and module.params["chunking_response"] is not None:
-        profile_data["chunking_response"] = module.params['chunking_response'] if 'chunking_response' in module.params else 0
-    if "compress_content_type" in module.params and module.params["compress_content_type"] is not None:
-        profile_data["compress_content_type"] = module.params['compress_content_type'] if 'compress_content_type' in module.params else []
-    if "compress_content_type_exclude" in module.params and module.params["compress_content_type_exclude"] is not None:
-        profile_data["compress_content_type_exclude"] = module.params['compress_content_type_exclude'] if 'compress_content_type_exclude' in module.params else []
-    if "compress_url_exclude" in module.params and module.params["compress_url_exclude"] is not None:
-        profile_data["compress_url_exclude"] = module.params['compress_url_exclude'] if 'compress_url_exclude' in module.params else []
-    if "req_header_insert_cert" in module.params and module.params["req_header_insert_cert"] is not None:
-        profile_data["req_header_insert_cert"] = module.params['req_header_insert_cert'] if 'req_header_insert_cert' in module.params else []
-    if "req_url_insert_cert" in module.params and module.params["req_url_insert_cert"] is not None:
-        profile_data["req_url_insert_cert"] = module.params['req_url_insert_cert'] if 'req_url_insert_cert' in module.params else []
-    if "req_cookie_insert_cert" in module.params and module.params["req_cookie_insert_cert"] is not None:
-        profile_data["req_cookie_insert_cert"] = module.params['req_cookie_insert_cert'] if 'req_cookie_insert_cert' in module.params else []
-    if "client_cert_code" in module.params and module.params["client_cert_code"] is not None:
-        profile_data["client_cert_code"] = module.params['client_cert_code'] if 'client_cert_code' in module.params else []
+    profile_data = {
+        "name": name,
+        "description": module.params['description'] if 'description' in module.params else "",
+        "fallback_url": module.params['fallback_url'] if 'fallback_url' in module.params else "",
+        "force_reselect": module.params['force_reselect'] if 'force_reselect' in module.params else 0,
+        "clientip_insert": module.params['clientip_insert'] if 'clientip_insert' in module.params else "",
+        "clientip_insert_replace": module.params['clientip_insert_replace'] if 'clientip_insert_replace' in module.params else 0,
+        "retry_503": module.params['retry_503'] if 'retry_503' in module.params else 0,
+        "websocket": module.params['websocket'] if 'websocket' in module.params else 0,
+        "node_select_fail_response_504": module.params['node_select_fail_response_504'] if 'node_select_fail_response_504' in module.params else 1,
+        "cookie_encrypt_name": module.params['cookie_encrypt_name'] if 'cookie_encrypt_name' in module.params else "",
+        "cookie_encrypt_password": module.params['cookie_encrypt_password'] if 'cookie_encrypt_password' in module.params else "",
+        "req_header_del": module.params['req_header_del'] if 'req_header_del' in module.params else [],
+        "rsp_header_del": module.params['rsp_header_del'] if 'rsp_header_del' in module.params else [],
+        "req_header_insert": module.params['req_header_insert'] if 'req_header_insert' in module.params else [],
+        "rsp_header_insert": module.params['rsp_header_insert'] if 'rsp_header_insert' in module.params else [],
+        "url_class": module.params['url_class'] if 'url_class' in module.params else [],
+        "host_class": module.params['host_class'] if 'host_class' in module.params else [],
+        "url_hash": module.params['url_hash'] if 'url_hash' in module.params else 0,
+        "url_hash_len": module.params['url_hash_len'] if 'url_hash_len' in module.params else 0,
+        "url_hash_offset": module.params['url_hash_offset'] if 'url_hash_offset' in module.params else 0,
+        "redirect_modify": module.params['redirect_modify'] if 'redirect_modify' in module.params else [],
+        "redirect_modify_https": module.params['redirect_modify_https'] if 'redirect_modify_https' in module.params else 0,
+        "redirect_modify_https_port": module.params['redirect_modify_https_port'] if 'redirect_modify_https_port' in module.params else 0,
+        "cookie_select": module.params['cookie_select'] if 'cookie_select' in module.params else 0,
+        "cookie_expire": module.params['cookie_expire'] if 'cookie_expire' in module.params else 0,
+        "cookie_expire_enable": module.params['cookie_expire_enable'] if 'cookie_expire_enable' in module.params else 0,
+        "compress": module.params['compress'] if 'compress' in module.params else 0,
+        "compress_keep_header": module.params['compress_keep_header'] if 'compress_keep_header' in module.params else 0,
+        "compress_level": module.params['compress_level'] if 'compress_level' in module.params else 1,
+        "compress_min_len": module.params['compress_min_len'] if 'compress_min_len' in module.params else 0,
+        "chunking_request": module.params['chunking_request'] if 'chunking_request' in module.params else 0,
+        "chunking_response": module.params['chunking_response'] if 'chunking_response' in module.params else 0,
+        "compress_content_type": module.params['compress_content_type'] if 'compress_content_type' in module.params else [],
+        "compress_content_type_exclude": module.params['compress_content_type_exclude'] if 'compress_content_type_exclude' in module.params else [],
+        "compress_url_exclude": module.params['compress_url_exclude'] if 'compress_url_exclude' in module.params else [],
+        "req_header_insert_cert": module.params['req_header_insert_cert'] if 'req_header_insert_cert' in module.params else [],
+        "req_url_insert_cert": module.params['req_url_insert_cert'] if 'req_url_insert_cert' in module.params else [],
+        "req_cookie_insert_cert": module.params['req_cookie_insert_cert'] if 'req_cookie_insert_cert' in module.params else [],
+        "client_cert_code": module.params['client_cert_code'] if 'client_cert_code' in module.params else []
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -354,13 +316,17 @@ def adc_add_http_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -369,7 +335,8 @@ def adc_add_http_profile(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "添加HTTP模板", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "添加HTTP模板", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -389,14 +356,13 @@ def adc_edit_http_profile(module):
         module.fail_json(msg="编辑HTTP模板需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.edit" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.edit" % (
+        ip, authkey)
 
     # 构造模板数据
-    profile_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(profile_data.keys()):
-        if profile_data[key] is None or (isinstance(profile_data[key], str) and profile_data[key] == ""):
-            del profile_data[key]
+    profile_data = {
+        "name": name
+    }
 
     # 添加可选参数
     if 'description' in module.params and module.params['description'] is not None:
@@ -486,13 +452,17 @@ def adc_edit_http_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -501,7 +471,8 @@ def adc_edit_http_profile(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "编辑HTTP模板", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "编辑HTTP模板", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -521,14 +492,13 @@ def adc_delete_http_profile(module):
         module.fail_json(msg="删除HTTP模板需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.del" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.del" % (
+        ip, authkey)
 
     # 构造请求数据
-    profile_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(profile_data.keys()):
-        if profile_data[key] is None or (isinstance(profile_data[key], str) and profile_data[key] == ""):
-            del profile_data[key]
+    profile_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -540,13 +510,17 @@ def adc_delete_http_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -555,7 +529,8 @@ def adc_delete_http_profile(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "删除HTTP模板", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "删除HTTP模板", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -621,10 +596,7 @@ def main():
 
     # 根据action执行相应操作
     action = module.params['action']
-    # 为了解决静态检查工具的问题，我们进行类型转换
-    if hasattr(action, '__str__'):
-        action = str(action)
-    
+
     if action == 'list_profiles':
         adc_list_http_profiles(module)
     elif action == 'list_profiles_withcommon':

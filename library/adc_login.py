@@ -20,10 +20,14 @@ def adc_login(module):
     url = "%s://%s/adcapi/v2.0/?action=login" % (protocol, ip)
 
     # 构造请求数据
-    data = {
-        "username": username,
-        "password": password
-    }
+    data = {}
+    # 只添加明确指定的参数
+    if "username" in module.params and module.params["username"] is not None:
+        data["username"] = module.params["username"]
+    if "password" in module.params and module.params["password"] is not None:
+        data["password"] = module.params["password"]
+    elif password is not None:
+        data["password"] = password
 
     # 转换为JSON格式
     post_data = json.dumps(data)

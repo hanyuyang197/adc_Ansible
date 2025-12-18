@@ -3,7 +3,7 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    # 从inventory文件获取变量，无需在此处定义
+
   tasks:
     - name: 登录ADC设备
       adc_login:

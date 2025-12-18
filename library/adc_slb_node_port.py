@@ -3,17 +3,11 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
+
+
 def format_adc_response_for_ansible(response_data, action="", changed_default=True):
     """
     格式化ADC响应为Ansible模块返回格式
@@ -106,21 +100,19 @@ def adc_add_node_port(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="添加节点端口需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.add" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.add" % (
+        ip, authkey)
 
     # 构造端口数据
-    port_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "port" in module.params and module.params["port"] is not None:
-        acl_data["port"] = {
+    port_data = {
+        "name": name,
+        "port": {
             "port_number": module.params['port_number'] if 'port_number' in module.params else 80,
             "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
             "status": module.params['status'] if 'status' in module.params else 1,
@@ -133,7 +125,7 @@ def adc_add_node_port(module):
             "phm_profile": module.params['phm_profile'] if 'phm_profile' in module.params else "",
             "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
             "nat_strategy": module.params['nat_strategy'] if 'nat_strategy' in module.params else ""
-       
+        }
     }
 
     # 处理可选参数upnum
@@ -150,13 +142,17 @@ def adc_add_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -165,7 +161,8 @@ def adc_add_node_port(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "添加节点端口", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "添加节点端口", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -179,21 +176,19 @@ def adc_edit_node_port(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="编辑节点端口需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.edit" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.edit" % (
+        ip, authkey)
 
     # 构造端口数据
-    port_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "port" in module.params and module.params["port"] is not None:
-        acl_data["port"] = {
+    port_data = {
+        "name": name,
+        "port": {
             "port_number": module.params['port_number'] if 'port_number' in module.params else 80,
             "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
             "status": module.params['status'] if 'status' in module.params else 1,
@@ -206,7 +201,7 @@ def adc_edit_node_port(module):
             "phm_profile": module.params['phm_profile'] if 'phm_profile' in module.params else "",
             "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
             "nat_strategy": module.params['nat_strategy'] if 'nat_strategy' in module.params else ""
-       
+        }
     }
 
     # 处理可选参数upnum
@@ -223,13 +218,17 @@ def adc_edit_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -238,7 +237,8 @@ def adc_edit_node_port(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "编辑节点端口", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "编辑节点端口", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -254,24 +254,22 @@ def adc_delete_node_port(module):
     name = module.params['name'] if 'name' in module.params else ""
     port_number = module.params['port_number'] if 'port_number' in module.params else 80
     protocol = module.params['protocol'] if 'protocol' in module.params else 0
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="删除节点端口需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.del" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.del" % (
+        ip, authkey)
 
     # 构造端口数据
-    port_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "port" in module.params and module.params["port"] is not None:
-        acl_data["port"] = {
+    port_data = {
+        "name": name,
+        "port": {
             "port_number": port_number,
             "protocol": protocol
-       
+        }
     }
 
     # 转换为JSON格式
@@ -284,13 +282,17 @@ def adc_delete_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -299,7 +301,8 @@ def adc_delete_node_port(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "删除节点端口", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "删除节点端口", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -316,25 +319,23 @@ def adc_onoff_node_port(module):
     port_number = module.params['port_number'] if 'port_number' in module.params else 80
     protocol = module.params['protocol'] if 'protocol' in module.params else 0
     status = module.params['status'] if 'status' in module.params else 1
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="启用/禁用节点端口需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.onoff" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.onoff" % (
+        ip, authkey)
 
     # 构造端口数据
-    port_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "port" in module.params and module.params["port"] is not None:
-        acl_data["port"] = {
+    port_data = {
+        "name": name,
+        "port": {
             "port_number": port_number,
             "protocol": protocol,
             "status": status
-       
+        }
     }
 
     # 转换为JSON格式
@@ -347,13 +348,17 @@ def adc_onoff_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -362,7 +367,8 @@ def adc_onoff_node_port(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "启用/禁用节点端口", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "启用/禁用节点端口", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -404,7 +410,7 @@ def main():
 
     # 根据action执行相应操作
     action = module.params['action']
-    
+
     if action == 'add_node_port':
         adc_add_node_port(module)
     elif action == 'edit_node_port':

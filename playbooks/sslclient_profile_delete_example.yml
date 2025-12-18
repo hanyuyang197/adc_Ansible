@@ -3,9 +3,6 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    adc_username: "{{ adc_username }}"
-    adc_password: "{{ adc_password }}"
-
     profile_name: "test_ssl_client_profile"
   tasks:
     - name: 登录ADC设备

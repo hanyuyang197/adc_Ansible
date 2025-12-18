@@ -4,8 +4,7 @@
   gather_facts: no
   vars:
     ruletable_name: "test_ruletable"
-    # # adc_username: "{{ adc_username }}"  # 循环引用已修复  # 循环引用已修复
-    # # adc_password: "{{ adc_password }}"  # 循环引用已修复  # 循环引用已修复
+
   tasks:
     - name: 登录ADC设备
       adc_login:

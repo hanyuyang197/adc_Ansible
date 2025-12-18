@@ -3,14 +3,6 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -118,11 +110,13 @@ def adc_get_nodes(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
+            import urllib.request as urllib_request
             req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
+            import urllib2 as urllib_request
             req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
@@ -162,11 +156,13 @@ def adc_list_nodes(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
+            import urllib.request as urllib_request
             req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
+            import urllib2 as urllib_request
             req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
@@ -205,25 +201,9 @@ def adc_get_node(module):
         ip, authkey)
 
     # 构造请求数据
-    # 只构建明确指定的参数
-    node_params = [
-        'name', 'host', 'weight', 'status', 'healthcheck', 'conn_limit', 'template',
-        'tc_name', 'graceful_time', 'graceful_delete', 'graceful_disable',
-        'graceful_persist', 'domain_ip_version', 'upnum', 'conn_rate_limit',
-        'cl_log', 'desc_rserver', 'slow_start_type', 'slow_start_recover',
-        'slow_start_rate', 'slow_start_from', 'slow_start_step',
-        'slow_start_interval', 'slow_start_interval_num', 'slow_start_tail',
-        'request_rate_limit'
-    ]
-
-    node_data = {}
-    for param in node_params:
-        # 只添加在YAML中明确指定且非None的参数
-        if param in module.params and module.params[param] is not None:
-            # 特殊处理空列表
-            if isinstance(module.params[param], list) and len(module.params[param]) == 0:
-                continue
-            node_data[param] = module.params[param]
+    node_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(node_data)
@@ -235,15 +215,17 @@ def adc_get_node(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
+            import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
+            import urllib2 as urllib_request
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -275,31 +257,40 @@ def adc_add_node(module):
         ip, authkey)
 
     # 构造节点数据
-    # 只构建明确指定的参数
-    node_params = [
-        'name', 'host', 'weight', 'status', 'healthcheck', 'conn_limit', 'template',
-        'tc_name', 'graceful_time', 'graceful_delete', 'graceful_disable',
-        'graceful_persist', 'domain_ip_version', 'upnum', 'conn_rate_limit',
-        'cl_log', 'desc_rserver', 'slow_start_type', 'slow_start_recover',
-        'slow_start_rate', 'slow_start_from', 'slow_start_step',
-        'slow_start_interval', 'slow_start_interval_num', 'slow_start_tail',
-        'request_rate_limit', 'ports'
-    ]
-
-    node_data = {}
-    for param in node_params:
-        # 只添加在YAML中明确指定且非None的参数
-        if param in module.params and module.params[param] is not None:
-            # 特殊处理空列表
-            if isinstance(module.params[param], list) and len(module.params[param]) == 0:
-                continue
-            node_data[param] = module.params[param]
-
-    # 构造顶层请求数据，包含node对象
-    request_data = {"node": node_data}
+    node_data = {
+        "node": {
+            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
+            "graceful_time": module.params['graceful_time'] if 'graceful_time' in module.params else 0,
+            "graceful_delete": module.params['graceful_delete'] if 'graceful_delete' in module.params else 0,
+            "graceful_disable": module.params['graceful_disable'] if 'graceful_disable' in module.params else 0,
+            "graceful_persist": module.params['graceful_persist'] if 'graceful_persist' in module.params else 0,
+            "name": module.params['name'] if 'name' in module.params else "",
+            "host": module.params['host'] if 'host' in module.params else "",
+            "domain_ip_version": module.params['domain_ip_version'] if 'domain_ip_version' in module.params else 0,
+            "weight": module.params['weight'] if 'weight' in module.params else 1,
+            "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
+            "upnum": module.params['upnum'] if 'upnum' in module.params else 0,
+            "status": module.params['status'] if 'status' in module.params else 1,
+            "conn_limit": module.params['conn_limit'] if 'conn_limit' in module.params else 0,
+            "template": module.params['template'] if 'template' in module.params else "",
+            "conn_rate_limit": module.params['conn_rate_limit'] if 'conn_rate_limit' in module.params else 0,
+            "cl_log": module.params['cl_log'] if 'cl_log' in module.params else "0",
+            "desc_rserver": module.params['desc_rserver'] if 'desc_rserver' in module.params else "",
+            "slow_start_type": module.params['slow_start_type'] if 'slow_start_type' in module.params else 0,
+            "slow_start_recover": module.params['slow_start_recover'] if 'slow_start_recover' in module.params else 15,
+            "slow_start_rate": module.params['slow_start_rate'] if 'slow_start_rate' in module.params else 0,
+            "slow_start_from": module.params['slow_start_from'] if 'slow_start_from' in module.params else 128,
+            "slow_start_step": module.params['slow_start_step'] if 'slow_start_step' in module.params else 2,
+            "slow_start_interval": module.params['slow_start_interval'] if 'slow_start_interval' in module.params else 10,
+            "slow_start_interval_num": module.params['slow_start_interval_num'] if 'slow_start_interval_num' in module.params else 6,
+            "slow_start_tail": module.params['slow_start_tail'] if 'slow_start_tail' in module.params else 4096,
+            "request_rate_limit": module.params['request_rate_limit'] if 'request_rate_limit' in module.params else 0,
+            "ports": module.params['ports'] if 'ports' in module.params else []
+        }
+    }
 
     # 转换为JSON格式
-    post_data = json.dumps(request_data)
+    post_data = json.dumps(node_data)
 
     # 初始化响应数据
     response_data = ""
@@ -308,15 +299,17 @@ def adc_add_node(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
+            import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
+            import urllib2 as urllib_request
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -350,31 +343,39 @@ def adc_edit_node(module):
         ip, authkey)
 
     # 构造节点数据
-    # 只构建明确指定的参数
-    node_params = [
-        'name', 'host', 'weight', 'status', 'healthcheck', 'conn_limit', 'template',
-        'tc_name', 'graceful_time', 'graceful_delete', 'graceful_disable',
-        'graceful_persist', 'domain_ip_version', 'upnum', 'conn_rate_limit',
-        'cl_log', 'desc_rserver', 'slow_start_type', 'slow_start_recover',
-        'slow_start_rate', 'slow_start_from', 'slow_start_step',
-        'slow_start_interval', 'slow_start_interval_num', 'slow_start_tail',
-        'request_rate_limit', 'ports'
-    ]
-
-    node_data = {}
-    for param in node_params:
-        # 只添加在YAML中明确指定且非None的参数
-        if param in module.params and module.params[param] is not None:
-            # 特殊处理空列表
-            if isinstance(module.params[param], list) and len(module.params[param]) == 0:
-                continue
-            node_data[param] = module.params[param]
-
-    # 构造顶层请求数据，包含node对象
-    request_data = {"node": node_data}
+    node_data = {
+        "node": {
+            "name": name,
+            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
+            "graceful_time": module.params['graceful_time'] if 'graceful_time' in module.params else 0,
+            "graceful_delete": module.params['graceful_delete'] if 'graceful_delete' in module.params else 0,
+            "graceful_disable": module.params['graceful_disable'] if 'graceful_disable' in module.params else 0,
+            "graceful_persist": module.params['graceful_persist'] if 'graceful_persist' in module.params else 0,
+            "host": module.params['host'] if 'host' in module.params else "",
+            "domain_ip_version": module.params['domain_ip_version'] if 'domain_ip_version' in module.params else 0,
+            "weight": module.params['weight'] if 'weight' in module.params else 1,
+            "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
+            "upnum": module.params['upnum'] if 'upnum' in module.params else 0,
+            "status": module.params['status'] if 'status' in module.params else 1,
+            "conn_limit": module.params['conn_limit'] if 'conn_limit' in module.params else 0,
+            "template": module.params['template'] if 'template' in module.params else "",
+            "conn_rate_limit": module.params['conn_rate_limit'] if 'conn_rate_limit' in module.params else 0,
+            "cl_log": module.params['cl_log'] if 'cl_log' in module.params else "0",
+            "desc_rserver": module.params['desc_rserver'] if 'desc_rserver' in module.params else "",
+            "slow_start_type": module.params['slow_start_type'] if 'slow_start_type' in module.params else 0,
+            "slow_start_recover": module.params['slow_start_recover'] if 'slow_start_recover' in module.params else 15,
+            "slow_start_rate": module.params['slow_start_rate'] if 'slow_start_rate' in module.params else 0,
+            "slow_start_from": module.params['slow_start_from'] if 'slow_start_from' in module.params else 128,
+            "slow_start_step": module.params['slow_start_step'] if 'slow_start_step' in module.params else 2,
+            "slow_start_interval": module.params['slow_start_interval'] if 'slow_start_interval' in module.params else 10,
+            "slow_start_interval_num": module.params['slow_start_interval_num'] if 'slow_start_interval_num' in module.params else 6,
+            "slow_start_tail": module.params['slow_start_tail'] if 'slow_start_tail' in module.params else 4096,
+            "request_rate_limit": module.params['request_rate_limit'] if 'request_rate_limit' in module.params else 0
+        }
+    }
 
     # 转换为JSON格式
-    post_data = json.dumps(request_data)
+    post_data = json.dumps(node_data)
 
     # 初始化响应数据
     response_data = ""
@@ -383,15 +384,17 @@ def adc_edit_node(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
+            import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
+            import urllib2 as urllib_request
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -425,25 +428,9 @@ def adc_delete_node(module):
         ip, authkey)
 
     # 构造节点数据
-    # 只构建明确指定的参数
-    node_params = [
-        'name', 'host', 'weight', 'status', 'healthcheck', 'conn_limit', 'template',
-        'tc_name', 'graceful_time', 'graceful_delete', 'graceful_disable',
-        'graceful_persist', 'domain_ip_version', 'upnum', 'conn_rate_limit',
-        'cl_log', 'desc_rserver', 'slow_start_type', 'slow_start_recover',
-        'slow_start_rate', 'slow_start_from', 'slow_start_step',
-        'slow_start_interval', 'slow_start_interval_num', 'slow_start_tail',
-        'request_rate_limit', 'ports'
-    ]
-
-    node_data = {}
-    for param in node_params:
-        # 只添加在YAML中明确指定且非None的参数
-        if param in module.params and module.params[param] is not None:
-            # 特殊处理空列表
-            if isinstance(module.params[param], list) and len(module.params[param]) == 0:
-                continue
-            node_data[param] = module.params[param]
+    node_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(node_data)
@@ -455,15 +442,17 @@ def adc_delete_node(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
+            import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
+            import urllib2 as urllib_request
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -525,15 +514,17 @@ def adc_add_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
+            import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
+            import urllib2 as urllib_request
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -595,15 +586,17 @@ def adc_edit_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
+            import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
+            import urllib2 as urllib_request
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -661,15 +654,17 @@ def adc_delete_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
+            import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
+            import urllib2 as urllib_request
             req = urllib_request.Request(url, data=post_data, headers={
-                'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -746,11 +741,10 @@ def main():
     )
 
     # 根据action执行相应操作
-    # 获取action参数并确保它是字符串类型
-    if 'action' in module.params and module.params['action'] is not None:
-        action = str(module.params['action'])
-    else:
-        action = ''
+    action = module.params['action'] if 'action' in module.params else ''
+    # 为了解决静态检查工具的问题，我们进行类型转换
+    if hasattr(action, '__str__'):
+        action = str(action)
 
     if action == 'get_nodes':
         adc_get_nodes(module)

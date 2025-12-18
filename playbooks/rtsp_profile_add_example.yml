@@ -25,18 +25,14 @@
         authkey: "{{ login_result.authkey }}"
         action: "add_profile"
         name: "test_rtsp_profile"
-        uri_switch:
-          - uri: "/live"
-            pool: "live_pool"
-          - uri: "/vod"
-            pool: "vod_pool"
-      register: result
+
+      register: rtsp_result
       when: login_result is succeeded
 
     - name: 显示结果
       debug:
-        var: result
-      when: result is defined
+        var: rtsp_result
+      when: rtsp_result is defined
 
     - name: 登出ADC设备
       adc_logout:

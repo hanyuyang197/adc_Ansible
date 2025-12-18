@@ -3,17 +3,11 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
+
+
 def format_adc_response_for_ansible(response_data, action="", changed_default=True):
     """
     格式化ADC响应为Ansible模块返回格式
@@ -107,7 +101,8 @@ def adc_list_fastl4_profiles(module):
     authkey = module.params['authkey']
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.list" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.list" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -116,12 +111,14 @@ def adc_list_fastl4_profiles(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -150,7 +147,8 @@ def adc_list_fastl4_profiles_withcommon(module):
     authkey = module.params['authkey']
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.list.withcommon" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.list.withcommon" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -159,12 +157,14 @@ def adc_list_fastl4_profiles_withcommon(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -178,7 +178,8 @@ def adc_list_fastl4_profiles_withcommon(module):
             parsed_data = json.loads(response_data)
             # 检查是否有错误信息
             if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取包含common分区的TCP代理模板列表失败", response=parsed_data)
+                module.fail_json(msg="获取包含common分区的TCP代理模板列表失败",
+                                 response=parsed_data)
             else:
                 module.exit_json(changed=False, profiles=parsed_data)
         except Exception as e:
@@ -198,14 +199,13 @@ def adc_get_fastl4_profile(module):
         module.fail_json(msg="获取TCP代理模板详情需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.get" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.get" % (
+        ip, authkey)
 
     # 构造请求数据
-    profile_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+    profile_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -217,13 +217,17 @@ def adc_get_fastl4_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -256,16 +260,14 @@ def adc_add_fastl4_profile(module):
         module.fail_json(msg="添加TCP代理模板需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.add" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.add" % (
+        ip, authkey)
 
     # 构造模板数据
-    profile_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "description" in module.params and module.params["description"] is not None:
-        acl_data["description"] = module.params['description'] if 'description' in module.params else ""
-#         "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
+    profile_data = {
+        "name": name,
+        "description": module.params['description'] if 'description' in module.params else "",
+        "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
         "timeout": module.params['timeout'] if 'timeout' in module.params else 1800,
         "reset_timeout": module.params['reset_timeout'] if 'reset_timeout' in module.params else 15,
         "half_close_timeout": module.params['half_close_timeout'] if 'half_close_timeout' in module.params else 120,
@@ -289,7 +291,7 @@ def adc_add_fastl4_profile(module):
         "rstclient": module.params['rstclient'] if 'rstclient' in module.params else 1,
         "zero_window_timeout": module.params['zero_window_timeout'] if 'zero_window_timeout' in module.params else 1024,
         "syn_rto_base": module.params['syn_rto_base'] if 'syn_rto_base' in module.params else 2346
-   
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -301,13 +303,17 @@ def adc_add_fastl4_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -316,7 +322,8 @@ def adc_add_fastl4_profile(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "添加TCP代理模板", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "添加TCP代理模板", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -336,16 +343,14 @@ def adc_edit_fastl4_profile(module):
         module.fail_json(msg="编辑TCP代理模板需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.edit" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.edit" % (
+        ip, authkey)
 
     # 构造模板数据
-    profile_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "description" in module.params and module.params["description"] is not None:
-        acl_data["description"] = module.params['description'] if 'description' in module.params else ""
-#         "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
+    profile_data = {
+        "name": name,
+        "description": module.params['description'] if 'description' in module.params else "",
+        "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
         "timeout": module.params['timeout'] if 'timeout' in module.params else 1800,
         "reset_timeout": module.params['reset_timeout'] if 'reset_timeout' in module.params else 15,
         "half_close_timeout": module.params['half_close_timeout'] if 'half_close_timeout' in module.params else 120,
@@ -369,7 +374,7 @@ def adc_edit_fastl4_profile(module):
         "rstclient": module.params['rstclient'] if 'rstclient' in module.params else 1,
         "zero_window_timeout": module.params['zero_window_timeout'] if 'zero_window_timeout' in module.params else 1024,
         "syn_rto_base": module.params['syn_rto_base'] if 'syn_rto_base' in module.params else 2346
-   
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -381,13 +386,17 @@ def adc_edit_fastl4_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -396,7 +405,8 @@ def adc_edit_fastl4_profile(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "编辑TCP代理模板", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "编辑TCP代理模板", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -416,14 +426,13 @@ def adc_delete_fastl4_profile(module):
         module.fail_json(msg="删除TCP代理模板需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.del" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.del" % (
+        ip, authkey)
 
     # 构造请求数据
-    profile_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+    profile_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -435,13 +444,17 @@ def adc_delete_fastl4_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -450,7 +463,8 @@ def adc_delete_fastl4_profile(module):
 
     # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(response_data, "删除TCP代理模板", True)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "删除TCP代理模板", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -503,7 +517,7 @@ def main():
 
     # 根据action执行相应操作
     action = module.params['action']
-    
+
     if action == 'list_profiles':
         adc_list_fastl4_profiles(module)
     elif action == 'list_profiles_withcommon':

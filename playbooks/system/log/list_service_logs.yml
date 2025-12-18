@@ -4,8 +4,6 @@
   gather_facts: no
   vars:
     ansible_python_interpreter: /usr/bin/python3
-    adc_username: "{{ adc_username }}"
-    adc_password: "{{ adc_password }}"
 
   tasks:
     - name: 登录ADC设备

@@ -3,9 +3,6 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    adc_username: "{{ adc_username }}"
-    adc_password: "{{ adc_password }}"
-
     adc_ip: "{{ inventory_hostname }}"
     adc_authkey: "{{ login_result.authkey }}"
 

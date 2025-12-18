@@ -3,6 +3,7 @@
   hosts: adc_servers
   gather_facts: no
   vars:
+
   tasks:
     - name: 登录ADC设备
       adc_login:

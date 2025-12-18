@@ -19,11 +19,11 @@
         authkey: "{{ login_result.authkey }}"
         action: "get_profile"
         name: "test_vs_profile"
-      register: result
+      register: vs_profile_result
 
     - name: 显示结果
       debug:
-        var: result
+        var: vs_profile_result
 
     - name: 登出ADC设备
       adc_logout:

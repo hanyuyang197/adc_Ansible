@@ -3,8 +3,6 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    adc_username: "{{ adc_username }}"
-    adc_password: "{{ adc_password }}"
 
   tasks:
     - name: 登录ADC设备
