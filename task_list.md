@@ -2,16 +2,6 @@
 
 ## 已完成的任务
 
-### 测试文档
-
-- [x] 测试指南文档 (TEST_GUIDE.md)
-- [x] 快速入门指南 (QUICK_START.md)
-- [x] 模块功能概览 (MODULES_OVERVIEW.md)
-- [x] 新环境部署指南 (DEPLOYMENT_GUIDE.md)
-- [x] 环境变量设置脚本 (setup_ansible_env.sh, setup_ansible_env.bat)
-- [x] 增强环境变量设置脚本 (enhanced_setup_ansible_env.sh, enhanced_setup_ansible_env.bat)
-- [x] 环境诊断工具 (diagnose_ansible_env.sh, diagnose_ansible_env.bat)
-
 ### 网络模块
 
 - [x] VLAN 管理模块 (adc_network_vlan.py)
@@ -82,12 +72,8 @@
 ### 需要开发的系统模块
 
 - [x] SMTP 配置模块 (adc_system_smtp.py)
-- [x] 日志配置模块 (adc_system_log_config.py)
-- [x] 日志获取模块 (adc_system_log_get.py)
-- [x] 日志发送模块 (adc_system_log_send.py)
-- [x] 日志告警模块 (adc_system_log_alarm.py)
-- [x] 高可用性模块 (adc_system_ha_vrrp.py)
-
-### 代码优化
-
-- [x] 模块参数处理优化 (所有模块文件) - 确保只发送 YAML 中明确指定的参数
+- [ ] 日志配置模块 (adc_system_log_config.py)
+- [ ] 日志获取模块 (adc_system_log_get.py)
+- [ ] 日志发送模块 (adc_system_log_send.py)
+- [ ] 日志告警模块 (adc_system_log_alarm.py)
+- [ ] 高可用性模块 (adc_system_ha_vrrp.py)

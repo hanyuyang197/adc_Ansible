@@ -3,14 +3,6 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -119,12 +111,10 @@ def adc_add_user(module):
         ip, authkey)
 
     # 构造用户数据
-    user_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        user_data["name"] = module.params["name"]
-    if "password" in module.params and module.params["password"] is not None:
-        user_data["password"] = password
+    user_data = {
+        "name": name,
+        "password": password
+    }
 
     # 添加可选参数
     if 'privilege' in module.params and module.params['privilege'] is not None:
@@ -152,15 +142,17 @@ def adc_add_user(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -195,12 +187,14 @@ def adc_list_users(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -238,11 +232,9 @@ def adc_get_user(module):
         ip, authkey)
 
     # 构造用户数据
-    user_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(user_data.keys()):
-        if user_data[key] is None or (isinstance(user_data[key], str) and user_data[key] == ""):
-            del user_data[key]
+    user_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(user_data)
@@ -254,15 +246,17 @@ def adc_get_user(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -299,11 +293,9 @@ def adc_edit_user(module):
         ip, authkey)
 
     # 构造用户数据
-    user_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+    user_data = {
+        "name": name
+    }
 
     # 添加可选参数
     if 'password' in module.params and module.params['password'] is not None:
@@ -333,15 +325,17 @@ def adc_edit_user(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -375,11 +369,9 @@ def adc_delete_user(module):
         ip, authkey)
 
     # 构造用户数据
-    user_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(user_data.keys()):
-        if user_data[key] is None or (isinstance(user_data[key], str) and user_data[key] == ""):
-            del user_data[key]
+    user_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(user_data)
@@ -391,15 +383,17 @@ def adc_delete_user(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -442,24 +436,16 @@ def adc_set_user_config(module):
         ip, authkey)
 
     # 构造配置数据
-    config_data = {}
-    # 只添加明确指定的参数
-    if "pwdtimeout" in module.params and module.params["pwdtimeout"] is not None:
-        config_data["pwdtimeout"] = module.params["pwdtimeout"]
-    if "pwdlength" in module.params and module.params["pwdlength"] is not None:
-        config_data["pwdlength"] = pwdlength
-    if "pwdcplex" in module.params and module.params["pwdcplex"] is not None:
-        config_data["pwdcplex"] = pwdcplex
-    if "pwdcpfl" in module.params and module.params["pwdcpfl"] is not None:
-        config_data["pwdcpfl"] = pwdcpfl
-    if "duration" in module.params and module.params["duration"] is not None:
-        config_data["duration"] = duration
-    if "resettime" in module.params and module.params["resettime"] is not None:
-        config_data["resettime"] = resettime
-    if "threshold" in module.params and module.params["threshold"] is not None:
-        config_data["threshold"] = threshold
-    if "enable" in module.params and module.params["enable"] is not None:
-        config_data["enable"] = enable
+    config_data = {
+        "pwdtimeout": pwdtimeout,
+        "pwdlength": pwdlength,
+        "pwdcplex": pwdcplex,
+        "pwdcpfl": pwdcpfl,
+        "duration": duration,
+        "resettime": resettime,
+        "threshold": threshold,
+        "enable": enable
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(config_data)
@@ -471,15 +457,17 @@ def adc_set_user_config(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -514,12 +502,14 @@ def adc_get_user_config(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -557,11 +547,9 @@ def adc_unlock_user(module):
         ip, authkey)
 
     # 构造用户数据
-    user_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(user_data.keys()):
-        if user_data[key] is None or (isinstance(user_data[key], str) and user_data[key] == ""):
-            del user_data[key]
+    user_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(user_data)
@@ -573,15 +561,17 @@ def adc_unlock_user(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -616,12 +606,10 @@ def adc_change_password(module):
         ip, authkey)
 
     # 构造密码数据
-    password_data = {}
-    # 只添加明确指定的参数
-    if "old_password" in module.params and module.params["old_password"] is not None:
-        password_data["old_password"] = module.params["old_password"]
-    if "password" in module.params and module.params["password"] is not None:
-        password_data["password"] = password
+    password_data = {
+        "old_password": old_password,
+        "password": password
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(password_data)
@@ -633,15 +621,17 @@ def adc_change_password(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -697,11 +687,7 @@ def main():
     )
 
     # 根据action执行相应操作
-        # 获取action参数并确保它是字符串类型
-    if 'action' in module.params and module.params['action'] is not None:
-        action = str(module.params['action'])
-    else:
-        action = 
+    action = module.params['action']
 
     if action == 'add_user':
         adc_add_user(module)

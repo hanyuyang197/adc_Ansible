@@ -3,14 +3,6 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 
@@ -95,10 +87,9 @@ def adc_add_config_file(module):
         ip, authkey)
 
     # 构造配置文件数据
-    config_data = {}
-    # 只添加明确指定的参数
-    if "file_name" in module.params and module.params["file_name"] is not None:
-        acl_data["file_name"] = module.params["file_name"]
+    config_data = {
+        "file_name": file_name
+    }
 
     # 添加可选参数
     if description is not None:
@@ -115,17 +106,19 @@ def adc_add_config_file(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = json.dumps(config_data)
+            import urllib.request as urllib_request
+            post_data = json.dumps(config_data)
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        post_data = json.dumps(config_data)
+            import urllib2 as urllib_request
+            post_data = json.dumps(config_data)
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -160,12 +153,14 @@ def adc_list_config_files(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -203,10 +198,9 @@ def adc_apply_config_file(module):
         ip, authkey)
 
     # 构造配置文件数据
-    config_data = {}
-    # 只添加明确指定的参数
-    if "file_name" in module.params and module.params["file_name"] is not None:
-        acl_data["file_name"] = module.params["file_name"]
+    config_data = {
+        "file_name": file_name
+    }
 
     # 初始化响应数据
     response_data = ""
@@ -215,17 +209,19 @@ def adc_apply_config_file(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = json.dumps(config_data)
+            import urllib.request as urllib_request
+            post_data = json.dumps(config_data)
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        post_data = json.dumps(config_data)
+            import urllib2 as urllib_request
+            post_data = json.dumps(config_data)
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -259,10 +255,9 @@ def adc_delete_config_file(module):
         ip, authkey)
 
     # 构造配置文件数据
-    config_data = {}
-    # 只添加明确指定的参数
-    if "file_name" in module.params and module.params["file_name"] is not None:
-        acl_data["file_name"] = module.params["file_name"]
+    config_data = {
+        "file_name": file_name
+    }
 
     # 初始化响应数据
     response_data = ""
@@ -271,17 +266,19 @@ def adc_delete_config_file(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = json.dumps(config_data)
+            import urllib.request as urllib_request
+            post_data = json.dumps(config_data)
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        post_data = json.dumps(config_data)
+            import urllib2 as urllib_request
+            post_data = json.dumps(config_data)
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -311,11 +308,9 @@ def adc_backup_config_file(module):
         # 导出指定名称备份的配置
         url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.config.backup" % (
             ip, authkey)
-        backup_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+        backup_data = {
+            "name": name
+        }
 
         # 初始化响应数据
         response_data = ""
@@ -324,17 +319,19 @@ def adc_backup_config_file(module):
             # 根据Python版本处理编码
             if sys.version_info[0] >= 3:
                 # Python 3
-                                post_data = json.dumps(backup_data)
+                import urllib.request as urllib_request
+                post_data = json.dumps(backup_data)
                 post_data = post_data.encode('utf-8')
                 req = urllib_request.Request(url, data=post_data, headers={
-                                            'Content-Type': 'application/json'})
+                                             'Content-Type': 'application/json'})
                 response = urllib_request.urlopen(req)
                 response_data = response.read().decode('utf-8')
             else:
                 # Python 2
-                                post_data = json.dumps(backup_data)
+                import urllib2 as urllib_request
+                post_data = json.dumps(backup_data)
                 req = urllib_request.Request(url, data=post_data, headers={
-                                            'Content-Type': 'application/json'})
+                                             'Content-Type': 'application/json'})
                 response = urllib_request.urlopen(req)
                 response_data = response.read()
 
@@ -352,12 +349,14 @@ def adc_backup_config_file(module):
             # 根据Python版本处理请求
             if sys.version_info[0] >= 3:
                 # Python 3
-                                req = urllib_request.Request(url, method='GET')
+                import urllib.request as urllib_request
+                req = urllib_request.Request(url, method='GET')
                 response = urllib_request.urlopen(req)
                 response_data = response.read().decode('utf-8')
             else:
                 # Python 2
-                                req = urllib_request.Request(url)
+                import urllib2 as urllib_request
+                req = urllib_request.Request(url)
                 req.get_method = lambda: 'GET'
                 response = urllib_request.urlopen(req)
                 response_data = response.read()
@@ -393,12 +392,14 @@ def adc_restore_config_file(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='POST')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='POST')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'POST'
             response = urllib_request.urlopen(req)
             response_data = response.read()

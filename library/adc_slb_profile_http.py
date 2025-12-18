@@ -14,6 +14,8 @@ except ImportError:
 import sys
 
 # ADC API响应解析函数
+
+
 def format_adc_response_for_ansible(response_data, action="", changed_default=True):
     """
     格式化ADC响应为Ansible模块返回格式
@@ -107,7 +109,8 @@ def adc_list_http_profiles(module):
     authkey = module.params['authkey']
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.list" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.list" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""

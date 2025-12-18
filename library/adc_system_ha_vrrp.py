@@ -7,15 +7,6 @@
 from __future__ import absolute_import, division, print_function
 from adc_base import ADCBase
 from ansible.module_utils.basic import AnsibleModule
-import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -23,156 +14,156 @@ DOCUMENTATION = r'''
 module: adc_system_ha_vrrp
 short_description: Manage ADC system HA VRRP configuration
 description:
-- Manage High Availability VRRP configuration for ADC devices.
-- Supports global configuration, groups, heartbeat interfaces, floating IPs, and more.
+  - Manage High Availability VRRP configuration for ADC devices.
+  - Supports global configuration, groups, heartbeat interfaces, floating IPs, and more.
 version_added: "1.0.0"
 options:
-vrrp_component:
+  vrrp_component:
     description:
-    - The VRRP component to manage.
+      - The VRRP component to manage.
     type: str
     required: true
     choices: [ global, group, heartbeat_eth, heartbeat_trunk, floating_ip, force_offline, gateway_track, route_track, pool_track, ethernet_track, trunk_track, vlan_track ]
-action:
+  action:
     description:
-    - The action to perform on the VRRP component.
+      - The action to perform on the VRRP component.
     type: str
     required: true
     choices: [ get, set, add, list, edit, delete ]
-# Global configuration parameters
-enabled:
+  # Global configuration parameters
+  enabled:
     description:
-    - Enable VRRP (0=disabled, 1=enabled).
+      - Enable VRRP (0=disabled, 1=enabled).
     type: int
     choices: [0, 1]
-as_model:
+  as_model:
     description:
-    - Enable AS mode (0=disabled, 1=enabled).
+      - Enable AS mode (0=disabled, 1=enabled).
     type: int
     choices: [0, 1]
-unit_id:
+  unit_id:
     description:
-    - Unit ID (0-8).
+      - Unit ID (0-8).
     type: int
-interval:
+  interval:
     description:
-    - Heartbeat interval (1-255).
+      - Heartbeat interval (1-255).
     type: int
-retry:
+  retry:
     description:
-    - Retry count (2-200).
+      - Retry count (2-200).
     type: int
-delay:
+  delay:
     description:
-    - Delay (1-100).
+      - Delay (1-100).
     type: int
-cluster_id:
+  cluster_id:
     description:
-    - Cluster ID (0-7).
+      - Cluster ID (0-7).
     type: int
-# Group parameters
-group_id:
+  # Group parameters
+  group_id:
     description:
-    - Group ID (0-8).
+      - Group ID (0-8).
     type: int
-priority:
+  priority:
     description:
-    - Priority (1-200).
+      - Priority (1-200).
     type: int
-preempt_th:
+  preempt_th:
     description:
-    - Preempt threshold (0-100).
+      - Preempt threshold (0-100).
     type: int
-preempt_dis:
+  preempt_dis:
     description:
-    - Disable preempt (0=enabled, 1=disabled).
-    type: int
-    choices: [0, 1]
-priority_threshold:
-    description:
-    - Priority threshold (1-200).
-    type: int
-failback_first_device:
-    description:
-    - Failback to first device (0=disabled, 1=enabled).
+      - Disable preempt (0=enabled, 1=disabled).
     type: int
     choices: [0, 1]
-order_list:
+  priority_threshold:
     description:
-    - Order list (space-separated integers).
+      - Priority threshold (1-200).
+    type: int
+  failback_first_device:
+    description:
+      - Failback to first device (0=disabled, 1=enabled).
+    type: int
+    choices: [0, 1]
+  order_list:
+    description:
+      - Order list (space-separated integers).
     type: str
-# Heartbeat interface parameters
-slot:
+  # Heartbeat interface parameters
+  slot:
     description:
-    - Ethernet interface slot (0-8).
+      - Ethernet interface slot (0-8).
     type: int
-port:
+  port:
     description:
-    - Ethernet interface port (0-7).
+      - Ethernet interface port (0-7).
     type: int
-vlan_id:
+  vlan_id:
     description:
-    - VLAN ID (0-4094).
+      - VLAN ID (0-4094).
     type: int
-trunk_id:
+  trunk_id:
     description:
-    - Trunk ID (1-8).
+      - Trunk ID (1-8).
     type: int
-# Floating IP parameters
-floating_ip:
+  # Floating IP parameters
+  floating_ip:
     description:
-    - Floating IP address (IPv4/IPv6).
+      - Floating IP address (IPv4/IPv6).
     type: str
-# Force offline parameters
-force_offline:
+  # Force offline parameters
+  force_offline:
     description:
-    - Force offline (0=disabled, 1=enabled).
+      - Force offline (0=disabled, 1=enabled).
     type: int
     choices: [0, 1]
-all_partitions:
+  all_partitions:
     description:
-    - Apply to all partitions (0=disabled, 1=enabled).
+      - Apply to all partitions (0=disabled, 1=enabled).
     type: int
     choices: [0, 1]
-# Track parameters
-ip:
+  # Track parameters
+  ip:
     description:
-    - IP address for tracking (IPv4/IPv6).
+      - IP address for tracking (IPv4/IPv6).
     type: str
-netmask:
+  netmask:
     description:
-    - Netmask or prefix for route tracking.
+      - Netmask or prefix for route tracking.
     type: str
-pool_name:
+  pool_name:
     description:
-    - Pool name for pool tracking.
+      - Pool name for pool tracking.
     type: str
-min_up_members:
+  min_up_members:
     description:
-    - Minimum up members for pool tracking.
+      - Minimum up members for pool tracking.
     type: int
-member_priority:
+  member_priority:
     description:
-    - Member priority for trunk tracking.
+      - Member priority for trunk tracking.
     type: int
-timeout:
+  timeout:
     description:
-    - Timeout for VLAN tracking.
+      - Timeout for VLAN tracking.
     type: int
 author:
-- Horizon Inc.
+  - Horizon Inc.
 '''
 
 EXAMPLES = r'''
 - name: Get VRRP global configuration
-adc_system_ha_vrrp:
+  adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     vrrp_component: global
     action: get
 
 - name: Enable VRRP
-adc_system_ha_vrrp:
+  adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     vrrp_component: global
@@ -183,7 +174,7 @@ adc_system_ha_vrrp:
     retry: 3
 
 - name: Add VRRP group
-adc_system_ha_vrrp:
+  adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     vrrp_component: group
@@ -192,14 +183,14 @@ adc_system_ha_vrrp:
     priority: 150
 
 - name: List VRRP groups
-adc_system_ha_vrrp:
+  adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     vrrp_component: group
     action: list
 
 - name: Add Ethernet heartbeat interface
-adc_system_ha_vrrp:
+  adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     vrrp_component: heartbeat_eth
@@ -209,7 +200,7 @@ adc_system_ha_vrrp:
     vlan_id: 100
 
 - name: Add floating IP
-adc_system_ha_vrrp:
+  adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     vrrp_component: floating_ip
@@ -218,7 +209,7 @@ adc_system_ha_vrrp:
     floating_ip: "192.168.1.100"
 
 - name: Set force offline
-adc_system_ha_vrrp:
+  adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     vrrp_component: force_offline
@@ -226,7 +217,7 @@ adc_system_ha_vrrp:
     force_offline: 1
 
 - name: Add gateway tracking
-adc_system_ha_vrrp:
+  adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     vrrp_component: gateway_track
@@ -238,32 +229,32 @@ adc_system_ha_vrrp:
 
 RETURN = r'''
 global_config:
-description: VRRP global configuration when vrrp_component=global and action=get
-returned: when vrrp_component=global and action=get
-type: dict
-sample: {
+  description: VRRP global configuration when vrrp_component=global and action=get
+  returned: when vrrp_component=global and action=get
+  type: dict
+  sample: {
     "enabled": 1,
     "as_mode": 0,
     "unit_id": 1,
     "interval": 10,
     "retry": 3
-}
+  }
 groups:
-description: List of VRRP groups when vrrp_component=group and action=list
-returned: when vrrp_component=group and action=list
-type: list
-sample: [
+  description: List of VRRP groups when vrrp_component=group and action=list
+  returned: when vrrp_component=group and action=list
+  type: list
+  sample: [
     {
-    "group_id": 1,
-    "priority": 150,
-    "preempt_th": 0
+      "group_id": 1,
+      "priority": 150,
+      "preempt_th": 0
     }
-]
+  ]
 msg:
-description: Result message
-returned: always
-type: str
-sample: "VRRP group added successfully"
+  description: Result message
+  returned: always
+  type: str
+  sample: "VRRP group added successfully"
 '''
 
 

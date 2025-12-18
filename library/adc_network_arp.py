@@ -3,14 +3,6 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -119,12 +111,14 @@ def adc_list_ipv4_entries(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -162,10 +156,9 @@ def adc_get_ipv4_entry(module):
         ip, authkey)
 
     # 构造请求数据
-    entry_data = {}
-    # 只添加明确指定的参数
-    if "ip_addr" in module.params and module.params["ip_addr"] is not None:
-        acl_data["ip_addr"] = module.params["ip_addr"]
+    entry_data = {
+        "ip_addr": ip_addr
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -177,15 +170,17 @@ def adc_get_ipv4_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -223,13 +218,10 @@ def adc_add_ipv4_entry(module):
         ip, authkey)
 
     # 构造IPv4 ARP条目数据
-    entry_data = {}
-    # 只添加明确指定的参数
-    if "ip_addr" in module.params and module.params["ip_addr"] is not None:
-        acl_data["ip_addr"] = module.params["ip_addr"]
-    if "mac_addr" in module.params and module.params["mac_addr"] is not None:
-        acl_data["mac_addr"] = mac_addr
-   
+    entry_data = {
+        "ip_addr": ip_addr,
+        "mac_addr": mac_addr
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -241,15 +233,17 @@ def adc_add_ipv4_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -284,13 +278,10 @@ def adc_edit_ipv4_entry(module):
         ip, authkey)
 
     # 构造IPv4 ARP条目数据
-    entry_data = {}
-    # 只添加明确指定的参数
-    if "ip_addr" in module.params and module.params["ip_addr"] is not None:
-        acl_data["ip_addr"] = module.params["ip_addr"]
-    if "mac_addr" in module.params and module.params["mac_addr"] is not None:
-        acl_data["mac_addr"] = mac_addr
-   
+    entry_data = {
+        "ip_addr": ip_addr,
+        "mac_addr": mac_addr
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -302,15 +293,17 @@ def adc_edit_ipv4_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -344,10 +337,9 @@ def adc_delete_ipv4_entry(module):
         ip, authkey)
 
     # 构造请求数据
-    entry_data = {}
-    # 只添加明确指定的参数
-    if "ip_addr" in module.params and module.params["ip_addr"] is not None:
-        acl_data["ip_addr"] = module.params["ip_addr"]
+    entry_data = {
+        "ip_addr": ip_addr
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -359,15 +351,17 @@ def adc_delete_ipv4_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -402,12 +396,14 @@ def adc_get_ipv4_statistics(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -446,12 +442,14 @@ def adc_clear_ipv4_statistics(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -487,12 +485,14 @@ def adc_list_ipv6_entries(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -530,10 +530,9 @@ def adc_get_ipv6_entry(module):
         ip, authkey)
 
     # 构造请求数据
-    entry_data = {}
-    # 只添加明确指定的参数
-    if "ip_addr" in module.params and module.params["ip_addr"] is not None:
-        acl_data["ip_addr"] = module.params["ip_addr"]
+    entry_data = {
+        "ip_addr": ip_addr
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -545,15 +544,17 @@ def adc_get_ipv6_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -591,13 +592,10 @@ def adc_add_ipv6_entry(module):
         ip, authkey)
 
     # 构造IPv6 ARP条目数据
-    entry_data = {}
-    # 只添加明确指定的参数
-    if "ip_addr" in module.params and module.params["ip_addr"] is not None:
-        acl_data["ip_addr"] = module.params["ip_addr"]
-    if "mac_addr" in module.params and module.params["mac_addr"] is not None:
-        acl_data["mac_addr"] = mac_addr
-   
+    entry_data = {
+        "ip_addr": ip_addr,
+        "mac_addr": mac_addr
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -609,15 +607,17 @@ def adc_add_ipv6_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -652,13 +652,10 @@ def adc_edit_ipv6_entry(module):
         ip, authkey)
 
     # 构造IPv6 ARP条目数据
-    entry_data = {}
-    # 只添加明确指定的参数
-    if "ip_addr" in module.params and module.params["ip_addr"] is not None:
-        acl_data["ip_addr"] = module.params["ip_addr"]
-    if "mac_addr" in module.params and module.params["mac_addr"] is not None:
-        acl_data["mac_addr"] = mac_addr
-   
+    entry_data = {
+        "ip_addr": ip_addr,
+        "mac_addr": mac_addr
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -670,15 +667,17 @@ def adc_edit_ipv6_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -712,10 +711,9 @@ def adc_delete_ipv6_entry(module):
         ip, authkey)
 
     # 构造请求数据
-    entry_data = {}
-    # 只添加明确指定的参数
-    if "ip_addr" in module.params and module.params["ip_addr"] is not None:
-        acl_data["ip_addr"] = module.params["ip_addr"]
+    entry_data = {
+        "ip_addr": ip_addr
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -727,15 +725,17 @@ def adc_delete_ipv6_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -770,12 +770,14 @@ def adc_get_ipv6_statistics(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -814,12 +816,14 @@ def adc_clear_ipv6_statistics(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()

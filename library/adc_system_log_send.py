@@ -7,15 +7,6 @@
 from __future__ import absolute_import, division, print_function
 from adc_base import ADCBase
 from ansible.module_utils.basic import AnsibleModule
-import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -23,101 +14,101 @@ DOCUMENTATION = r'''
 module: adc_system_log_send
 short_description: Manage ADC system log sending configuration
 description:
-- Manage syslog server configuration for ADC devices.
-- Supports adding, listing, getting, editing, and deleting syslog server configurations.
+  - Manage syslog server configuration for ADC devices.
+  - Supports adding, listing, getting, editing, and deleting syslog server configurations.
 version_added: "1.0.0"
 options:
-action:
+  action:
     description:
-    - The action to perform on syslog server configuration.
+      - The action to perform on syslog server configuration.
     type: str
     required: true
     choices: [ add, list, get, edit, delete ]
-# Parameters for add/edit actions
-host:
+  # Parameters for add/edit actions
+  host:
     description:
-    - Syslog server address (hostname/IPv4/IPv6).
+      - Syslog server address (hostname/IPv4/IPv6).
     type: str
-port:
+  port:
     description:
-    - Syslog server port.
+      - Syslog server port.
     type: int
-log_code:
+  log_code:
     description:
-    - Code encoding status (0=disabled, 1=enabled).
+      - Code encoding status (0=disabled, 1=enabled).
     type: int
     choices: [0, 1]
-facility:
+  facility:
     description:
-    - Syslog facility number (0-7).
+      - Syslog facility number (0-7).
     type: int
     choices: [0, 1, 2, 3, 4, 5, 6, 7]
-nat_log:
+  nat_log:
     description:
-    - Send NAT logs (0=disabled, 1=enabled).
+      - Send NAT logs (0=disabled, 1=enabled).
     type: int
     choices: [0, 1]
-audit_log:
+  audit_log:
     description:
-    - Send audit logs (0=disabled, 1=enabled).
+      - Send audit logs (0=disabled, 1=enabled).
     type: int
     choices: [0, 1]
-service_log:
+  service_log:
     description:
-    - Send service logs (0=disabled, 1=enabled).
+      - Send service logs (0=disabled, 1=enabled).
     type: int
     choices: [0, 1]
-dns_log:
+  dns_log:
     description:
-    - Send DNS logs (0=disabled, 1=enabled).
+      - Send DNS logs (0=disabled, 1=enabled).
     type: int
     choices: [0, 1]
-match_type:
+  match_type:
     description:
-    - Filter matching type.
-    - 0: Disable filtering
-    - 1: Level/event/keyword/module OR operation
-    - 2: Level/event/keyword/module AND operation
+      - Filter matching type.
+      - 0: Disable filtering
+      - 1: Level/event/keyword/module OR operation
+      - 2: Level/event/keyword/module AND operation
     type: int
     choices: [0, 1, 2]
-level_filter:
+  level_filter:
     description:
-    - Log level filter (0-7).
+      - Log level filter (0-7).
     type: int
     choices: [0, 1, 2, 3, 4, 5, 6, 7]
-event_list:
+  event_list:
     description:
-    - Event list array.
-    - 1: Interface status
-    - 2: Device reboot
-    - 3: Login event
-    - 4: Health check failure
-    - 5: Health check busy
-    - 9: VM linkage
-    - 11: GSLB log
-    - 12: Erule log
+      - Event list array.
+      - 1: Interface status
+      - 2: Device reboot
+      - 3: Login event
+      - 4: Health check failure
+      - 5: Health check busy
+      - 9: VM linkage
+      - 11: GSLB log
+      - 12: Erule log
     type: list
     elements: int
-keyword_filter:
+  keyword_filter:
     description:
-    - Keyword filter.
+      - Keyword filter.
     type: str
-module_filter:
+  module_filter:
     description:
-    - Module filter (comma-separated modules).
+      - Module filter (comma-separated modules).
     type: str
-keyword_type:
+  keyword_type:
     description:
-    - Keyword type (string or regular).
+      - Keyword type (string or regular).
     type: str
     choices: [string, regular]
 author:
-- Horizon Inc.
+  - Horizon Inc.
 '''
 
 EXAMPLES = r'''
 - name: Add syslog server
-adc_system_log_send:
+  adc_system_log_send:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     action: add
@@ -129,13 +120,13 @@ adc_system_log_send:
     dns_log: 1
 
 - name: List syslog servers
-adc_system_log_send:
+  adc_system_log_send:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     action: list
 
 - name: Get specific syslog server
-adc_system_log_send:
+  adc_system_log_send:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     action: get
@@ -143,7 +134,7 @@ adc_system_log_send:
     port: 514
 
 - name: Edit syslog server
-adc_system_log_send:
+  adc_system_log_send:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     action: edit
@@ -153,7 +144,7 @@ adc_system_log_send:
     keyword_filter: "error"
 
 - name: Delete syslog server
-adc_system_log_send:
+  adc_system_log_send:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     action: delete
@@ -163,26 +154,26 @@ adc_system_log_send:
 
 RETURN = r'''
 servers:
-description: List of syslog servers when action=list
-returned: when action=list
-type: list
-sample: [
+  description: List of syslog servers when action=list
+  returned: when action=list
+  type: list
+  sample: [
     {
-    "host": "10.66.30.129",
-    "port": 514,
-    "log_code": 0,
-    "facility": 1,
-    "nat_log": 1,
-    "audit_log": 1,
-    "service_log": 1,
-    "dns_log": 1
+      "host": "10.66.30.129",
+      "port": 514,
+      "log_code": 0,
+      "facility": 1,
+      "nat_log": 1,
+      "audit_log": 1,
+      "service_log": 1,
+      "dns_log": 1
     }
-]
+  ]
 server:
-description: Specific syslog server when action=get
-returned: when action=get
-type: dict
-sample: {
+  description: Specific syslog server when action=get
+  returned: when action=get
+  type: dict
+  sample: {
     "host": "10.66.30.129",
     "port": 514,
     "log_code": 0,
@@ -191,12 +182,12 @@ sample: {
     "audit_log": 1,
     "service_log": 1,
     "dns_log": 1
-}
+  }
 msg:
-description: Result message
-returned: always
-type: str
-sample: "Syslog server added successfully"
+  description: Result message
+  returned: always
+  type: str
+  sample: "Syslog server added successfully"
 '''
 
 

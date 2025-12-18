@@ -152,6 +152,7 @@ result:
     type: dict
 '''
 
+
 def send_request(url, data=None, method='GET'):
     """Send HTTP request to ADC device"""
     try:
@@ -162,10 +163,10 @@ def send_request(url, data=None, method='GET'):
             req.add_header('Content-Type', 'application/json')
         else:
             req = urllib_request.Request(url)
-        
+
         response = urllib_request.urlopen(req)
         result = json.loads(response.read())
-        
+
         # 根据API文档，检查响应是否成功
         # 对于配置类API，成功时返回 {"result":"success"}
         # 对于查询类API，返回具体的数据
@@ -182,93 +183,104 @@ def send_request(url, data=None, method='GET'):
             return {'success': True, 'data': result, 'errcode': '', 'errmsg': ''}
         else:
             return {'success': True, 'data': result, 'errcode': '', 'errmsg': ''}
-            
+
     except Exception as e:
         return {'success': False, 'data': {}, 'errcode': 'REQUEST_ERROR', 'errmsg': str(e)}
+
 
 def adc_list_ruletables(module):
     """List all rule tables"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.list" % (ip, authkey)
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.list" % (
+        ip, authkey)
     result = send_request(url)
     return result
+
 
 def adc_list_ruletables_withcommon(module):
     """List all rule tables including common partition"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.list.withcommon" % (ip, authkey)
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.list.withcommon" % (
+        ip, authkey)
     result = send_request(url)
     return result
+
 
 def adc_get_ruletable(module):
     """Get a specific rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     if not name:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "获取规则表需要提供name参数"}
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.get" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.get" % (
+        ip, authkey)
+
     data = {"name": name}
     # 移除未明确指定的参数
     for key in list(data.keys()):
         if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
             del data[key]
-    
+
     result = send_request(url, data, method='POST')
     return result
+
 
 def adc_add_ruletable(module):
     """Add a new rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # Check required parameters
     if not name:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "添加规则表需要提供name参数"}
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.add" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.add" % (
+        ip, authkey)
+
     # Construct rule table data according to API documentation
     ruletable_data = {
         "ruletable": {
             "name": name
         }
     }
-    
+
     # Send POST request
     result = send_request(url, ruletable_data, method='POST')
     return result
+
 
 def adc_delete_ruletable(module):
     """Delete a rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # Check required parameters
     if not name:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "删除规则表需要提供name参数"}
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.del" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.del" % (
+        ip, authkey)
+
     # Construct rule table data
     ruletable_data = {"name": name}
     # 移除未明确指定的参数
     for key in list(ruletable_data.keys()):
         if ruletable_data[key] is None or (isinstance(ruletable_data[key], str) and ruletable_data[key] == ""):
             del ruletable_data[key]
-    
+
     # Send POST request
     result = send_request(url, ruletable_data, method='POST')
     return result
+
 
 def adc_add_ruletable_entry(module):
     """Add entries to a rule table"""
@@ -276,25 +288,27 @@ def adc_add_ruletable_entry(module):
     authkey = module.params['authkey']
     name = module.params['name']
     entrys = module.params['entrys']
-    
+
     # Check required parameters
     if not name:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "添加规则表条目需要提供name参数"}
-    
+
     if not entrys:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "添加规则表条目需要提供entrys参数"}
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.entry.add" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.entry.add" % (
+        ip, authkey)
+
     # Construct rule table entry data
     ruletable_data = {
         "name": name,
         "entrys": entrys
     }
-    
+
     # Send POST request
     result = send_request(url, ruletable_data, method='POST')
     return result
+
 
 def adc_delete_ruletable_entry(module):
     """Delete entries from a rule table"""
@@ -302,25 +316,27 @@ def adc_delete_ruletable_entry(module):
     authkey = module.params['authkey']
     name = module.params['name']
     entrys = module.params['entrys']
-    
+
     # Check required parameters
     if not name:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "删除规则表条目需要提供name参数"}
-    
+
     if not entrys:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "删除规则表条目需要提供entrys参数"}
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.entry.del" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.entry.del" % (
+        ip, authkey)
+
     # Construct rule table entry data
     ruletable_data = {
         "name": name,
         "entrys": entrys
     }
-    
+
     # Send POST request
     result = send_request(url, ruletable_data, method='POST')
     return result
+
 
 def adc_add_ruletable_string(module):
     """Add string entries to a rule table"""
@@ -328,25 +344,27 @@ def adc_add_ruletable_string(module):
     authkey = module.params['authkey']
     name = module.params['name']
     strings = module.params['strings']
-    
+
     # Check required parameters
     if not name:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "添加规则表字符串条目需要提供name参数"}
-    
+
     if not strings:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "添加规则表字符串条目需要提供strings参数"}
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.string.add" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.string.add" % (
+        ip, authkey)
+
     # Construct rule table string data
     ruletable_data = {
         "name": name,
         "strings": strings
     }
-    
+
     # Send POST request
     result = send_request(url, ruletable_data, method='POST')
     return result
+
 
 def adc_delete_ruletable_string(module):
     """Delete string entries from a rule table"""
@@ -354,25 +372,27 @@ def adc_delete_ruletable_string(module):
     authkey = module.params['authkey']
     name = module.params['name']
     strings = module.params['strings']
-    
+
     # Check required parameters
     if not name:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "删除规则表字符串条目需要提供name参数"}
-    
+
     if not strings:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "删除规则表字符串条目需要提供strings参数"}
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.string.del" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.string.del" % (
+        ip, authkey)
+
     # Construct rule table string data
     ruletable_data = {
         "name": name,
         "strings": strings
     }
-    
+
     # Send POST request
     result = send_request(url, ruletable_data, method='POST')
     return result
+
 
 def adc_add_ruletable_dns(module):
     """Add DNS entries to a rule table"""
@@ -380,25 +400,27 @@ def adc_add_ruletable_dns(module):
     authkey = module.params['authkey']
     name = module.params['name']
     dnss = module.params['dnss']
-    
+
     # Check required parameters
     if not name:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "添加规则表DNS条目需要提供name参数"}
-    
+
     if not dnss:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "添加规则表DNS条目需要提供dnss参数"}
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.dns.add" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.dns.add" % (
+        ip, authkey)
+
     # Construct rule table DNS data
     ruletable_data = {
         "name": name,
         "dnss": dnss
     }
-    
+
     # Send POST request
     result = send_request(url, ruletable_data, method='POST')
     return result
+
 
 def adc_delete_ruletable_dns(module):
     """Delete DNS entries from a rule table"""
@@ -406,25 +428,27 @@ def adc_delete_ruletable_dns(module):
     authkey = module.params['authkey']
     name = module.params['name']
     dnss = module.params['dnss']
-    
+
     # Check required parameters
     if not name:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "删除规则表DNS条目需要提供name参数"}
-    
+
     if not dnss:
         return {'success': False, 'data': {}, 'errcode': 'MISSING_PARAM', 'errmsg': "删除规则表DNS条目需要提供dnss参数"}
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.dns.del" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.dns.del" % (
+        ip, authkey)
+
     # Construct rule table DNS data
     ruletable_data = {
         "name": name,
         "dnss": dnss
     }
-    
+
     # Send POST request
     result = send_request(url, ruletable_data, method='POST')
     return result
+
 
 def main():
     module = AnsibleModule(
@@ -432,8 +456,8 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True),
             action=dict(type='str', required=True, choices=[
-                'list_ruletables', 'list_ruletables_withcommon', 'get_ruletable', 
-                'add_ruletable', 'delete_ruletable', 'add_ruletable_entry', 
+                'list_ruletables', 'list_ruletables_withcommon', 'get_ruletable',
+                'add_ruletable', 'delete_ruletable', 'add_ruletable_entry',
                 'delete_ruletable_entry', 'add_ruletable_string', 'delete_ruletable_string',
                 'add_ruletable_dns', 'delete_ruletable_dns'
             ]),
@@ -450,7 +474,7 @@ def main():
         action = str(module.params['action'])
     else:
         action = ''
-    
+
     if action == 'list_ruletables':
         result = adc_list_ruletables(module)
     elif action == 'list_ruletables_withcommon':
@@ -475,12 +499,14 @@ def main():
         result = adc_delete_ruletable_dns(module)
     else:
         module.fail_json(msg="Unknown action: %s" % action)
-    
+
     # 正确处理返回值 - 检查result是否成功
     if result.get('success', False):
         module.exit_json(changed=True, result=result)
     else:
-        module.fail_json(msg="Operation failed: %s" % result.get('errmsg', 'Unknown error'), result=result)
+        module.fail_json(msg="Operation failed: %s" %
+                         result.get('errmsg', 'Unknown error'), result=result)
+
 
 if __name__ == '__main__':
     main()

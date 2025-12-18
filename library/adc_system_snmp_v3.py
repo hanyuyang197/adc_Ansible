@@ -3,14 +3,6 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -119,13 +111,10 @@ def adc_add_snmp_v3_view(module):
         ip, authkey)
 
     # 构造视图数据
-    view_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "oid" in module.params and module.params["oid"] is not None:
-        acl_data["oid"] = oid
-   
+    view_data = {
+        "name": name,
+        "oid": oid
+    }
 
     # 添加可选参数
     if 'mask' in module.params and module.params['mask'] is not None:
@@ -143,15 +132,17 @@ def adc_add_snmp_v3_view(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -186,12 +177,14 @@ def adc_list_snmp_v3_views(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -230,13 +223,10 @@ def adc_get_snmp_v3_view(module):
         ip, authkey)
 
     # 构造视图数据
-    view_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "oid" in module.params and module.params["oid"] is not None:
-        acl_data["oid"] = oid
-   
+    view_data = {
+        "name": name,
+        "oid": oid
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(view_data)
@@ -248,15 +238,17 @@ def adc_get_snmp_v3_view(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -294,13 +286,10 @@ def adc_delete_snmp_v3_view(module):
         ip, authkey)
 
     # 构造视图数据
-    view_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "oid" in module.params and module.params["oid"] is not None:
-        acl_data["oid"] = oid
-   
+    view_data = {
+        "name": name,
+        "oid": oid
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(view_data)
@@ -312,15 +301,17 @@ def adc_delete_snmp_v3_view(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -356,14 +347,11 @@ def adc_edit_snmp_v3_view(module):
         ip, authkey)
 
     # 构造视图数据
-    view_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "old_oid" in module.params and module.params["old_oid"] is not None:
-        acl_data["old_oid"] = old_oid
-#         "oid": oid
-   
+    view_data = {
+        "name": name,
+        "old_oid": old_oid,
+        "oid": oid
+    }
 
     # 添加可选参数
     if 'mask' in module.params and module.params['mask'] is not None:
@@ -381,15 +369,17 @@ def adc_edit_snmp_v3_view(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -425,14 +415,11 @@ def adc_add_snmp_v3_group(module):
         ip, authkey)
 
     # 构造组数据
-    group_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "view" in module.params and module.params["view"] is not None:
-        acl_data["view"] = view
-#         "auth_mode": auth_mode
-   
+    group_data = {
+        "name": name,
+        "view": view,
+        "auth_mode": auth_mode
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(group_data)
@@ -444,15 +431,17 @@ def adc_add_snmp_v3_group(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -487,12 +476,14 @@ def adc_list_snmp_v3_groups(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -530,11 +521,9 @@ def adc_get_snmp_v3_group(module):
         ip, authkey)
 
     # 构造组数据
-    group_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+    group_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(group_data)
@@ -546,15 +535,17 @@ def adc_get_snmp_v3_group(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -591,11 +582,9 @@ def adc_delete_snmp_v3_group(module):
         ip, authkey)
 
     # 构造组数据
-    group_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+    group_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(group_data)
@@ -607,15 +596,17 @@ def adc_delete_snmp_v3_group(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -651,14 +642,11 @@ def adc_edit_snmp_v3_group(module):
         ip, authkey)
 
     # 构造组数据
-    group_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "view" in module.params and module.params["view"] is not None:
-        acl_data["view"] = view
-#         "auth_mode": auth_mode
-   
+    group_data = {
+        "name": name,
+        "view": view,
+        "auth_mode": auth_mode
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(group_data)
@@ -670,15 +658,17 @@ def adc_edit_snmp_v3_group(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -714,14 +704,11 @@ def adc_add_snmp_v3_user(module):
         ip, authkey)
 
     # 构造用户数据
-    user_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "group" in module.params and module.params["group"] is not None:
-        acl_data["group"] = group
-#         "auth_mode": auth_mode
-   
+    user_data = {
+        "name": name,
+        "group": group,
+        "auth_mode": auth_mode
+    }
 
     # 添加可选参数
     if 'auth_password' in module.params and module.params['auth_password'] is not None:
@@ -741,15 +728,17 @@ def adc_add_snmp_v3_user(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -784,12 +773,14 @@ def adc_list_snmp_v3_users(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -827,11 +818,9 @@ def adc_get_snmp_v3_user(module):
         ip, authkey)
 
     # 构造用户数据
-    user_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+    user_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(user_data)
@@ -843,15 +832,17 @@ def adc_get_snmp_v3_user(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -888,11 +879,9 @@ def adc_delete_snmp_v3_user(module):
         ip, authkey)
 
     # 构造用户数据
-    user_data = {"name": name}
-    # 移除未明确指定的参数
-    for key in list(data.keys()):
-        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
-            del data[key]
+    user_data = {
+        "name": name
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(user_data)
@@ -904,15 +893,17 @@ def adc_delete_snmp_v3_user(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -948,14 +939,11 @@ def adc_edit_snmp_v3_user(module):
         ip, authkey)
 
     # 构造用户数据
-    user_data = {}
-    # 只添加明确指定的参数
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = module.params["name"]
-    if "group" in module.params and module.params["group"] is not None:
-        acl_data["group"] = group
-#         "auth_mode": auth_mode
-   
+    user_data = {
+        "name": name,
+        "group": group,
+        "auth_mode": auth_mode
+    }
 
     # 添加可选参数
     if 'auth_password' in module.params and module.params['auth_password'] is not None:
@@ -975,15 +963,17 @@ def adc_edit_snmp_v3_user(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -1018,13 +1008,10 @@ def adc_add_snmp_v3_trap(module):
         ip, authkey)
 
     # 构造TRAP数据
-    trap_data = {}
-    # 只添加明确指定的参数
-    if "host" in module.params and module.params["host"] is not None:
-        acl_data["host"] = module.params["host"]
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = name
-   
+    trap_data = {
+        "host": host,
+        "name": name
+    }
 
     # 添加可选参数
     if 'port' in module.params and module.params['port'] is not None:
@@ -1050,15 +1037,17 @@ def adc_add_snmp_v3_trap(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -1093,12 +1082,14 @@ def adc_list_snmp_v3_traps(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -1136,10 +1127,9 @@ def adc_get_snmp_v3_trap(module):
         ip, authkey)
 
     # 构造TRAP数据
-    trap_data = {}
-    # 只添加明确指定的参数
-    if "host" in module.params and module.params["host"] is not None:
-        acl_data["host"] = module.params["host"]
+    trap_data = {
+        "host": host
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(trap_data)
@@ -1151,15 +1141,17 @@ def adc_get_snmp_v3_trap(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -1196,10 +1188,9 @@ def adc_delete_snmp_v3_trap(module):
         ip, authkey)
 
     # 构造TRAP数据
-    trap_data = {}
-    # 只添加明确指定的参数
-    if "host" in module.params and module.params["host"] is not None:
-        acl_data["host"] = module.params["host"]
+    trap_data = {
+        "host": host
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(trap_data)
@@ -1211,15 +1202,17 @@ def adc_delete_snmp_v3_trap(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -1254,13 +1247,10 @@ def adc_edit_snmp_v3_trap(module):
         ip, authkey)
 
     # 构造TRAP数据
-    trap_data = {}
-    # 只添加明确指定的参数
-    if "host" in module.params and module.params["host"] is not None:
-        acl_data["host"] = module.params["host"]
-    if "name" in module.params and module.params["name"] is not None:
-        acl_data["name"] = name
-   
+    trap_data = {
+        "host": host,
+        "name": name
+    }
 
     # 添加可选参数
     if 'port' in module.params and module.params['port'] is not None:
@@ -1286,15 +1276,17 @@ def adc_edit_snmp_v3_trap(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 

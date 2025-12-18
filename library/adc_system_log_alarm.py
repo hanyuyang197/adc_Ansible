@@ -7,15 +7,6 @@
 from __future__ import absolute_import, division, print_function
 from adc_base import ADCBase
 from ansible.module_utils.basic import AnsibleModule
-import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -23,69 +14,69 @@ DOCUMENTATION = r'''
 module: adc_system_log_alarm
 short_description: Manage ADC system log alarm configuration
 description:
-- Manage email and SMS log alarm configuration for ADC devices.
-- Supports getting and setting email/SMS alarm configurations.
+  - Manage email and SMS log alarm configuration for ADC devices.
+  - Supports getting and setting email/SMS alarm configurations.
 version_added: "1.0.0"
 options:
-alarm_type:
+  alarm_type:
     description:
-    - The type of alarm configuration to manage.
+      - The type of alarm configuration to manage.
     type: str
     required: true
     choices: [ email, sms ]
-action:
+  action:
     description:
-    - The action to perform on alarm configuration.
+      - The action to perform on alarm configuration.
     type: str
     required: true
     choices: [ get, set ]
-# Parameters for email alarm configuration
-delay_send_buff:
+  # Parameters for email alarm configuration
+  delay_send_buff:
     description:
-    - Delay send buffer length (16-256).
+      - Delay send buffer length (16-256).
     type: int
-delay_send_time:
+  delay_send_time:
     description:
-    - Delay send time in minutes (10-1440).
+      - Delay send time in minutes (10-1440).
     type: int
-send_event:
+  send_event:
     description:
-    - Send events array.
-    - 1: Interface status
-    - 2: Device reboot
-    - 3: Login event
-    - 4: Health check failure
-    - 5: Health check busy
-    - 9: VM linkage
-    - 11: GSLB log
-    - 12: Erule log
+      - Send events array.
+      - 1: Interface status
+      - 2: Device reboot
+      - 3: Login event
+      - 4: Health check failure
+      - 5: Health check busy
+      - 9: VM linkage
+      - 11: GSLB log
+      - 12: Erule log
     type: list
     elements: int
-send_level:
+  send_level:
     description:
-    - Log level filter (-1, 0, 1, 2, 5).
-    - -1: Disable level filtering
+      - Log level filter (-1, 0, 1, 2, 5).
+      - -1: Disable level filtering
     type: int
     choices: [-1, 0, 1, 2, 5]
-# Parameters for SMS alarm configuration
-url:
+  # Parameters for SMS alarm configuration
+  url:
     description:
-    - SMS platform URL.
+      - SMS platform URL.
     type: str
 author:
-- Horizon Inc.
+  - Horizon Inc.
 '''
 
 EXAMPLES = r'''
 - name: Get email alarm configuration
-adc_system_log_alarm:
+  adc_system_log_alarm:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     alarm_type: email
     action: get
 
 - name: Set email alarm configuration
-adc_system_log_alarm:
+  adc_system_log_alarm:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     alarm_type: email
@@ -96,14 +87,14 @@ adc_system_log_alarm:
     send_level: 5
 
 - name: Get SMS alarm configuration
-adc_system_log_alarm:
+  adc_system_log_alarm:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     alarm_type: sms
     action: get
 
 - name: Set SMS alarm configuration
-adc_system_log_alarm:
+  adc_system_log_alarm:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     alarm_type: sms
@@ -115,29 +106,29 @@ adc_system_log_alarm:
 
 RETURN = r'''
 email_config:
-description: Email alarm configuration when alarm_type=email and action=get
-returned: when alarm_type=email and action=get
-type: dict
-sample: {
+  description: Email alarm configuration when alarm_type=email and action=get
+  returned: when alarm_type=email and action=get
+  type: dict
+  sample: {
     "delay_send_buff": 120,
     "delay_send_time": 110,
     "send_event": [2, 4, 5],
     "send_level": 5
-}
+  }
 sms_config:
-description: SMS alarm configuration when alarm_type=sms and action=get
-returned: when alarm_type=sms and action=get
-type: dict
-sample: {
+  description: SMS alarm configuration when alarm_type=sms and action=get
+  returned: when alarm_type=sms and action=get
+  type: dict
+  sample: {
     "url": "h.163.com.cn",
     "send_event": [1, 3],
     "send_level": 2
-}
+  }
 msg:
-description: Result message
-returned: always
-type: str
-sample: "Email alarm configuration updated successfully"
+  description: Result message
+  returned: always
+  type: str
+  sample: "Email alarm configuration updated successfully"
 '''
 
 

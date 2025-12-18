@@ -13,6 +13,7 @@ except ImportError:
     import urllib.error as urllib_error
 # ADC API响应解析函数
 
+
 def format_adc_response_for_ansible(response_data, action="", changed_default=True):
     """
     格式化ADC响应为Ansible模块返回格式
@@ -100,12 +101,14 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
         return False, result_dict
 
 # 定义模块参数
+
+
 def define_module_args():
     return dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile', 
+            'list_profiles', 'list_profiles_withcommon', 'get_profile',
             'add_profile', 'edit_profile', 'delete_profile'
         ]),
         # HTTP2模板参数
@@ -115,6 +118,8 @@ def define_module_args():
     )
 
 # 发送HTTP请求
+
+
 def send_request(url, data=None, method='GET'):
     try:
         if data:
@@ -123,14 +128,14 @@ def send_request(url, data=None, method='GET'):
             req.add_header('Content-Type', 'application/json')
         else:
             req = urllib_request.Request(url)
-        
+
         if method == 'POST':
             req.get_method = lambda: 'POST'
         elif method == 'PUT':
             req.get_method = lambda: 'PUT'
         elif method == 'DELETE':
             req.get_method = lambda: 'DELETE'
-            
+
         response = urllib_request.urlopen(req)
         result = response.read()
         return json.loads(result) if result else {}
@@ -138,16 +143,19 @@ def send_request(url, data=None, method='GET'):
         return {'status': 'error', 'msg': str(e)}
 
 # 获取HTTP2模板列表
+
+
 def adc_list_http2_profiles(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.list" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.list" % (
+        ip, authkey)
+
     # 发送GET请求
     result = send_request(url, method='GET')
-    
+
     # 对于获取列表操作，直接返回响应数据，不判断success
     if result:
         try:
@@ -162,22 +170,26 @@ def adc_list_http2_profiles(module):
         module.fail_json(msg="未收到有效响应")
 
 # 获取包含common分区的HTTP2模板列表
+
+
 def adc_list_http2_profiles_withcommon(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.list.withcommon" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.list.withcommon" % (
+        ip, authkey)
+
     # 发送GET请求
     result = send_request(url, method='GET')
-    
+
     # 对于获取列表操作，直接返回响应数据，不判断success
     if result:
         try:
             # 检查是否有错误信息
             if 'errmsg' in result and result['errmsg']:
-                module.fail_json(msg="获取包含common分区的HTTP2模板列表失败", response=result)
+                module.fail_json(
+                    msg="获取包含common分区的HTTP2模板列表失败", response=result)
             else:
                 module.exit_json(changed=False, profiles=result)
         except Exception as e:
@@ -186,28 +198,31 @@ def adc_list_http2_profiles_withcommon(module):
         module.fail_json(msg="未收到有效响应")
 
 # 获取指定HTTP2模板
+
+
 def adc_get_http2_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="获取HTTP2模板需要提供name参数")
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.get" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.get" % (
+        ip, authkey)
+
     # 构造请求数据
     data = {"name": name}
     # 移除未明确指定的参数
     for key in list(data.keys()):
         if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
             del data[key]
-    
+
     # 发送POST请求
     result = send_request(url, data, method='POST')
-    
+
     # 对于获取操作，直接返回响应数据，不判断success
     if result:
         try:
@@ -222,37 +237,40 @@ def adc_get_http2_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 添加HTTP2模板
+
+
 def adc_add_http2_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="添加HTTP2模板需要提供name参数")
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.add" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.add" % (
+        ip, authkey)
+
     # 构造模板数据
     profile_data = {"name": name}
     # 移除未明确指定的参数
     for key in list(profile_data.keys()):
         if profile_data[key] is None or (isinstance(profile_data[key], str) and profile_data[key] == ""):
             del profile_data[key]
-    
+
     # 只有当参数在YAML中明确定义时才包含在请求中
     optional_params = [
         'insert_x_header'
     ]
-    
+
     for param in optional_params:
         if module.params[param] is not None:
             profile_data[param] = module.params[param]
-    
+
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -265,37 +283,40 @@ def adc_add_http2_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 编辑HTTP2模板
+
+
 def adc_edit_http2_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="编辑HTTP2模板需要提供name参数")
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.edit" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.edit" % (
+        ip, authkey)
+
     # 构造模板数据
     profile_data = {"name": name}
     # 移除未明确指定的参数
     for key in list(profile_data.keys()):
         if profile_data[key] is None or (isinstance(profile_data[key], str) and profile_data[key] == ""):
             del profile_data[key]
-    
+
     # 只有当参数在YAML中明确定义时才包含在请求中
     optional_params = [
         'insert_x_header', 'description'
     ]
-    
+
     for param in optional_params:
         if module.params[param] is not None:
             profile_data[param] = module.params[param]
-    
+
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -308,28 +329,31 @@ def adc_edit_http2_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 删除HTTP2模板
+
+
 def adc_delete_http2_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="删除HTTP2模板需要提供name参数")
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.del" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http2.del" % (
+        ip, authkey)
+
     # 构造请求数据
     data = {"name": name}
     # 移除未明确指定的参数
     for key in list(data.keys()):
         if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
             del data[key]
-    
+
     # 发送POST请求
     result = send_request(url, data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -342,23 +366,25 @@ def adc_delete_http2_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 主函数
+
+
 def main():
     # 定义模块参数
     module_args = define_module_args()
-    
+
     # 创建Ansible模块实例
     module = AnsibleModule(
         argument_spec=module_args,
         supports_check_mode=True
     )
-    
+
     # 获取参数
-        # 获取action参数并确保它是字符串类型
+    # 获取action参数并确保它是字符串类型
     if 'action' in module.params and module.params['action'] is not None:
         action = str(module.params['action'])
     else:
-        action = 
-    
+        action =
+
     # 根据action执行相应操作
     if action == 'list_profiles':
         adc_list_http2_profiles(module)
@@ -374,6 +400,7 @@ def main():
         adc_delete_http2_profile(module)
     else:
         module.fail_json(msg="不支持的操作: %s" % action)
+
 
 if __name__ == '__main__':
     main()

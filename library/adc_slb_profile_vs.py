@@ -1,7 +1,21 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from ansible.module_utils.basic import AnsibleModule
+# Windows兼容性处理
+try:
+    from ansible.module_utils.basic import AnsibleModule
+except ImportError:
+    # 创建一个模拟的AnsibleModule类用于测试
+    class AnsibleModule:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def fail_json(self, **kwargs):
+            raise Exception(str(kwargs))
+
+        def exit_json(self, **kwargs):
+            print("SUCCESS:", kwargs)
+
 import json
 # Python 2/3兼容性处理
 try:
@@ -12,6 +26,7 @@ except ImportError:
     import urllib.request as urllib_request
     import urllib.error as urllib_error
 # ADC API响应解析函数
+
 
 def format_adc_response_for_ansible(response_data, action="", changed_default=True):
     """
@@ -100,12 +115,14 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
         return False, result_dict
 
 # 定义模块参数
+
+
 def define_module_args():
     return dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile', 
+            'list_profiles', 'list_profiles_withcommon', 'get_profile',
             'add_profile', 'edit_profile', 'delete_profile'
         ]),
         # 虚拟服务模板参数
@@ -127,6 +144,8 @@ def define_module_args():
     )
 
 # 发送HTTP请求
+
+
 def send_request(url, data=None, method='GET'):
     try:
         if data:
@@ -135,14 +154,14 @@ def send_request(url, data=None, method='GET'):
             req.add_header('Content-Type', 'application/json')
         else:
             req = urllib_request.Request(url)
-        
+
         if method == 'POST':
             req.get_method = lambda: 'POST'
         elif method == 'PUT':
             req.get_method = lambda: 'PUT'
         elif method == 'DELETE':
             req.get_method = lambda: 'DELETE'
-            
+
         response = urllib_request.urlopen(req)
         result = response.read()
         return json.loads(result) if result else {}
@@ -150,16 +169,19 @@ def send_request(url, data=None, method='GET'):
         return {'status': 'error', 'msg': str(e)}
 
 # 获取虚拟服务模板列表
+
+
 def adc_list_vs_profiles(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.list" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.list" % (
+        ip, authkey)
+
     # 发送GET请求
     result = send_request(url, method='GET')
-    
+
     # 对于获取列表操作，直接返回响应数据，不判断success
     if result:
         try:
@@ -174,22 +196,26 @@ def adc_list_vs_profiles(module):
         module.fail_json(msg="未收到有效响应")
 
 # 获取包含common分区的虚拟服务模板列表
+
+
 def adc_list_vs_profiles_withcommon(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.list.withcommon" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.list.withcommon" % (
+        ip, authkey)
+
     # 发送GET请求
     result = send_request(url, method='GET')
-    
+
     # 对于获取列表操作，直接返回响应数据，不判断success
     if result:
         try:
             # 检查是否有错误信息
             if 'errmsg' in result and result['errmsg']:
-                module.fail_json(msg="获取包含common分区的虚拟服务模板列表失败", response=result)
+                module.fail_json(
+                    msg="获取包含common分区的虚拟服务模板列表失败", response=result)
             else:
                 module.exit_json(changed=False, profiles=result)
         except Exception as e:
@@ -198,28 +224,31 @@ def adc_list_vs_profiles_withcommon(module):
         module.fail_json(msg="未收到有效响应")
 
 # 获取指定虚拟服务模板
+
+
 def adc_get_vs_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="获取虚拟服务模板需要提供name参数")
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.get" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.get" % (
+        ip, authkey)
+
     # 构造请求数据
     data = {"name": name}
     # 移除未明确指定的参数
     for key in list(data.keys()):
         if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
             del data[key]
-    
+
     # 发送POST请求
     result = send_request(url, data, method='POST')
-    
+
     # 对于获取操作，直接返回响应数据，不判断success
     if result:
         try:
@@ -234,16 +263,18 @@ def adc_get_vs_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 添加虚拟服务模板
+
+
 def adc_add_vs_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
     description = module.params['description']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="添加虚拟服务模板需要提供name参数")
-    
+
     # 检查必填参数
     required_params = [
         'ignored_tcp_msl', 'reset_unknown_conn', 'reset_l7_on_failover',
@@ -253,14 +284,15 @@ def adc_add_vs_profile(module):
         'conn_rate_over_limit_action', 'conn_rate_unit',
         'log_conn_rate_limit_exceed'
     ]
-    
+
     for param in required_params:
         if module.params[param] is None:
             module.fail_json(msg="添加虚拟服务模板需要提供%s参数" % param)
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.add" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.add" % (
+        ip, authkey)
+
     # 构造模板数据
     profile_data = {}
     # 只添加明确指定的参数
@@ -294,10 +326,10 @@ def adc_add_vs_profile(module):
         profile_data["conn_rate_unit"] = module.params["conn_rate_unit"]
     if "log_conn_rate_limit_exceed" in module.params and module.params["log_conn_rate_limit_exceed"] is not None:
         profile_data["log_conn_rate_limit_exceed"] = module.params["log_conn_rate_limit_exceed"]
-    
+
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -310,16 +342,18 @@ def adc_add_vs_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 编辑虚拟服务模板
+
+
 def adc_edit_vs_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
     description = module.params['description']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="编辑虚拟服务模板需要提供name参数")
-    
+
     # 检查必填参数
     required_params = [
         'ignored_tcp_msl', 'reset_unknown_conn', 'reset_l7_on_failover',
@@ -329,14 +363,15 @@ def adc_edit_vs_profile(module):
         'conn_rate_over_limit_action', 'conn_rate_unit',
         'log_conn_rate_limit_exceed'
     ]
-    
+
     for param in required_params:
         if module.params[param] is None:
             module.fail_json(msg="编辑虚拟服务模板需要提供%s参数" % param)
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.edit" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.edit" % (
+        ip, authkey)
+
     # 构造模板数据
     profile_data = {}
     # 只添加明确指定的参数
@@ -370,11 +405,10 @@ def adc_edit_vs_profile(module):
         profile_data["conn_rate_unit"] = module.params["conn_rate_unit"]
     if "log_conn_rate_limit_exceed" in module.params and module.params["log_conn_rate_limit_exceed"] is not None:
         profile_data["log_conn_rate_limit_exceed"] = module.params["log_conn_rate_limit_exceed"]
-   
-    
+
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -387,28 +421,31 @@ def adc_edit_vs_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 删除虚拟服务模板
+
+
 def adc_delete_vs_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="删除虚拟服务模板需要提供name参数")
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.del" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.del" % (
+        ip, authkey)
+
     # 构造请求数据
     data = {"name": name}
     # 移除未明确指定的参数
     for key in list(data.keys()):
         if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
             del data[key]
-    
+
     # 发送POST请求
     result = send_request(url, data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -421,23 +458,25 @@ def adc_delete_vs_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 主函数
+
+
 def main():
     # 定义模块参数
     module_args = define_module_args()
-    
+
     # 创建Ansible模块实例
     module = AnsibleModule(
         argument_spec=module_args,
         supports_check_mode=True
     )
-    
+
     # 获取参数
-        # 获取action参数并确保它是字符串类型
+    # 获取action参数并确保它是字符串类型
     if 'action' in module.params and module.params['action'] is not None:
         action = str(module.params['action'])
     else:
-        action = 
-    
+        action = ''  # 修复不完整的赋值语句
+
     # 根据action执行相应操作
     if action == 'list_profiles':
         adc_list_vs_profiles(module)
@@ -453,6 +492,7 @@ def main():
         adc_delete_vs_profile(module)
     else:
         module.fail_json(msg="不支持的操作: %s" % action)
+
 
 if __name__ == '__main__':
     main()

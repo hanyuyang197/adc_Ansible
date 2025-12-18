@@ -15,6 +15,7 @@ import urllib
 
 # ADC API响应解析函数
 
+
 def format_adc_response_for_ansible(response_data, action="", changed_default=True):
     """
     格式化ADC响应为Ansible模块返回格式
@@ -156,7 +157,7 @@ def adc_list_rtsp_profiles(module):
 
     # 发送GET请求
     result = send_request(url, method='GET')
-    
+
     # 对于获取列表操作，直接返回响应数据，不判断success
     if result:
         try:
@@ -183,13 +184,14 @@ def adc_list_rtsp_profiles_withcommon(module):
 
     # 发送GET请求
     result = send_request(url, method='GET')
-    
+
     # 对于获取列表操作，直接返回响应数据，不判断success
     if result:
         try:
             # 检查是否有错误信息
             if 'errmsg' in result and result['errmsg']:
-                module.fail_json(msg="获取包含common分区的RTSP模板列表失败", response=result)
+                module.fail_json(
+                    msg="获取包含common分区的RTSP模板列表失败", response=result)
             else:
                 module.exit_json(changed=False, profiles=result)
         except Exception as e:
@@ -222,7 +224,7 @@ def adc_get_rtsp_profile(module):
 
     # 发送POST请求
     result = send_request(url, data, method='POST')
-    
+
     # 对于获取操作，直接返回响应数据，不判断success
     if result:
         try:
@@ -266,7 +268,7 @@ def adc_add_rtsp_profile(module):
 
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -308,7 +310,7 @@ def adc_edit_rtsp_profile(module):
 
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -345,7 +347,7 @@ def adc_delete_rtsp_profile(module):
 
     # 发送POST请求
     result = send_request(url, data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -371,11 +373,11 @@ def main():
     )
 
     # 获取参数
-        # 获取action参数并确保它是字符串类型
+    # 获取action参数并确保它是字符串类型
     if 'action' in module.params and module.params['action'] is not None:
         action = str(module.params['action'])
     else:
-        action = 
+        action =
 
     # 根据action执行相应操作
     if action == 'list_profiles':

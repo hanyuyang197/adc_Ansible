@@ -49,7 +49,7 @@ class ADCBase:
                     if data:
                         post_data = json.dumps(data).encode('utf-8')
                         req = urllib_request.Request(url, data=post_data, headers={
-                                                    'Content-Type': 'application/json'})
+                            'Content-Type': 'application/json'})
                     else:
                         req = urllib_request.Request(
                             url, headers={'Content-Type': 'application/json'})
@@ -67,7 +67,7 @@ class ADCBase:
                     if data:
                         post_data = json.dumps(data)
                         req = urllib_request.Request(url, data=post_data, headers={
-                                                    'Content-Type': 'application/json'})
+                            'Content-Type': 'application/json'})
                     else:
                         req = urllib_request.Request(
                             url, headers={'Content-Type': 'application/json'})

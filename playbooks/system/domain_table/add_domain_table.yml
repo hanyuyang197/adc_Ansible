@@ -1,10 +1,10 @@
 ---
 - name: 添加域名解析自定义
-  hosts: adc_devices
+  hosts: adc_servers
   gather_facts: no
   vars:
-    # adc_username: "{{ adc_username }}"  # 循环引用已修复
-    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+    adc_username: "{{ adc_username }}"
+    adc_password: "{{ adc_password }}"
 
     adc_ip: "{{ inventory_hostname }}"
     adc_authkey: "{{ login_result.authkey }}"

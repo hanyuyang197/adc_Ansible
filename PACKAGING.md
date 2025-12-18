@@ -46,7 +46,7 @@ ansible-galaxy collection install horizon-modules-1.0.0.tar.gz
 ```yaml
 ---
 - name: 示例playbook
-  hosts: adc_devices
+  hosts: adc_servers
   gather_facts: no
 
   tasks:
@@ -85,7 +85,7 @@ ansible-galaxy collection install horizon-modules-1.0.0.tar.gz
 将您的 ADC 设备添加到 Ansible inventory 中：
 
 ```ini
-[adc_devices]
+[adc_servers]
 adc1 ansible_host=192.168.1.100
 adc2 ansible_host=192.168.1.101
 ```

@@ -1,11 +1,11 @@
 ---
 - name: List service logs
-  hosts: adc_devices
+  hosts: adc_servers
   gather_facts: no
   vars:
     ansible_python_interpreter: /usr/bin/python3
-    # adc_username: "{{ adc_username }}"  # 循环引用已修复
-    # adc_password: "{{ adc_password }}"  # 循环引用已修复
+    adc_username: "{{ adc_username }}"
+    adc_password: "{{ adc_password }}"
 
   tasks:
     - name: 登录ADC设备

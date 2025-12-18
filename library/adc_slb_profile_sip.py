@@ -15,6 +15,7 @@ import sys
 
 # ADC API响应解析函数
 
+
 def format_adc_response_for_ansible(response_data, action="", changed_default=True):
     """
     格式化ADC响应为Ansible模块返回格式

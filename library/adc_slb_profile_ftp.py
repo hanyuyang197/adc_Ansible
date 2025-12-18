@@ -13,6 +13,7 @@ except ImportError:
     import urllib.error as urllib_error
 # ADC API响应解析函数
 
+
 def format_adc_response_for_ansible(response_data, action="", changed_default=True):
     """
     格式化ADC响应为Ansible模块返回格式
@@ -100,12 +101,14 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
         return False, result_dict
 
 # 定义模块参数
+
+
 def define_module_args():
     return dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile', 
+            'list_profiles', 'list_profiles_withcommon', 'get_profile',
             'add_profile', 'edit_profile', 'delete_profile'
         ]),
         # FTP模板参数
@@ -117,6 +120,8 @@ def define_module_args():
     )
 
 # 发送HTTP请求
+
+
 def send_request(url, data=None, method='GET'):
     try:
         if data:
@@ -125,14 +130,14 @@ def send_request(url, data=None, method='GET'):
             req.add_header('Content-Type', 'application/json')
         else:
             req = urllib_request.Request(url)
-        
+
         if method == 'POST':
             req.get_method = lambda: 'POST'
         elif method == 'PUT':
             req.get_method = lambda: 'PUT'
         elif method == 'DELETE':
             req.get_method = lambda: 'DELETE'
-            
+
         response = urllib_request.urlopen(req)
         result = response.read()
         return json.loads(result) if result else {}
@@ -140,16 +145,19 @@ def send_request(url, data=None, method='GET'):
         return {'status': 'error', 'msg': str(e)}
 
 # 获取FTP模板列表
+
+
 def adc_list_ftp_profiles(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.list" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.list" % (
+        ip, authkey)
+
     # 发送GET请求
     result = send_request(url, method='GET')
-    
+
     # 对于获取列表操作，直接返回响应数据，不判断success
     if result:
         try:
@@ -164,16 +172,19 @@ def adc_list_ftp_profiles(module):
         module.fail_json(msg="未收到有效响应")
 
 # 获取包含common分区的FTP模板列表
+
+
 def adc_list_ftp_profiles_withcommon(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.list.withcommon" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.list.withcommon" % (
+        ip, authkey)
+
     # 发送GET请求
     result = send_request(url, method='GET')
-    
+
     # 对于获取列表操作，直接返回响应数据，不判断success
     if result:
         try:
@@ -188,28 +199,31 @@ def adc_list_ftp_profiles_withcommon(module):
         module.fail_json(msg="未收到有效响应")
 
 # 获取指定FTP模板
+
+
 def adc_get_ftp_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="获取FTP模板需要提供name参数")
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.get" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.get" % (
+        ip, authkey)
+
     # 构造请求数据
     data = {"name": name}
     # 移除未明确指定的参数
     for key in list(data.keys()):
         if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
             del data[key]
-    
+
     # 发送POST请求
     result = send_request(url, data, method='POST')
-    
+
     # 对于获取操作，直接返回响应数据，不判断success
     if result:
         try:
@@ -224,6 +238,8 @@ def adc_get_ftp_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 添加FTP模板
+
+
 def adc_add_ftp_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -232,14 +248,15 @@ def adc_add_ftp_profile(module):
     disable_active_mode = module.params['disable_active_mode']
     disable_passive_mode = module.params['disable_passive_mode']
     description = module.params['description']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="添加FTP模板需要提供name参数")
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.add" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.add" % (
+        ip, authkey)
+
     # 构造模板数据
     profile_data = {}
     # 只添加明确指定的参数
@@ -247,7 +264,7 @@ def adc_add_ftp_profile(module):
         profile_data["name"] = module.params["name"]
     if "description" in module.params and module.params["description"] is not None:
         profile_data["description"] = description
-    
+
     # 只有当参数在YAML中明确定义时才包含在请求中
     if active_mode_port is not None:
         profile_data["active_mode_port"] = active_mode_port
@@ -255,10 +272,10 @@ def adc_add_ftp_profile(module):
         profile_data["disable_active_mode"] = disable_active_mode
     if disable_passive_mode is not None:
         profile_data["disable_passive_mode"] = disable_passive_mode
-    
+
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -271,6 +288,8 @@ def adc_add_ftp_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 编辑FTP模板
+
+
 def adc_edit_ftp_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -279,14 +298,15 @@ def adc_edit_ftp_profile(module):
     disable_active_mode = module.params['disable_active_mode']
     disable_passive_mode = module.params['disable_passive_mode']
     description = module.params['description']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="编辑FTP模板需要提供name参数")
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.edit" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.edit" % (
+        ip, authkey)
+
     # 构造模板数据
     profile_data = {}
     # 只添加明确指定的参数
@@ -294,7 +314,7 @@ def adc_edit_ftp_profile(module):
         profile_data["name"] = module.params["name"]
     if "description" in module.params and module.params["description"] is not None:
         profile_data["description"] = description
-    
+
     # 只有当参数在YAML中明确定义时才包含在请求中
     if active_mode_port is not None:
         profile_data["active_mode_port"] = active_mode_port
@@ -302,10 +322,10 @@ def adc_edit_ftp_profile(module):
         profile_data["disable_active_mode"] = disable_active_mode
     if disable_passive_mode is not None:
         profile_data["disable_passive_mode"] = disable_passive_mode
-    
+
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -318,28 +338,31 @@ def adc_edit_ftp_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 删除FTP模板
+
+
 def adc_delete_ftp_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # 检查必需参数
     if not name:
         module.fail_json(msg="删除FTP模板需要提供name参数")
-    
+
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.del" % (ip, authkey)
-    
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.ftp.del" % (
+        ip, authkey)
+
     # 构造请求数据
     data = {"name": name}
     # 移除未明确指定的参数
     for key in list(data.keys()):
         if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
             del data[key]
-    
+
     # 发送POST请求
     result = send_request(url, data, method='POST')
-    
+
     # 使用通用响应解析函数
     if result:
         success, result_dict = format_adc_response_for_ansible(
@@ -352,23 +375,25 @@ def adc_delete_ftp_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 # 主函数
+
+
 def main():
     # 定义模块参数
     module_args = define_module_args()
-    
+
     # 创建Ansible模块实例
     module = AnsibleModule(
         argument_spec=module_args,
         supports_check_mode=True
     )
-    
+
     # 获取参数
-        # 获取action参数并确保它是字符串类型
+    # 获取action参数并确保它是字符串类型
     if 'action' in module.params and module.params['action'] is not None:
         action = str(module.params['action'])
     else:
-        action = 
-    
+        action =
+
     # 根据action执行相应操作
     if action == 'list_profiles':
         adc_list_ftp_profiles(module)
@@ -384,6 +409,7 @@ def main():
         adc_delete_ftp_profile(module)
     else:
         module.fail_json(msg="不支持的操作: %s" % action)
+
 
 if __name__ == '__main__':
     main()

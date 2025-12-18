@@ -24,7 +24,8 @@ def adc_logout(module):
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     protocol = "https" if use_https else "http"
-    url = "%s://%s/adcapi/v2.0/?authkey=%s&action=logout" % (protocol, ip, authkey)
+    url = "%s://%s/adcapi/v2.0/?authkey=%s&action=logout" % (
+        protocol, ip, authkey)
 
     # 初始化响应数据
     response_data = ""

@@ -124,6 +124,7 @@ result:
     type: dict
 '''
 
+
 def send_request(url, data=None, method='GET'):
     """Send HTTP request to ADC device"""
     try:
@@ -134,138 +135,151 @@ def send_request(url, data=None, method='GET'):
             req.add_header('Content-Type', 'application/json')
         else:
             req = urllib_request.Request(url)
-        
+
         response = urllib_request.urlopen(req)
         result = json.loads(response.read())
         return result
     except Exception as e:
         return {'status': False, 'msg': str(e)}
 
+
 def adc_list_policies(module):
     """List all policy templates"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.list" % (ip, authkey)
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.list" % (
+        ip, authkey)
     result = send_request(url)
     return result
+
 
 def adc_list_policies_withcommon(module):
     """List all policy templates including common partition"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.list.withcommon" % (ip, authkey)
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.list.withcommon" % (
+        ip, authkey)
     result = send_request(url)
     return result
+
 
 def adc_get_policy(module):
     """Get a specific policy template"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     if not name:
         module.fail_json(msg="获取策略模板需要提供name参数")
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.get" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.get" % (
+        ip, authkey)
+
     data = {"name": name}
     # 移除未明确指定的参数
     for key in list(data.keys()):
         if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
             del data[key]
-    
+
     result = send_request(url, data, method='POST')
     return result
+
 
 def adc_add_policy(module):
     """Add a new policy template"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # Check required parameters
     if not name:
         module.fail_json(msg="添加策略模板需要提供name参数")
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.add" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.add" % (
+        ip, authkey)
+
     # Construct policy data
     policy_data = {"name": name}
     # 移除未明确指定的参数
     for key in list(policy_data.keys()):
         if policy_data[key] is None or (isinstance(policy_data[key], str) and policy_data[key] == ""):
             del policy_data[key]
-    
+
     # Only include parameters that are explicitly defined in YAML
     optional_params = [
         'match_dst_ip', 'match_overlap', 'bwlist_name', 'ruletable_name',
         'match_client', 'header_name', 'bwlists', 'ruletables'
     ]
-    
+
     for param in optional_params:
         if module.params[param] is not None:
             policy_data[param] = module.params[param]
-    
+
     # Send POST request
     result = send_request(url, policy_data, method='POST')
     return result
+
 
 def adc_edit_policy(module):
     """Edit an existing policy template"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # Check required parameters
     if not name:
         module.fail_json(msg="编辑策略模板需要提供name参数")
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.edit" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.edit" % (
+        ip, authkey)
+
     # Construct policy data
     policy_data = {"name": name}
     # 移除未明确指定的参数
     for key in list(policy_data.keys()):
         if policy_data[key] is None or (isinstance(policy_data[key], str) and policy_data[key] == ""):
             del policy_data[key]
-    
+
     # Only include parameters that are explicitly defined in YAML
     optional_params = [
         'match_dst_ip', 'match_overlap', 'bwlist_name', 'ruletable_name',
         'match_client', 'header_name', 'bwlists', 'ruletables'
     ]
-    
+
     for param in optional_params:
         if module.params[param] is not None:
             policy_data[param] = module.params[param]
-    
+
     # Send POST request
     result = send_request(url, policy_data, method='POST')
     return result
+
 
 def adc_delete_policy(module):
     """Delete a policy template"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    
+
     # Check required parameters
     if not name:
         module.fail_json(msg="删除策略模板需要提供name参数")
-    
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.del" % (ip, authkey)
-    
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.del" % (
+        ip, authkey)
+
     # Construct policy data
     policy_data = {"name": name}
     # 移除未明确指定的参数
     for key in list(policy_data.keys()):
         if policy_data[key] is None or (isinstance(policy_data[key], str) and policy_data[key] == ""):
             del policy_data[key]
-    
+
     result = send_request(url, policy_data, method='POST')
     return result
+
 
 def main():
     module = AnsibleModule(
@@ -273,7 +287,7 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True),
             action=dict(type='str', required=True, choices=[
-                'list_policies', 'list_policies_withcommon', 'get_policy', 
+                'list_policies', 'list_policies_withcommon', 'get_policy',
                 'add_policy', 'edit_policy', 'delete_policy'
             ]),
             name=dict(type='str', required=False),
@@ -289,12 +303,12 @@ def main():
         supports_check_mode=False
     )
 
-        # 获取action参数并确保它是字符串类型
+    # 获取action参数并确保它是字符串类型
     if 'action' in module.params and module.params['action'] is not None:
         action = str(module.params['action'])
     else:
         action = ''
-    
+
     if action == 'list_policies':
         result = adc_list_policies(module)
     elif action == 'list_policies_withcommon':
@@ -309,11 +323,12 @@ def main():
         result = adc_delete_policy(module)
     else:
         module.fail_json(msg="Unknown action: %s" % action)
-    
+
     if result.get('status') is True:
         module.exit_json(changed=True, result=result)
     else:
         module.fail_json(msg="Operation failed", result=result)
+
 
 if __name__ == '__main__':
     main()

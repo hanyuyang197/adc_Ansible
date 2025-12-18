@@ -3,14 +3,6 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
-# Python 2/3兼容性处理
-try:
-    # Python 2
-    import urllib2 as urllib_request
-except ImportError:
-    # Python 3
-    import urllib.request as urllib_request
-    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -119,12 +111,14 @@ def adc_list_acls(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-                        req = urllib_request.Request(url, method='GET')
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url)
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -162,10 +156,9 @@ def adc_get_acl(module):
         ip, authkey)
 
     # 构造请求数据
-    acl_data = {}
-    # 只添加明确指定的参数
-    if "id" in module.params and module.params["id"] is not None:
-        acl_data["id"] = module.params["id"]
+    acl_data = {
+        "id": id
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(acl_data)
@@ -177,15 +170,17 @@ def adc_get_acl(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -223,24 +218,16 @@ def adc_add_acl_item(module):
         ip, authkey)
 
     # 构造ACL条目数据
-    acl_data = {}
-    # 只添加明确指定的参数
-    if "id" in module.params and module.params["id"] is not None:
-        acl_data["id"] = module.params["id"]
-    if "sequence" in module.params and module.params["sequence"] is not None:
-        acl_data["sequence"] = sequence
-    if "acl_action" in module.params and module.params["acl_action"] is not None:
-        acl_data["acl_action"] = module.params["acl_action"]
-    if "protocol" in module.params and module.params["protocol"] is not None:
-        acl_data["protocol"] = module.params["protocol"]
-    if "src_ip" in module.params and module.params["src_ip"] is not None:
-        acl_data["src_ip"] = module.params["src_ip"]
-    if "src_mask" in module.params and module.params["src_mask"] is not None:
-        acl_data["src_mask"] = module.params["src_mask"]
-    if "dst_ip" in module.params and module.params["dst_ip"] is not None:
-        acl_data["dst_ip"] = module.params["dst_ip"]
-    if "dst_mask" in module.params and module.params["dst_mask"] is not None:
-        acl_data["dst_mask"] = module.params["dst_mask"]
+    acl_data = {
+        "id": id,
+        "sequence": sequence,
+        "acl_action": module.params['acl_action'] if 'acl_action' in module.params else 0,
+        "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
+        "src_ip": module.params['src_ip'] if 'src_ip' in module.params else "0.0.0.0",
+        "src_mask": module.params['src_mask'] if 'src_mask' in module.params else "255.255.255.255",
+        "dst_ip": module.params['dst_ip'] if 'dst_ip' in module.params else "0.0.0.0",
+        "dst_mask": module.params['dst_mask'] if 'dst_mask' in module.params else "255.255.255.255"
+    }
 
     # 添加可选参数
     if 'icmp_type' in module.params and module.params['icmp_type'] is not None:
@@ -278,15 +265,17 @@ def adc_add_acl_item(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -321,12 +310,10 @@ def adc_edit_acl_item(module):
         ip, authkey)
 
     # 构造ACL条目数据
-    acl_data = {}
-    # 只添加明确指定的参数
-    if "id" in module.params and module.params["id"] is not None:
-        acl_data["id"] = module.params["id"]
-    if "sequence" in module.params and module.params["sequence"] is not None:
-        acl_data["sequence"] = sequence
+    acl_data = {
+        "id": id,
+        "sequence": sequence
+    }
 
     # 添加可选参数
     if 'acl_action' in module.params and module.params['acl_action'] is not None:
@@ -376,15 +363,17 @@ def adc_edit_acl_item(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -418,10 +407,9 @@ def adc_delete_acl_item(module):
         ip, authkey)
 
     # 构造请求数据
-    acl_data = {}
-    # 只添加明确指定的参数
-    if "id" in module.params and module.params["id"] is not None:
-        acl_data["id"] = module.params["id"]
+    acl_data = {
+        "id": id
+    }
 
     # 如果提供了sequence参数，则添加到请求数据中
     if 'sequence' in module.params and module.params['sequence'] is not None:
@@ -437,15 +425,17 @@ def adc_delete_acl_item(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -480,12 +470,10 @@ def adc_set_acl_description(module):
         ip, authkey)
 
     # 构造请求数据
-    acl_data = {}
-    # 只添加明确指定的参数
-    if "id" in module.params and module.params["id"] is not None:
-        acl_data["id"] = module.params["id"]
-    if "description" in module.params and module.params["description"] is not None:
-        acl_data["description"] = description
+    acl_data = {
+        "id": id,
+        "description": description
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(acl_data)
@@ -497,15 +485,17 @@ def adc_set_acl_description(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-                        post_data = post_data.encode('utf-8')
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-                        req = urllib_request.Request(url, data=post_data, headers={
-                                        'Content-Type': 'application/json'})
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
