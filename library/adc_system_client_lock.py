@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 
@@ -87,12 +95,15 @@ def adc_set_client_lock_config(module):
         ip, authkey)
 
     # 构造客户端锁定配置数据
-    lock_data = {
-        "interval": interval,
-        "maxnum": maxnum,
-        "locktime": locktime,
+    lock_data = {}
+    # 只添加明确指定的参数
+    if "interval" in module.params and module.params["interval"] is not None:
+        acl_data["interval"] = module.params["interval"]
+    if "maxnum" in module.params and module.params["maxnum"] is not None:
+        acl_data["maxnum"] = maxnum
+#         "locktime": locktime,
         "enable": enable
-    }
+   
 
     # 初始化响应数据
     response_data = ""
@@ -101,19 +112,17 @@ def adc_set_client_lock_config(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = json.dumps(lock_data)
+                        post_data = json.dumps(lock_data)
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            post_data = json.dumps(lock_data)
+                        post_data = json.dumps(lock_data)
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -148,14 +157,12 @@ def adc_get_client_lock_config(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -194,14 +201,12 @@ def adc_list_locked_clients(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -239,9 +244,10 @@ def adc_unlock_client(module):
         ip, authkey)
 
     # 构造客户端数据
-    client_data = {
-        "srcip": srcip
-    }
+    client_data = {}
+    # 只添加明确指定的参数
+    if "srcip" in module.params and module.params["srcip"] is not None:
+        acl_data["srcip"] = module.params["srcip"]
 
     # 初始化响应数据
     response_data = ""
@@ -250,19 +256,17 @@ def adc_unlock_client(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = json.dumps(client_data)
+                        post_data = json.dumps(client_data)
             post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            post_data = json.dumps(client_data)
+                        post_data = json.dumps(client_data)
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 

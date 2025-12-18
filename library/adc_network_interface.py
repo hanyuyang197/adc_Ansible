@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -111,14 +119,12 @@ def adc_get_mgmt_interface(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -174,17 +180,15 @@ def adc_set_mgmt_interface(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -230,14 +234,12 @@ def adc_list_ethernet_interfaces(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -275,9 +277,10 @@ def adc_get_ethernet_interface(module):
         ip, authkey)
 
     # 构造请求数据
-    interface_data = {
-        "interface_name": interface_name
-    }
+    interface_data = {}
+    # 只添加明确指定的参数
+    if "interface_name" in module.params and module.params["interface_name"] is not None:
+        acl_data["interface_name"] = module.params["interface_name"]
 
     # 转换为JSON格式
     post_data = json.dumps(interface_data)
@@ -289,17 +292,15 @@ def adc_get_ethernet_interface(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -336,9 +337,10 @@ def adc_edit_ethernet_interface(module):
         ip, authkey)
 
     # 构造以太网接口配置数据
-    interface_data = {
-        "interface_name": interface_name
-    }
+    interface_data = {}
+    # 只添加明确指定的参数
+    if "interface_name" in module.params and module.params["interface_name"] is not None:
+        acl_data["interface_name"] = module.params["interface_name"]
 
     # 添加可选参数
     if 'ip_addr' in module.params and module.params['ip_addr'] is not None:
@@ -364,17 +366,15 @@ def adc_edit_ethernet_interface(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -408,9 +408,10 @@ def adc_get_ethernet_statistics(module):
         ip, authkey)
 
     # 构造请求数据
-    interface_data = {
-        "interface_name": interface_name
-    }
+    interface_data = {}
+    # 只添加明确指定的参数
+    if "interface_name" in module.params and module.params["interface_name"] is not None:
+        acl_data["interface_name"] = module.params["interface_name"]
 
     # 转换为JSON格式
     post_data = json.dumps(interface_data)
@@ -422,17 +423,15 @@ def adc_get_ethernet_statistics(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -470,14 +469,12 @@ def adc_list_ve_interfaces(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -515,9 +512,10 @@ def adc_get_ve_interface(module):
         ip, authkey)
 
     # 构造请求数据
-    ve_data = {
-        "ve_id": ve_id
-    }
+    ve_data = {}
+    # 只添加明确指定的参数
+    if "ve_id" in module.params and module.params["ve_id"] is not None:
+        acl_data["ve_id"] = module.params["ve_id"]
 
     # 转换为JSON格式
     post_data = json.dumps(ve_data)
@@ -529,17 +527,15 @@ def adc_get_ve_interface(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -576,9 +572,10 @@ def adc_edit_ve_interface(module):
         ip, authkey)
 
     # 构造VE接口配置数据
-    ve_data = {
-        "ve_id": ve_id
-    }
+    ve_data = {}
+    # 只添加明确指定的参数
+    if "ve_id" in module.params and module.params["ve_id"] is not None:
+        acl_data["ve_id"] = module.params["ve_id"]
 
     # 添加可选参数
     if 'ip_addr' in module.params and module.params['ip_addr'] is not None:
@@ -600,17 +597,15 @@ def adc_edit_ve_interface(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -645,14 +640,12 @@ def adc_list_trunk_interfaces(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -690,9 +683,10 @@ def adc_get_trunk_interface(module):
         ip, authkey)
 
     # 构造请求数据
-    trunk_data = {
-        "trunk_id": trunk_id
-    }
+    trunk_data = {}
+    # 只添加明确指定的参数
+    if "trunk_id" in module.params and module.params["trunk_id"] is not None:
+        acl_data["trunk_id"] = module.params["trunk_id"]
 
     # 转换为JSON格式
     post_data = json.dumps(trunk_data)
@@ -704,17 +698,15 @@ def adc_get_trunk_interface(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -751,9 +743,10 @@ def adc_edit_trunk_interface(module):
         ip, authkey)
 
     # 构造TRUNK接口配置数据
-    trunk_data = {
-        "trunk_id": trunk_id
-    }
+    trunk_data = {}
+    # 只添加明确指定的参数
+    if "trunk_id" in module.params and module.params["trunk_id"] is not None:
+        acl_data["trunk_id"] = module.params["trunk_id"]
 
     # 添加可选参数
     if 'interface_list' in module.params and module.params['interface_list'] is not None:
@@ -771,17 +764,15 @@ def adc_edit_trunk_interface(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -821,7 +812,7 @@ def main():
         mtu=dict(type='int', required=False),
         description=dict(type='str', required=False),
         list_type=dict(type='str', required=False, choices=[
-                       'normal', 'withcommon', 'withused', 'self']),
+                    'normal', 'withcommon', 'withused', 'self']),
         # VE接口参数
         ve_id=dict(type='int', required=False),
         vlan_id=dict(type='int', required=False),

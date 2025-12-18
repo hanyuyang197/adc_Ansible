@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -111,14 +119,12 @@ def adc_list_statics(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -156,9 +162,10 @@ def adc_get_static(module):
         ip, authkey)
 
     # 构造请求数据
-    static_data = {
-        "id": id
-    }
+    static_data = {}
+    # 只添加明确指定的参数
+    if "id" in module.params and module.params["id"] is not None:
+        acl_data["id"] = module.params["id"]
 
     # 转换为JSON格式
     post_data = json.dumps(static_data)
@@ -170,17 +177,15 @@ def adc_get_static(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -219,11 +224,14 @@ def adc_add_static(module):
         ip, authkey)
 
     # 构造静态NAT数据
-    static_data = {
-        "id": id,
-        "ip_addr": ip_addr,
-        "nat_ip": nat_ip
-    }
+    static_data = {}
+    # 只添加明确指定的参数
+    if "id" in module.params and module.params["id"] is not None:
+        acl_data["id"] = module.params["id"]
+    if "ip_addr" in module.params and module.params["ip_addr"] is not None:
+        acl_data["ip_addr"] = ip_addr
+#         "nat_ip": nat_ip
+   
 
     # 添加可选参数
     if 'description' in module.params and module.params['description'] is not None:
@@ -239,17 +247,15 @@ def adc_add_static(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -283,9 +289,10 @@ def adc_edit_static(module):
         ip, authkey)
 
     # 构造静态NAT数据
-    static_data = {
-        "id": id
-    }
+    static_data = {}
+    # 只添加明确指定的参数
+    if "id" in module.params and module.params["id"] is not None:
+        acl_data["id"] = module.params["id"]
 
     # 添加可选参数
     if 'ip_addr' in module.params and module.params['ip_addr'] is not None:
@@ -305,17 +312,15 @@ def adc_edit_static(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -349,9 +354,10 @@ def adc_delete_static(module):
         ip, authkey)
 
     # 构造请求数据
-    static_data = {
-        "id": id
-    }
+    static_data = {}
+    # 只添加明确指定的参数
+    if "id" in module.params and module.params["id"] is not None:
+        acl_data["id"] = module.params["id"]
 
     # 转换为JSON格式
     post_data = json.dumps(static_data)
@@ -363,17 +369,15 @@ def adc_delete_static(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 

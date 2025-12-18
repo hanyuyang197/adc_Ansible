@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -107,9 +115,12 @@ def adc_add_node_port(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.add" % (ip, authkey)
 
     # 构造端口数据
-    port_data = {
-        "name": name,
-        "port": {
+    port_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "port" in module.params and module.params["port"] is not None:
+        acl_data["port"] = {
             "port_number": module.params['port_number'] if 'port_number' in module.params else 80,
             "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
             "status": module.params['status'] if 'status' in module.params else 1,
@@ -122,7 +133,7 @@ def adc_add_node_port(module):
             "phm_profile": module.params['phm_profile'] if 'phm_profile' in module.params else "",
             "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
             "nat_strategy": module.params['nat_strategy'] if 'nat_strategy' in module.params else ""
-        }
+       
     }
 
     # 处理可选参数upnum
@@ -139,15 +150,13 @@ def adc_add_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -179,9 +188,12 @@ def adc_edit_node_port(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.edit" % (ip, authkey)
 
     # 构造端口数据
-    port_data = {
-        "name": name,
-        "port": {
+    port_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "port" in module.params and module.params["port"] is not None:
+        acl_data["port"] = {
             "port_number": module.params['port_number'] if 'port_number' in module.params else 80,
             "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
             "status": module.params['status'] if 'status' in module.params else 1,
@@ -194,7 +206,7 @@ def adc_edit_node_port(module):
             "phm_profile": module.params['phm_profile'] if 'phm_profile' in module.params else "",
             "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
             "nat_strategy": module.params['nat_strategy'] if 'nat_strategy' in module.params else ""
-        }
+       
     }
 
     # 处理可选参数upnum
@@ -211,15 +223,13 @@ def adc_edit_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -253,12 +263,15 @@ def adc_delete_node_port(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.del" % (ip, authkey)
 
     # 构造端口数据
-    port_data = {
-        "name": name,
-        "port": {
+    port_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "port" in module.params and module.params["port"] is not None:
+        acl_data["port"] = {
             "port_number": port_number,
             "protocol": protocol
-        }
+       
     }
 
     # 转换为JSON格式
@@ -271,15 +284,13 @@ def adc_delete_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -314,13 +325,16 @@ def adc_onoff_node_port(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.onoff" % (ip, authkey)
 
     # 构造端口数据
-    port_data = {
-        "name": name,
-        "port": {
+    port_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "port" in module.params and module.params["port"] is not None:
+        acl_data["port"] = {
             "port_number": port_number,
             "protocol": protocol,
             "status": status
-        }
+       
     }
 
     # 转换为JSON格式
@@ -333,15 +347,13 @@ def adc_onoff_node_port(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 

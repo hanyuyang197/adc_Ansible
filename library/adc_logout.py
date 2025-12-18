@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 
@@ -16,16 +24,14 @@ def adc_logout(module):
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     protocol = "https" if use_https else "http"
-    url = "%s://%s/adcapi/v2.0/?authkey=%s&action=logout" % (
-        protocol, ip, authkey)
+    url = "%s://%s/adcapi/v2.0/?authkey=%s&action=logout" % (protocol, ip, authkey)
 
     # 初始化响应数据
     response_data = ""
 
-    # 根据Python版本处理请求
+    # 根据Python版本处理编码和SSL
     if sys.version_info[0] >= 3:
         # Python 3
-        import urllib.request as urllib_request
         import ssl
 
         # 处理SSL证书验证
@@ -49,11 +55,8 @@ def adc_logout(module):
                 module.fail_json(msg="登出请求失败: %s" % str(e))
     else:
         # Python 2
-        import urllib2 as urllib_request
-
         # 处理SSL证书验证 (Python 2)
         if use_https and not validate_certs:
-            import ssl
             # 跳过SSL证书验证
             # 注意：Python 2的SSL处理较为简单
             req = urllib_request.Request(url)

@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -111,14 +119,12 @@ def adc_list_hosts(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -157,10 +163,13 @@ def adc_add_host(module):
         ip, authkey)
 
     # 构造Hosts数据
-    host_data = {
-        "hostname": hostname,
-        "host_ip_address": host_ip_address
-    }
+    host_data = {}
+    # 只添加明确指定的参数
+    if "hostname" in module.params and module.params["hostname"] is not None:
+        acl_data["hostname"] = module.params["hostname"]
+    if "host_ip_address" in module.params and module.params["host_ip_address"] is not None:
+        acl_data["host_ip_address"] = host_ip_address
+   
 
     # 转换为JSON格式
     post_data = json.dumps(host_data)
@@ -172,17 +181,15 @@ def adc_add_host(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -217,10 +224,13 @@ def adc_delete_host(module):
         ip, authkey)
 
     # 构造Hosts数据
-    host_data = {
-        "hostname": hostname,
-        "host_ip_address": host_ip_address
-    }
+    host_data = {}
+    # 只添加明确指定的参数
+    if "hostname" in module.params and module.params["hostname"] is not None:
+        acl_data["hostname"] = module.params["hostname"]
+    if "host_ip_address" in module.params and module.params["host_ip_address"] is not None:
+        acl_data["host_ip_address"] = host_ip_address
+   
 
     # 转换为JSON格式
     post_data = json.dumps(host_data)
@@ -232,17 +242,15 @@ def adc_delete_host(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 

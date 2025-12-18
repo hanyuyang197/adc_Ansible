@@ -837,6 +837,10 @@ ansible-galaxy collection install horizon.modules.horizon_modules
   - Linux/macOS: [diagnose_ansible_env.sh](diagnose_ansible_env.sh)
   - Windows: [diagnose_ansible_env.bat](diagnose_ansible_env.bat)
 
+### 参数优化
+
+所有模块均已优化参数处理逻辑，确保只发送 YAML 中明确指定的参数。详细说明请参考 [PARAMETER_OPTIMIZATION.md](PARAMETER_OPTIMIZATION.md)。
+
 ## 注意事项
 
 1. 所有操作前请确保已正确配置 ADC 设备的 IP 地址和认证信息

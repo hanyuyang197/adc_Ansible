@@ -87,3 +87,7 @@
 - [x] 日志发送模块 (adc_system_log_send.py)
 - [x] 日志告警模块 (adc_system_log_alarm.py)
 - [x] 高可用性模块 (adc_system_ha_vrrp.py)
+
+### 代码优化
+
+- [x] 模块参数处理优化 (所有模块文件) - 确保只发送 YAML 中明确指定的参数

@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -111,14 +119,12 @@ def adc_get_network_mode(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -156,15 +162,18 @@ def adc_set_network_mode(module):
         ip, authkey)
 
     # 构造网络模式数据
-    mode_data = {
-        "network_mode": network_mode,
-        "ipv4_addr": module.params['ipv4_addr'] if 'ipv4_addr' in module.params else "0.0.0.0",
-        "ipv4_mask": module.params['ipv4_mask'] if 'ipv4_mask' in module.params else "0.0.0.0",
+    mode_data = {}
+    # 只添加明确指定的参数
+    if "network_mode" in module.params and module.params["network_mode"] is not None:
+        acl_data["network_mode"] = module.params["network_mode"]
+    if "ipv4_addr" in module.params and module.params["ipv4_addr"] is not None:
+        acl_data["ipv4_addr"] = module.params['ipv4_addr'] if 'ipv4_addr' in module.params else "0.0.0.0"
+#         "ipv4_mask": module.params['ipv4_mask'] if 'ipv4_mask' in module.params else "0.0.0.0",
         "ipv4_gw": module.params['ipv4_gw'] if 'ipv4_gw' in module.params else "0.0.0.0",
         "ipv6_addr": module.params['ipv6_addr'] if 'ipv6_addr' in module.params else "::",
         "ipv6_prefix": module.params['ipv6_prefix'] if 'ipv6_prefix' in module.params else 0,
         "ipv6_gw": module.params['ipv6_gw'] if 'ipv6_gw' in module.params else "::"
-    }
+   
 
     # 转换为JSON格式
     post_data = json.dumps(mode_data)
@@ -176,17 +185,15 @@ def adc_set_network_mode(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 

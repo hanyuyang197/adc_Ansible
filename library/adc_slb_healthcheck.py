@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -111,14 +119,12 @@ def adc_list_healthchecks(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -156,9 +162,11 @@ def adc_get_healthcheck(module):
         ip, authkey)
 
     # 构造请求数据
-    hc_data = {
-        "name": name
-    }
+    hc_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(hc_data.keys()):
+        if hc_data[key] is None or (isinstance(hc_data[key], str) and hc_data[key] == ""):
+            del hc_data[key]
 
     # 转换为JSON格式
     post_data = json.dumps(hc_data)
@@ -170,17 +178,15 @@ def adc_get_healthcheck(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -206,6 +212,7 @@ def adc_add_healthcheck(module):
     """添加健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
     hc_type = module.params['hc_type'] if 'hc_type' in module.params else "icmp"
 
     # 检查必需参数
@@ -217,15 +224,22 @@ def adc_add_healthcheck(module):
         ip, authkey)
 
     # 构造健康检查数据 - 包含所有通用参数
-    hc_data = {
-        "name": module.params['name'],
-        "type": hc_type,
-        "retry": module.params['retry'] if 'retry' in module.params and module.params['retry'] is not None else 3,
-        "interval": module.params['interval'] if 'interval' in module.params and module.params['interval'] is not None else 5,
-        "timeout": module.params['timeout'] if 'timeout' in module.params and module.params['timeout'] is not None else 5,
-        "up_check_cnt": module.params['up_check_cnt'] if 'up_check_cnt' in module.params and module.params['up_check_cnt'] is not None else 1,
-        "wait_all_retry": module.params['wait_all_retry'] if 'wait_all_retry' in module.params and module.params['wait_all_retry'] is not None else 0
-    }
+    hc_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        hc_data["name"] = module.params["name"]
+    if "type" in module.params and module.params["type"] is not None:
+        hc_data["type"] = hc_type
+    if "retry" in module.params and module.params["retry"] is not None:
+        hc_data["retry"] = module.params['retry'] if 'retry' in module.params and module.params['retry'] is not None else 3
+    if "interval" in module.params and module.params["interval"] is not None:
+        hc_data["interval"] = module.params['interval'] if 'interval' in module.params and module.params['interval'] is not None else 5
+    if "timeout" in module.params and module.params["timeout"] is not None:
+        hc_data["timeout"] = module.params['timeout'] if 'timeout' in module.params and module.params['timeout'] is not None else 5
+    if "up_check_cnt" in module.params and module.params["up_check_cnt"] is not None:
+        hc_data["up_check_cnt"] = module.params['up_check_cnt'] if 'up_check_cnt' in module.params and module.params['up_check_cnt'] is not None else 1
+    if "wait_all_retry" in module.params and module.params["wait_all_retry"] is not None:
+        hc_data["wait_all_retry"] = module.params['wait_all_retry'] if 'wait_all_retry' in module.params and module.params['wait_all_retry'] is not None else 0
 
     # 只有当参数在YAML中明确定义时才添加到请求中
     if 'description' in module.params and module.params['description']:
@@ -297,17 +311,15 @@ def adc_add_healthcheck(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -341,9 +353,11 @@ def adc_edit_healthcheck(module):
         ip, authkey)
 
     # 构造健康检查数据 - 包含所有通用参数
-    hc_data = {
-        "name": name
-    }
+    hc_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(hc_data.keys()):
+        if hc_data[key] is None or (isinstance(hc_data[key], str) and hc_data[key] == ""):
+            del hc_data[key]
 
     # 只有当参数在YAML中明确定义时才添加到请求中
     if 'retry' in module.params and module.params['retry'] is not None:
@@ -425,17 +439,15 @@ def adc_edit_healthcheck(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -469,9 +481,11 @@ def adc_delete_healthcheck(module):
         ip, authkey)
 
     # 构造健康检查数据
-    hc_data = {
-        "name": name
-    }
+    hc_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(hc_data.keys()):
+        if hc_data[key] is None or (isinstance(hc_data[key], str) and hc_data[key] == ""):
+            del hc_data[key]
 
     # 转换为JSON格式
     post_data = json.dumps(hc_data)
@@ -483,17 +497,15 @@ def adc_delete_healthcheck(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -566,10 +578,11 @@ def main():
     )
 
     # 根据action执行相应操作
-    action = module.params['action'] if 'action' in module.params else ''
-    # 为了解决静态检查工具的问题，我们进行类型转换
-    if hasattr(action, '__str__'):
-        action = str(action)
+        # 获取action参数并确保它是字符串类型
+    if 'action' in module.params and module.params['action'] is not None:
+        action = str(module.params['action'])
+    else:
+        action = 
 
     if action == 'list_healthchecks':
         adc_list_healthchecks(module)

@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -111,14 +119,12 @@ def adc_get_pools(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -156,9 +162,11 @@ def adc_get_pool(module):
         ip, authkey)
 
     # 构造请求数据
-    pool_data = {
-        "name": name
-    }
+    pool_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)
@@ -170,17 +178,15 @@ def adc_get_pool(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -212,17 +218,19 @@ def adc_add_pool(module):
         ip, authkey)
 
     # 构造服务池数据
-    pool_data = {
-        "pool": {
-            "name": module.params['name'] if 'name' in module.params else "",
-            "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
-            "lb_method": module.params['lb_method'] if 'lb_method' in module.params else 0,
+    pool_data = {}
+    # 只添加明确指定的参数
+    if "pool" in module.params and module.params["pool"] is not None:
+        acl_data["pool"] = module.params["pool"]
+    if "protocol" in module.params and module.params["protocol"] is not None:
+        acl_data["protocol"] = module.params['protocol'] if 'protocol' in module.params else 0
+#             "lb_method": module.params['lb_method'] if 'lb_method' in module.params else 0,
             "upnum": module.params['upnum'] if 'upnum' in module.params else 0,
             "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
             "desc_pool": module.params['desc_pool'] if 'desc_pool' in module.params else "",
             "action_on_service_down": module.params['action_on_service_down'] if 'action_on_service_down' in module.params else 0,
             "aux_node_log": module.params['aux_node_log'] if 'aux_node_log' in module.params else 0
-        }
+       
     }
 
     # 处理up_members_at_least参数
@@ -247,17 +255,15 @@ def adc_add_pool(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -291,16 +297,18 @@ def adc_edit_pool(module):
         ip, authkey)
 
     # 构造服务池数据
-    pool_data = {
-        "pool": {
-            "name": name,
-            "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
-            "lb_method": module.params['lb_method'] if 'lb_method' in module.params else 0,
+    pool_data = {}
+    # 只添加明确指定的参数
+    if "pool" in module.params and module.params["pool"] is not None:
+        acl_data["pool"] = module.params["pool"]
+    if "protocol" in module.params and module.params["protocol"] is not None:
+        acl_data["protocol"] = module.params['protocol'] if 'protocol' in module.params else 0
+#             "lb_method": module.params['lb_method'] if 'lb_method' in module.params else 0,
             "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
             "desc_pool": module.params['desc_pool'] if 'desc_pool' in module.params else "",
             "action_on_service_down": module.params['action_on_service_down'] if 'action_on_service_down' in module.params else 0,
             "aux_node_log": module.params['aux_node_log'] if 'aux_node_log' in module.params else 0
-        }
+       
     }
 
     # 处理up_members_at_least参数
@@ -333,17 +341,15 @@ def adc_edit_pool(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -377,9 +383,11 @@ def adc_delete_pool(module):
         ip, authkey)
 
     # 构造服务池数据
-    pool_data = {
-        "name": name
-    }
+    pool_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)
@@ -391,17 +399,15 @@ def adc_delete_pool(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -444,9 +450,12 @@ def adc_add_pool_node(module):
         ip, authkey)
 
     # 构造请求数据
-    pool_data = {
-        "name": pool_name,
-        "member": {
+    pool_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "member" in module.params and module.params["member"] is not None:
+        acl_data["member"] = {
             "nodename": node,
             "server": node,
             "port": port,
@@ -455,7 +464,7 @@ def adc_add_pool_node(module):
             "weight": weight,
             "status": status,
             "conn_limit": conn_limit
-        }
+       
     }
 
     # 转换为JSON格式
@@ -468,17 +477,15 @@ def adc_add_pool_node(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -517,14 +524,17 @@ def adc_delete_pool_node(module):
         ip, authkey)
 
     # 构造请求数据
-    pool_data = {
-        "name": pool_name,
-        "member": {
+    pool_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "member" in module.params and module.params["member"] is not None:
+        acl_data["member"] = {
             "nodename": node,
             "server": node,
             "port": port,
             "protocol": protocol
-        }
+       
     }
 
     # 转换为JSON格式
@@ -537,17 +547,15 @@ def adc_delete_pool_node(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 

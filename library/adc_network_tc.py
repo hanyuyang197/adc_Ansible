@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -111,14 +119,12 @@ def adc_get_global_tc_config(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -168,17 +174,15 @@ def adc_set_global_tc_config(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -218,14 +222,12 @@ def adc_list_tc_entries(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -263,9 +265,11 @@ def adc_get_tc_entry(module):
         ip, authkey)
 
     # 构造请求数据
-    entry_data = {
-        "name": name
-    }
+    entry_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -277,17 +281,15 @@ def adc_get_tc_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -324,9 +326,11 @@ def adc_add_tc_entry(module):
         ip, authkey)
 
     # 构造TC条目数据
-    entry_data = {
-        "name": name
-    }
+    entry_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
 
     # 添加可选参数
     if 'description' in module.params and module.params['description'] is not None:
@@ -344,17 +348,15 @@ def adc_add_tc_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -388,9 +390,11 @@ def adc_edit_tc_entry(module):
         ip, authkey)
 
     # 构造TC条目数据
-    entry_data = {
-        "name": name
-    }
+    entry_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
 
     # 添加可选参数
     if 'description' in module.params and module.params['description'] is not None:
@@ -408,17 +412,15 @@ def adc_edit_tc_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -452,9 +454,11 @@ def adc_delete_tc_entry(module):
         ip, authkey)
 
     # 构造请求数据
-    entry_data = {
-        "name": name
-    }
+    entry_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -466,17 +470,15 @@ def adc_delete_tc_entry(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -510,9 +512,10 @@ def adc_list_tc_rules(module):
         ip, authkey)
 
     # 构造请求数据
-    rule_data = {
-        "tc_name": tc_name
-    }
+    rule_data = {}
+    # 只添加明确指定的参数
+    if "tc_name" in module.params and module.params["tc_name"] is not None:
+        acl_data["tc_name"] = module.params["tc_name"]
 
     # 转换为JSON格式
     post_data = json.dumps(rule_data)
@@ -524,17 +527,15 @@ def adc_list_tc_rules(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -572,10 +573,13 @@ def adc_get_tc_rule(module):
         ip, authkey)
 
     # 构造请求数据
-    rule_data = {
-        "tc_name": tc_name,
-        "rule_id": rule_id
-    }
+    rule_data = {}
+    # 只添加明确指定的参数
+    if "tc_name" in module.params and module.params["tc_name"] is not None:
+        acl_data["tc_name"] = module.params["tc_name"]
+    if "rule_id" in module.params and module.params["rule_id"] is not None:
+        acl_data["rule_id"] = rule_id
+   
 
     # 转换为JSON格式
     post_data = json.dumps(rule_data)
@@ -587,17 +591,15 @@ def adc_get_tc_rule(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -635,10 +637,13 @@ def adc_add_tc_rule(module):
         ip, authkey)
 
     # 构造TC规则数据
-    rule_data = {
-        "tc_name": tc_name,
-        "rule_id": rule_id
-    }
+    rule_data = {}
+    # 只添加明确指定的参数
+    if "tc_name" in module.params and module.params["tc_name"] is not None:
+        acl_data["tc_name"] = module.params["tc_name"]
+    if "rule_id" in module.params and module.params["rule_id"] is not None:
+        acl_data["rule_id"] = rule_id
+   
 
     # 添加可选参数
     if 'source_ip' in module.params and module.params['source_ip'] is not None:
@@ -662,17 +667,15 @@ def adc_add_tc_rule(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -707,10 +710,13 @@ def adc_edit_tc_rule(module):
         ip, authkey)
 
     # 构造TC规则数据
-    rule_data = {
-        "tc_name": tc_name,
-        "rule_id": rule_id
-    }
+    rule_data = {}
+    # 只添加明确指定的参数
+    if "tc_name" in module.params and module.params["tc_name"] is not None:
+        acl_data["tc_name"] = module.params["tc_name"]
+    if "rule_id" in module.params and module.params["rule_id"] is not None:
+        acl_data["rule_id"] = rule_id
+   
 
     # 添加可选参数
     if 'source_ip' in module.params and module.params['source_ip'] is not None:
@@ -734,17 +740,15 @@ def adc_edit_tc_rule(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -779,10 +783,13 @@ def adc_delete_tc_rule(module):
         ip, authkey)
 
     # 构造请求数据
-    rule_data = {
-        "tc_name": tc_name,
-        "rule_id": rule_id
-    }
+    rule_data = {}
+    # 只添加明确指定的参数
+    if "tc_name" in module.params and module.params["tc_name"] is not None:
+        acl_data["tc_name"] = module.params["tc_name"]
+    if "rule_id" in module.params and module.params["rule_id"] is not None:
+        acl_data["rule_id"] = rule_id
+   
 
     # 转换为JSON格式
     post_data = json.dumps(rule_data)
@@ -794,17 +801,15 @@ def adc_delete_tc_rule(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -845,7 +850,7 @@ def main():
         destination_port=dict(type='int', required=False),
         enable=dict(type='int', required=False),
         list_type=dict(type='str', required=False,
-                       choices=['normal', 'withcommon'])
+                    choices=['normal', 'withcommon'])
     )
 
     # 创建AnsibleModule实例

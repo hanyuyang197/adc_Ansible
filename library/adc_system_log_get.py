@@ -8,6 +8,14 @@ from __future__ import absolute_import, division, print_function
 from ansible_collections.horizon.adc.plugins.module_utils.adc_base import ADCBase
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 __metaclass__ = type
 
 DOCUMENTATION = r'''
@@ -15,73 +23,73 @@ DOCUMENTATION = r'''
 module: adc_system_log_get
 short_description: Manage ADC system log retrieval
 description:
-  - Retrieve various types of logs from ADC devices.
-  - Supports service logs, audit logs, NAT logs, DNS logs.
-  - Supports listing, clearing, and downloading logs.
+- Retrieve various types of logs from ADC devices.
+- Supports service logs, audit logs, NAT logs, DNS logs.
+- Supports listing, clearing, and downloading logs.
 version_added: "1.0.0"
 options:
-  action:
+action:
     description:
-      - The action to perform on logs.
-      - C(list) to list logs.
-      - C(clear) to clear logs.
-      - C(download) to download logs.
+    - The action to perform on logs.
+    - C(list) to list logs.
+    - C(clear) to clear logs.
+    - C(download) to download logs.
     type: str
     required: true
     choices: [ list, clear, download ]
-  log_type:
+log_type:
     description:
-      - The type of log to operate on.
+    - The type of log to operate on.
     type: str
     required: true
     choices: [ service, audit, nat, dns, coredump, system ]
-  # Options for list action
-  direct:
+# Options for list action
+direct:
     description:
-      - Log pagination direction.
-      - 0:first, 1:prev, 2:next, 3:last
+    - Log pagination direction.
+    - 0:first, 1:prev, 2:next, 3:last
     type: int
     choices: [0, 1, 2, 3]
     default: 0
-  index:
+index:
     description:
-      - Log index for pagination.
+    - Log index for pagination.
     type: int
     default: 0
-  limit:
+limit:
     description:
-      - Output limit for logs.
+    - Output limit for logs.
     type: int
     default: 30
-  level:
+level:
     description:
-      - Output logs at this level and above.
-      - 0: emergency, 1: alert, 2: critical, 3: error, 4: warning, 5: notification, 6: information, 7: debugging
+    - Output logs at this level and above.
+    - 0: emergency, 1: alert, 2: critical, 3: error, 4: warning, 5: notification, 6: information, 7: debugging
     type: int
     choices: [0, 1, 2, 3, 4, 5, 6, 7]
     default: 7
-  # Options for audit log list
-  start_time:
+# Options for audit log list
+start_time:
     description:
-      - Filter logs by start time (seconds since epoch).
+    - Filter logs by start time (seconds since epoch).
     type: int
     default: 0
-  time_range:
+time_range:
     description:
-      - Filter logs by time range (seconds).
+    - Filter logs by time range (seconds).
     type: int
     default: 0
-  user_name:
+user_name:
     description:
-      - Filter audit logs by username.
+    - Filter audit logs by username.
     type: str
 author:
-  - Horizon Inc.
+- Horizon Inc.
 '''
 
 EXAMPLES = r'''
 - name: Get service logs
-  adc_system_log_get:
+adc_system_log_get:
     action: list
     log_type: service
     direct: 0
@@ -90,44 +98,44 @@ EXAMPLES = r'''
     level: 7
 
 - name: Get audit logs for user
-  adc_system_log_get:
+adc_system_log_get:
     action: list
     log_type: audit
     user_name: admin
     limit: 20
 
 - name: Clear NAT logs
-  adc_system_log_get:
+adc_system_log_get:
     action: clear
     log_type: nat
 
 - name: Download DNS logs
-  adc_system_log_get:
+adc_system_log_get:
     action: download
     log_type: dns
 '''
 
 RETURN = r'''
 logs:
-  description: List of logs when action=list
-  returned: when action=list
-  type: list
-  sample: [
+description: List of logs when action=list
+returned: when action=list
+type: list
+sample: [
     {
-      "index": 254,
-      "item": "Oct 25 2024 14:48:58 local0.info Horizon/common/ lldp: add neighbor for Ethernet6/0..."
+    "index": 254,
+    "item": "Oct 25 2024 14:48:58 local0.info Horizon/common/ lldp: add neighbor for Ethernet6/0..."
     }
-  ]
+]
 result:
-  description: Result message when action=clear
-  returned: when action=clear
-  type: str
-  sample: "Logs cleared successfully"
+description: Result message when action=clear
+returned: when action=clear
+type: str
+sample: "Logs cleared successfully"
 file_path:
-  description: Path to downloaded file when action=download
-  returned: when action=download
-  type: str
-  sample: "/tmp/service_logs.txt"
+description: Path to downloaded file when action=download
+returned: when action=download
+type: str
+sample: "/tmp/service_logs.txt"
 '''
 
 
@@ -224,7 +232,7 @@ def main():
         action=dict(type='str', required=True, choices=[
                     'list', 'clear', 'download']),
         log_type=dict(type='str', required=True, choices=[
-                      'service', 'audit', 'nat', 'dns', 'coredump', 'system']),
+                    'service', 'audit', 'nat', 'dns', 'coredump', 'system']),
         # Options for list action
         direct=dict(type='int', choices=[0, 1, 2, 3], default=0),
         index=dict(type='int', default=0),

@@ -2,12 +2,15 @@
 # -*- coding: utf-8 -*-
 
 from ansible.module_utils.basic import AnsibleModule
+import json
+# Python 2/3兼容性处理
 try:
-    import urllib2
-    import json
+    # Python 2
+    import urllib2 as urllib_request
 except ImportError:
-    pass
-
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 DOCUMENTATION = '''
 ---
 module: adc_slb_policy
@@ -126,12 +129,13 @@ def send_request(url, data=None, method='GET'):
     try:
         if method == 'POST' and data:
             data_json = json.dumps(data)
-            req = urllib2.Request(url, data=data_json)
+            data_bytes = data_json.encode('utf-8')
+            req = urllib_request.Request(url, data=data_bytes)
             req.add_header('Content-Type', 'application/json')
         else:
-            req = urllib2.Request(url)
+            req = urllib_request.Request(url)
         
-        response = urllib2.urlopen(req)
+        response = urllib_request.urlopen(req)
         result = json.loads(response.read())
         return result
     except Exception as e:
@@ -166,9 +170,11 @@ def adc_get_policy(module):
     
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.get" % (ip, authkey)
     
-    data = {
-        "name": name
-    }
+    data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
     
     result = send_request(url, data, method='POST')
     return result
@@ -186,9 +192,11 @@ def adc_add_policy(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.add" % (ip, authkey)
     
     # Construct policy data
-    policy_data = {
-        "name": name
-    }
+    policy_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(policy_data.keys()):
+        if policy_data[key] is None or (isinstance(policy_data[key], str) and policy_data[key] == ""):
+            del policy_data[key]
     
     # Only include parameters that are explicitly defined in YAML
     optional_params = [
@@ -217,9 +225,11 @@ def adc_edit_policy(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.edit" % (ip, authkey)
     
     # Construct policy data
-    policy_data = {
-        "name": name
-    }
+    policy_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(policy_data.keys()):
+        if policy_data[key] is None or (isinstance(policy_data[key], str) and policy_data[key] == ""):
+            del policy_data[key]
     
     # Only include parameters that are explicitly defined in YAML
     optional_params = [
@@ -248,11 +258,12 @@ def adc_delete_policy(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.policy.del" % (ip, authkey)
     
     # Construct policy data
-    policy_data = {
-        "name": name
-    }
+    policy_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(policy_data.keys()):
+        if policy_data[key] is None or (isinstance(policy_data[key], str) and policy_data[key] == ""):
+            del policy_data[key]
     
-    # Send POST request
     result = send_request(url, policy_data, method='POST')
     return result
 
@@ -278,7 +289,11 @@ def main():
         supports_check_mode=False
     )
 
-    action = module.params['action']
+        # 获取action参数并确保它是字符串类型
+    if 'action' in module.params and module.params['action'] is not None:
+        action = str(module.params['action'])
+    else:
+        action = ''
     
     if action == 'list_policies':
         result = adc_list_policies(module)

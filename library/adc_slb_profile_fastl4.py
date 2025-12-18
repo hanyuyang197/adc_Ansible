@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -108,14 +116,12 @@ def adc_list_fastl4_profiles(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -153,14 +159,12 @@ def adc_list_fastl4_profiles_withcommon(module):
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+                        req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
+                        req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
@@ -197,9 +201,11 @@ def adc_get_fastl4_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.get" % (ip, authkey)
 
     # 构造请求数据
-    profile_data = {
-        "name": name
-    }
+    profile_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -211,15 +217,13 @@ def adc_get_fastl4_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -255,10 +259,13 @@ def adc_add_fastl4_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.add" % (ip, authkey)
 
     # 构造模板数据
-    profile_data = {
-        "name": name,
-        "description": module.params['description'] if 'description' in module.params else "",
-        "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
+    profile_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "description" in module.params and module.params["description"] is not None:
+        acl_data["description"] = module.params['description'] if 'description' in module.params else ""
+#         "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
         "timeout": module.params['timeout'] if 'timeout' in module.params else 1800,
         "reset_timeout": module.params['reset_timeout'] if 'reset_timeout' in module.params else 15,
         "half_close_timeout": module.params['half_close_timeout'] if 'half_close_timeout' in module.params else 120,
@@ -282,7 +289,7 @@ def adc_add_fastl4_profile(module):
         "rstclient": module.params['rstclient'] if 'rstclient' in module.params else 1,
         "zero_window_timeout": module.params['zero_window_timeout'] if 'zero_window_timeout' in module.params else 1024,
         "syn_rto_base": module.params['syn_rto_base'] if 'syn_rto_base' in module.params else 2346
-    }
+   
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -294,15 +301,13 @@ def adc_add_fastl4_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -334,10 +339,13 @@ def adc_edit_fastl4_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.edit" % (ip, authkey)
 
     # 构造模板数据
-    profile_data = {
-        "name": name,
-        "description": module.params['description'] if 'description' in module.params else "",
-        "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
+    profile_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "description" in module.params and module.params["description"] is not None:
+        acl_data["description"] = module.params['description'] if 'description' in module.params else ""
+#         "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
         "timeout": module.params['timeout'] if 'timeout' in module.params else 1800,
         "reset_timeout": module.params['reset_timeout'] if 'reset_timeout' in module.params else 15,
         "half_close_timeout": module.params['half_close_timeout'] if 'half_close_timeout' in module.params else 120,
@@ -361,7 +369,7 @@ def adc_edit_fastl4_profile(module):
         "rstclient": module.params['rstclient'] if 'rstclient' in module.params else 1,
         "zero_window_timeout": module.params['zero_window_timeout'] if 'zero_window_timeout' in module.params else 1024,
         "syn_rto_base": module.params['syn_rto_base'] if 'syn_rto_base' in module.params else 2346
-    }
+   
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -373,15 +381,13 @@ def adc_edit_fastl4_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -413,9 +419,11 @@ def adc_delete_fastl4_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.del" % (ip, authkey)
 
     # 构造请求数据
-    profile_data = {
-        "name": name
-    }
+    profile_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -427,15 +435,13 @@ def adc_delete_fastl4_profile(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 

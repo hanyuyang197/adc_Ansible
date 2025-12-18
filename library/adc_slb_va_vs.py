@@ -3,6 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
+try:
+    # Python 2
+    import urllib2 as urllib_request
+except ImportError:
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 import sys
 
 # ADC API响应解析函数
@@ -110,9 +118,12 @@ def adc_add_vs(module):
         ip, authkey)
 
     # 构造虚拟服务数据 - 包含所有必填参数
-    vs_data = {
-        "name": va_name,
-        "virtual_service": {
+    vs_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "virtual_service" in module.params and module.params["virtual_service"] is not None:
+        acl_data["virtual_service"] = {
             "name": module.params['name'] if 'name' in module.params else "",
             # 默认TCP
             "protocol": module.params['protocol'] if 'protocol' in module.params else 2,
@@ -135,7 +146,7 @@ def adc_add_vs(module):
             "no_dest_nat": module.params['no_dest_nat'] if 'no_dest_nat' in module.params else 0,
             "syncookie": {
                 "syncookie": module.params['syncookie'] if 'syncookie' in module.params else 0
-            },
+        ,
             "immediate_action_on_service_down": module.params['immediate_action_on_service_down'] if 'immediate_action_on_service_down' in module.params else 0,
             "vport_template_name": module.params['vport_template_name'] if 'vport_template_name' in module.params else "default",
             "traffic_control": module.params['traffic_control'] if 'traffic_control' in module.params else "",
@@ -281,17 +292,15 @@ def adc_add_vs(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -325,9 +334,12 @@ def adc_edit_vs(module):
         ip, authkey)
 
     # 构造虚拟服务数据 - 包含所有必填参数
-    vs_data = {
-        "name": va_name,
-        "virtual_service": {
+    vs_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "virtual_service" in module.params and module.params["virtual_service"] is not None:
+        acl_data["virtual_service"] = {
             "name": module.params['name'] if 'name' in module.params else "",
             "protocol": module.params['protocol'] if 'protocol' in module.params else 2,
             "port": module.params['port'] if 'port' in module.params else 80,
@@ -349,7 +361,7 @@ def adc_edit_vs(module):
             "no_dest_nat": module.params['no_dest_nat'] if 'no_dest_nat' in module.params else 0,
             "syncookie": {
                 "syncookie": module.params['syncookie'] if 'syncookie' in module.params else 0
-            },
+        ,
             "immediate_action_on_service_down": module.params['immediate_action_on_service_down'] if 'immediate_action_on_service_down' in module.params else 0,
             "vport_template_name": module.params['vport_template_name'] if 'vport_template_name' in module.params else "default",
             "traffic_control": module.params['traffic_control'] if 'traffic_control' in module.params else "",
@@ -504,17 +516,15 @@ def adc_edit_vs(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -548,12 +558,15 @@ def adc_delete_vs(module):
         ip, authkey)
 
     # 构造虚拟服务数据
-    vs_data = {
-        "name": va_name,
-        "virtual_service": {
+    vs_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "virtual_service" in module.params and module.params["virtual_service"] is not None:
+        acl_data["virtual_service"] = {
             "protocol": module.params['protocol'] if 'protocol' in module.params else 2,
             "port": module.params['port'] if 'port' in module.params else 80
-        }
+       
     }
 
     # 转换为JSON格式
@@ -566,17 +579,15 @@ def adc_delete_vs(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -610,12 +621,15 @@ def adc_get_vs(module):
         ip, authkey)
 
     # 构造请求数据
-    vs_data = {
-        "name": va_name,
-        "virtual_service": {
+    vs_data = {}
+    # 只添加明确指定的参数
+    if "name" in module.params and module.params["name"] is not None:
+        acl_data["name"] = module.params["name"]
+    if "virtual_service" in module.params and module.params["virtual_service"] is not None:
+        acl_data["virtual_service"] = {
             "protocol": module.params['protocol'] if 'protocol' in module.params else 2,
             "port": module.params['port'] if 'port' in module.params else 80
-        }
+       
     }
 
     # 转换为JSON格式
@@ -628,17 +642,15 @@ def adc_get_vs(module):
         # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
+                        post_data = post_data.encode('utf-8')
             req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+                        req = urllib_request.Request(url, data=post_data, headers={
+                                        'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -729,10 +741,11 @@ def main():
     )
 
     # 根据action执行相应操作
-    action = module.params['action'] if 'action' in module.params else ''
-    # 为了解决静态检查工具的问题，我们进行类型转换
-    if hasattr(action, '__str__'):
-        action = str(action)
+        # 获取action参数并确保它是字符串类型
+    if 'action' in module.params and module.params['action'] is not None:
+        action = str(module.params['action'])
+    else:
+        action = 
 
     if action == 'add_vs':
         adc_add_vs(module)

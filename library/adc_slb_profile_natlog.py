@@ -3,14 +3,14 @@
 
 from ansible.module_utils.basic import AnsibleModule
 import json
+# Python 2/3兼容性处理
 try:
     # Python 2
-    import urllib2
+    import urllib2 as urllib_request
 except ImportError:
     # Python 3
-    import urllib.request as urllib2
+    import urllib.request as urllib_request
     import urllib.error as urllib_error
-
 # 定义模块参数
 def define_module_args():
     return dict(
@@ -40,10 +40,10 @@ def send_request(url, data=None, method='GET'):
     try:
         if data:
             data = json.dumps(data).encode('utf-8')
-            req = urllib2.Request(url, data=data)
+            req = urllib_request.Request(url, data=data)
             req.add_header('Content-Type', 'application/json')
         else:
-            req = urllib2.Request(url)
+            req = urllib_request.Request(url)
         
         if method == 'POST':
             req.get_method = lambda: 'POST'
@@ -52,7 +52,7 @@ def send_request(url, data=None, method='GET'):
         elif method == 'DELETE':
             req.get_method = lambda: 'DELETE'
             
-        response = urllib2.urlopen(req)
+        response = urllib_request.urlopen(req)
         result = response.read()
         return json.loads(result) if result else {}
     except Exception as e:
@@ -96,9 +96,11 @@ def adc_get_natlog_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.natlog.get" % (ip, authkey)
     
     # 构造请求数据
-    data = {
-        "name": name
-    }
+    data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
     
     # 发送POST请求
     result = send_request(url, data, method='POST')
@@ -118,9 +120,11 @@ def adc_add_natlog_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.natlog.add" % (ip, authkey)
     
     # 构造模板数据
-    profile_data = {
-        "name": name
-    }
+    profile_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
     
     # 只有当参数在YAML中明确定义时才包含在请求中
     optional_params = [
@@ -151,9 +155,11 @@ def adc_edit_natlog_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.natlog.edit" % (ip, authkey)
     
     # 构造模板数据
-    profile_data = {
-        "name": name
-    }
+    profile_data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
     
     # 只有当参数在YAML中明确定义时才包含在请求中
     optional_params = [
@@ -184,9 +190,11 @@ def adc_delete_natlog_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.natlog.del" % (ip, authkey)
     
     # 构造请求数据
-    data = {
-        "name": name
-    }
+    data = {"name": name}
+    # 移除未明确指定的参数
+    for key in list(data.keys()):
+        if data[key] is None or (isinstance(data[key], str) and data[key] == ""):
+            del data[key]
     
     # 发送POST请求
     result = send_request(url, data, method='POST')
