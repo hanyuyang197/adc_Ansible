@@ -3,8 +3,12 @@
   hosts: adc_servers
   gather_facts: no
   vars:
+    # 添加默认的用户名和密码
+    adc_username: "admin"
+    adc_password: "admin"
     profile_name: "test_ssl_client_profile"
     new_cert_name: "new_test_cert"
+
   tasks:
     - name: 登录ADC设备
       adc_login:
@@ -20,11 +24,11 @@
         action: edit_profile
         name: "{{ profile_name }}"
         cert: "{{ new_cert_name }}"
-      register: result
+      register: sslclient_result # 更改变量名避免使用保留关键字
 
     - name: Display result
       debug:
-        var: result.result
+        var: sslclient_result # 使用新的变量名
 
     - name: 登出ADC设备
       adc_logout:

@@ -165,6 +165,7 @@ result:
 
 def send_request(url, data=None, method='GET'):
     """Send HTTP request to ADC device"""
+    response_data = None
     try:
         if method == 'POST' and data:
             data_json = json.dumps(data)
@@ -175,19 +176,46 @@ def send_request(url, data=None, method='GET'):
             req = urllib_request.Request(url)
 
         response = urllib_request.urlopen(req)
-        result = json.loads(response.read())
+        response_data = response.read()
+
+        # 正确处理响应数据的编码
+        if isinstance(response_data, bytes):
+            # 尝试UTF-8解码，如果失败则使用latin1作为后备
+            try:
+                response_text = response_data.decode('utf-8')
+            except UnicodeDecodeError:
+                response_text = response_data.decode('latin1')
+        else:
+            response_text = response_data
+
+        result = json.loads(response_text)
 
         # 标准化响应格式
         # 成功响应保持原样
         # 错误响应标准化为 {"result":"error","errcode":"REQUEST_ERROR","errmsg":"..."}
         if isinstance(result, dict) and 'status' in result and result['status'] is False:
+            # 修复Unicode解码错误：确保错误消息正确处理中文字符
+            error_msg = result.get('msg', '')
+            if isinstance(error_msg, bytes):
+                try:
+                    error_msg = error_msg.decode('utf-8')
+                except UnicodeDecodeError:
+                    error_msg = error_msg.decode('latin1')
+
             return {
                 'result': 'error',
                 'errcode': 'REQUEST_ERROR',
-                'errmsg': result.get('msg', '请求失败')
+                'errmsg': error_msg if error_msg else '请求失败'
             }
         else:
             return result
+    except UnicodeDecodeError as e:
+        # 如果JSON解析失败，直接返回原始响应数据
+        return {
+            'result': 'success',
+            'data': str(response_data) if response_data is not None else '',
+            'raw_response': True
+        }
     except Exception as e:
         return {
             'result': 'error',
@@ -389,9 +417,20 @@ def main():
             # 成功响应
             module.exit_json(changed=True, result=result)
         elif 'errcode' in result and result['errcode']:
-            # 错误响应
-            module.fail_json(msg="操作失败: %s" %
-                             result.get('errmsg', '未知错误'), result=result)
+            # 错误响应 - 修复Unicode解码错误
+            try:
+                error_msg = result.get('errmsg', '未知错误')
+                # 确保错误消息正确处理Unicode字符
+                if isinstance(error_msg, bytes):
+                    try:
+                        error_msg = error_msg.decode('utf-8')
+                    except UnicodeDecodeError:
+                        error_msg = error_msg.decode('latin1')
+                formatted_msg = "操作失败: %s" % error_msg
+            except Exception:
+                formatted_msg = "操作失败: 未知错误"
+
+            module.fail_json(msg=formatted_msg, result=result)
         else:
             # 查询类API直接返回数据
             module.exit_json(changed=False, result=result)
