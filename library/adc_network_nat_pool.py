@@ -218,22 +218,27 @@ def adc_add_pool(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.pool.add" % (
         ip, authkey)
 
-    # 构造NAT地址池数据
-    pool_data = {
+    # 构造NAT地址池数据 - 按照API文档要求使用外部"pool"对象包装
+    pool_object = {
         "name": name,
         "ip_start": ip_start,
         "ip_end": ip_end
     }
 
-    # 添加可选参数
+    # 添加可选参数到pool对象
     if 'ip_type' in module.params and module.params['ip_type'] is not None:
-        pool_data['ip_type'] = module.params['ip_type']
+        pool_object['ip_type'] = module.params['ip_type']
     if 'global_gateway' in module.params and module.params['global_gateway'] is not None:
-        pool_data['global_gateway'] = module.params['global_gateway']
+        pool_object['global_gateway'] = module.params['global_gateway']
     if 'vrid' in module.params and module.params['vrid'] is not None:
-        pool_data['vrid'] = module.params['vrid']
+        pool_object['vrid'] = module.params['vrid']
     if 'ip_rr' in module.params and module.params['ip_rr'] is not None:
-        pool_data['ip_rr'] = module.params['ip_rr']
+        pool_object['ip_rr'] = module.params['ip_rr']
+
+    # 按照API文档要求，使用外部"pool"对象包装
+    pool_data = {
+        "pool": pool_object
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)
@@ -288,24 +293,29 @@ def adc_edit_pool(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.pool.edit" % (
         ip, authkey)
 
-    # 构造NAT地址池数据
-    pool_data = {
+    # 构造NAT地址池数据 - 按照API文档要求使用外部"pool"对象包装
+    pool_object = {
         "name": name
     }
 
-    # 添加可选参数
+    # 添加可选参数到pool对象
     if 'ip_start' in module.params and module.params['ip_start'] is not None:
-        pool_data['ip_start'] = module.params['ip_start']
+        pool_object['ip_start'] = module.params['ip_start']
     if 'ip_end' in module.params and module.params['ip_end'] is not None:
-        pool_data['ip_end'] = module.params['ip_end']
+        pool_object['ip_end'] = module.params['ip_end']
     if 'ip_type' in module.params and module.params['ip_type'] is not None:
-        pool_data['ip_type'] = module.params['ip_type']
+        pool_object['ip_type'] = module.params['ip_type']
     if 'global_gateway' in module.params and module.params['global_gateway'] is not None:
-        pool_data['global_gateway'] = module.params['global_gateway']
+        pool_object['global_gateway'] = module.params['global_gateway']
     if 'vrid' in module.params and module.params['vrid'] is not None:
-        pool_data['vrid'] = module.params['vrid']
+        pool_object['vrid'] = module.params['vrid']
     if 'ip_rr' in module.params and module.params['ip_rr'] is not None:
-        pool_data['ip_rr'] = module.params['ip_rr']
+        pool_object['ip_rr'] = module.params['ip_rr']
+
+    # 按照API文档要求，使用外部"pool"对象包装
+    pool_data = {
+        "pool": pool_object
+    }
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)

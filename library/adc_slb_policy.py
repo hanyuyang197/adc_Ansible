@@ -357,18 +357,13 @@ def main():
     else:
         module.fail_json(msg="Unknown action: %s" % action)
 
-    # 添加详细的调试信息，显示result的类型和内容
-    debug_info = {
-        'result_type': type(result).__name__,
-        'result_repr': str(result)[:200] + ('...' if len(str(result)) > 200 else ''),
-        'is_dict': isinstance(result, dict),
-        'is_list': isinstance(result, list),
-        'dict_keys': list(result.keys()) if isinstance(result, dict) else None,
-        'list_length': len(result) if isinstance(result, list) else None
-    }
-
-    # 将调试信息添加到返回结果中
-    # 注意：这只是临时调试，生产环境中应移除
+    # 打印result的详细信息，便于调试
+    print("DEBUG: result type = %s" % type(result).__name__)
+    print("DEBUG: result value = %s" % repr(str(result)[:500]))
+    if isinstance(result, dict):
+        print("DEBUG: result keys = %s" % list(result.keys()))
+    elif isinstance(result, list):
+        print("DEBUG: result length = %s" % len(result))
 
     # 统一使用标准的ADC响应格式处理结果
     # 成功响应: {"result":"success"} 或直接返回数据
@@ -376,22 +371,31 @@ def main():
     if isinstance(result, dict):
         if result.get('result', '').lower() == 'success':
             # 成功响应
-            module.exit_json(changed=True, result=result,
-                             debug_info=debug_info)
+            module.exit_json(changed=True, result=result)
         elif 'errcode' in result and result['errcode']:
-            # 错误响应
-            module.fail_json(msg="操作失败: %s" %
-                             result.get('errmsg', '未知错误'), result=result, debug_info=debug_info)
+            # 错误响应 - 修复Unicode解码错误
+            try:
+                error_msg = result.get('errmsg', '未知错误')
+                # 确保错误消息正确处理Unicode字符
+                if isinstance(error_msg, bytes):
+                    try:
+                        error_msg = error_msg.decode('utf-8')
+                    except UnicodeDecodeError:
+                        error_msg = error_msg.decode('latin1')
+                formatted_msg = "操作失败: %s" % error_msg
+            except Exception:
+                formatted_msg = "操作失败: 未知错误"
+
+            module.fail_json(msg=formatted_msg, result=result)
         else:
             # 查询类API直接返回数据
-            module.exit_json(changed=False, result=result,
-                             debug_info=debug_info)
+            module.exit_json(changed=False, result=result)
     elif isinstance(result, list):
         # 列表类型直接返回
-        module.exit_json(changed=False, result=result, debug_info=debug_info)
+        module.exit_json(changed=False, result=result)
     else:
-        # 其他类型也直接返回，并添加类型信息便于调试
-        module.exit_json(changed=False, result=result, debug_info=debug_info)
+        # 其他类型也直接返回
+        module.exit_json(changed=False, result=result)
 
 
 if __name__ == '__main__':
