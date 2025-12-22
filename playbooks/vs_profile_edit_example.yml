@@ -4,6 +4,10 @@
   gather_facts: no
   vars:
     # adc_ip变量已移除，使用inventory_hostname替代
+    adc_username: "admin"
+    adc_password: "admin"
+    profile_name: "test_vs_profile"
+
   tasks:
     - name: 登录ADC设备
       adc_login:
@@ -17,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "edit_profile"
-        name: "test_vs_profile"
+        name: "{{ profile_name }}"
         ignored_tcp_msl: 0
         reset_unknown_conn: 1
         reset_l7_on_failover: 0

@@ -4,6 +4,9 @@
   gather_facts: no
   vars:
     # 从inventory文件获取变量，无需在此处定义
+    adc_username: "admin"
+    adc_password: "admin"
+    profile_name: "test_vs_profile"
 
   tasks:
     - name: 登录ADC设备
@@ -18,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "get_profile"
-        name: "test_vs_profile"
+        name: "{{ profile_name }}"
       register: vs_profile_result
 
     - name: 显示结果

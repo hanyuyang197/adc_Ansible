@@ -4,6 +4,8 @@
   gather_facts: no
   vars:
     # 从inventory文件获取变量，无需在此处定义
+    adc_username: "admin"
+    adc_password: "admin"
 
   tasks:
     - name: 登录ADC设备

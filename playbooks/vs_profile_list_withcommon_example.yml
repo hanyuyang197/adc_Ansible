@@ -4,6 +4,9 @@
   gather_facts: no
   vars:
     # adc_ip变量已移除，使用inventory_hostname替代
+    adc_username: "admin"
+    adc_password: "admin"
+
   tasks:
     - name: 登录ADC设备
       adc_login:
