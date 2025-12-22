@@ -2,11 +2,15 @@
 # -*- coding: utf-8 -*-
 
 from ansible.module_utils.basic import AnsibleModule
+import json
+# Python 2/3兼容性处理
 try:
-    import urllib2
-    import json
+    # Python 2
+    import urllib2 as urllib_request
 except ImportError:
-    pass
+    # Python 3
+    import urllib.request as urllib_request
+    import urllib.error as urllib_error
 
 DOCUMENTATION = '''
 ---
@@ -97,16 +101,32 @@ def send_request(url, data=None, method='GET'):
     try:
         if method == 'POST' and data:
             data_json = json.dumps(data)
-            req = urllib2.Request(url, data=data_json)
+            data_bytes = data_json.encode('utf-8')
+            req = urllib_request.Request(url, data=data_bytes)
             req.add_header('Content-Type', 'application/json')
         else:
-            req = urllib2.Request(url)
+            req = urllib_request.Request(url)
 
-        response = urllib2.urlopen(req)
+        response = urllib_request.urlopen(req)
         result = json.loads(response.read())
-        return result
+
+        # 标准化响应格式
+        # 成功响应保持原样
+        # 错误响应标准化为 {"result":"error","errcode":"REQUEST_ERROR","errmsg":"..."}
+        if isinstance(result, dict) and 'status' in result and result['status'] is False:
+            return {
+                'result': 'error',
+                'errcode': 'REQUEST_ERROR',
+                'errmsg': result.get('msg', '请求失败')
+            }
+        else:
+            return result
     except Exception as e:
-        return {'status': False, 'msg': str(e)}
+        return {
+            'result': 'error',
+            'errcode': 'REQUEST_EXCEPTION',
+            'errmsg': str(e)
+        }
 
 
 def adc_list_sslserver_profiles(module):
@@ -267,10 +287,26 @@ def main():
     else:
         module.fail_json(msg="Unknown action: %s" % action)
 
-    if result.get('status') is True:
-        module.exit_json(changed=True, result=result)
+    # 统一使用标准的ADC响应格式处理结果
+    # 成功响应: {"result":"success"} 或直接返回数据
+    # 错误响应: {"result":"error","errcode":"...","errmsg":"..."}
+    if isinstance(result, dict):
+        if result.get('result', '').lower() == 'success':
+            # 成功响应
+            module.exit_json(changed=True, result=result)
+        elif 'errcode' in result and result['errcode']:
+            # 错误响应
+            module.fail_json(msg="操作失败: %s" %
+                             result.get('errmsg', '未知错误'), result=result)
+        else:
+            # 查询类API直接返回数据
+            module.exit_json(changed=False, result=result)
+    elif isinstance(result, list):
+        # 列表类型直接返回
+        module.exit_json(changed=False, result=result)
     else:
-        module.fail_json(msg="Operation failed", result=result)
+        # 其他类型也直接返回
+        module.exit_json(changed=False, result=result)
 
 
 if __name__ == '__main__':

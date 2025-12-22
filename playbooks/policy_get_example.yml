@@ -3,7 +3,11 @@
   hosts: adc_servers
   gather_facts: no
   vars:
+    # adc_ip变量已移除，使用inventory_hostname替代
+    adc_username: "admin"
+    adc_password: "admin"
     policy_name: "test_policy"
+
   tasks:
     - name: 登录ADC设备
       adc_login:
@@ -18,13 +22,22 @@
         authkey: "{{ login_result.authkey }}"
         action: get_policy
         name: "{{ policy_name }}"
-      register: result
+      register: policy_result
+      when: login_result is succeeded
 
-    - name: Display policy template details
+    - name: Display policy template details (JSON)
       debug:
-        var: result.result
+        var: policy_result
+      when: policy_result is defined and policy_result.result is defined
+
+    - name: Display raw response if not JSON
+      debug:
+        msg: "Raw response: {{ policy_result }}"
+      when: policy_result is defined and policy_result.raw_response is defined
 
     - name: 登出ADC设备
       adc_logout:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded

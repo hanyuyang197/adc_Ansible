@@ -3,6 +3,9 @@
   hosts: adc_servers
   gather_facts: no
   vars:
+    # adc_ip变量已移除，使用inventory_hostname替代
+    adc_username: "admin"
+    adc_password: "admin"
 
   tasks:
     - name: 登录ADC设备
@@ -17,13 +20,17 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: list_policies_withcommon
-      register: result
+      register: policy_result
+      when: login_result is succeeded
 
     - name: Display policy templates
       debug:
-        var: result.result
+        var: policy_result
+      when: policy_result is defined
 
     - name: 登出ADC设备
       adc_logout:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded

@@ -62,7 +62,7 @@ def send_request(url, data=None, method='GET'):
         response = urllib2.urlopen(req)
         result = response.read()
         parsed_result = json.loads(result) if result else {}
-        
+
         # 标准化响应格式
         # 成功响应保持原样
         # 错误响应标准化为 {"result":"error","errcode":"REQUEST_ERROR","errmsg":"..."}
@@ -310,7 +310,8 @@ def main():
             module.exit_json(changed=True, result=result)
         elif 'errcode' in result and result['errcode']:
             # 错误响应
-            module.fail_json(msg="操作失败: %s" % result.get('errmsg', '未知错误'), result=result)
+            module.fail_json(msg="操作失败: %s" %
+                             result.get('errmsg', '未知错误'), result=result)
         else:
             # 查询类API直接返回数据
             module.exit_json(changed=False, result=result)
