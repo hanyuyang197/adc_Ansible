@@ -37,9 +37,9 @@
         desc_vport: ""
         snat_on_vip: 0
         auto_snat: 0
-        vs_acl_id: 52  # 明确定义vs_acl_id，会包含在请求中
-        aclnamev6: ""  # 明确定义aclnamev6，会包含在请求中
-        erules: []  # 明确定义erules，会包含在请求中
+        # vs_acl_id: 52  # 注释掉不必要的参数
+        # aclnamev6: ""  # 注释掉不必要的参数
+        # erules: []  # 注释掉不必要的参数
         send_reset: 0
         syncookie: 0
         source_nat: ""
@@ -60,7 +60,7 @@
         serverssl_profile: ""
         connmulti_profile: ""
         srcip_persist: ""
-        fallback_persist_srcip: ""
+        # fallback_persist_srcip: ""  # 注释掉不必要的参数
         policy_profile: ""
         aclsnats: []
       register: edit_vs_result

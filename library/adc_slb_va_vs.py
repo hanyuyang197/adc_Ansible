@@ -324,175 +324,44 @@ def adc_edit_vs(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.vs.edit" % (
         ip, authkey)
 
-    # 构造虚拟服务数据 - 包含所有必填参数
+    # 构造虚拟服务数据 - 只包含在YAML中明确定义的参数
     vs_data = {
         "name": va_name,
-        "virtual_service": {
-            "name": module.params['name'] if 'name' in module.params else "",
-            "protocol": module.params['protocol'] if 'protocol' in module.params else 2,
-            "port": module.params['port'] if 'port' in module.params else 80,
-            "vs_enable_intf": module.params['vs_enable_intf'] if 'vs_enable_intf' in module.params else "",
-            "status": module.params['status'] if 'status' in module.params else 1,
-            "path_persist": module.params['path_persist'] if 'path_persist' in module.params else 1,
-            "desc_vport": module.params['desc_vport'] if 'desc_vport' in module.params else "",
-            "snat_on_vip": module.params['snat_on_vip'] if 'snat_on_vip' in module.params else 0,
-            "auto_snat": module.params['auto_snat'] if 'auto_snat' in module.params else 0,
-            "send_reset": module.params['send_reset'] if 'send_reset' in module.params else 0,
-            "source_nat": module.params['source_nat'] if 'source_nat' in module.params else "",
-            "srcip_persist": module.params['srcip_persist'] if 'srcip_persist' in module.params else "",
-            "dstip_persist": module.params['dstip_persist'] if 'dstip_persist' in module.params else "",
-            "cookie_persist": module.params['cookie_persist'] if 'cookie_persist' in module.params else "",
-            "sslid_persis": module.params['sslid_persis'] if 'sslid_persis' in module.params else "",
-            "policy_profile": module.params['policy_profile'] if 'policy_profile' in module.params else "",
-            "aclsnats": module.params['aclsnats'] if 'aclsnats' in module.params else [],
-            "connection_mirror": module.params['connection_mirror'] if 'connection_mirror' in module.params else 0,
-            "no_dest_nat": module.params['no_dest_nat'] if 'no_dest_nat' in module.params else 0,
-            "syncookie": {
-                "syncookie": module.params['syncookie'] if 'syncookie' in module.params else 0
-            },
-            "immediate_action_on_service_down": module.params['immediate_action_on_service_down'] if 'immediate_action_on_service_down' in module.params else 0,
-            "vport_template_name": module.params['vport_template_name'] if 'vport_template_name' in module.params else "default",
-            "traffic_control": module.params['traffic_control'] if 'traffic_control' in module.params else "",
-            "service_last_hop": module.params['service_last_hop'] if 'service_last_hop' in module.params else "",
-            "force_update_mac": module.params['force_update_mac'] if 'force_update_mac' in module.params else 0,
-            "snat_port_preserve_enable": module.params['snat_port_preserve_enable'] if 'snat_port_preserve_enable' in module.params else 0,
-            "snat_port_preserve_type": module.params['snat_port_preserve_type'] if 'snat_port_preserve_type' in module.params else 0
-        }
+        "virtual_service": {}
     }
 
-    # 只有当pool在参数中定义时才添加到请求中
-    if 'pool' in module.params and module.params['pool']:
-        vs_data['virtual_service']['pool'] = module.params['pool']
+    # 只有当参数在YAML中明确定义时才包含在请求中
+    optional_params = [
+        'name', 'protocol', 'port', 'vs_enable_intf', 'status', 'path_persist',
+        'desc_vport', 'snat_on_vip', 'auto_snat', 'send_reset', 'source_nat',
+        'srcip_persist', 'dstip_persist', 'cookie_persist', 'sslid_persis',
+        'policy_profile', 'aclsnats', 'connection_mirror', 'no_dest_nat',
+        'syncookie', 'immediate_action_on_service_down', 'vport_template_name',
+        'traffic_control', 'service_last_hop', 'force_update_mac',
+        'snat_port_preserve_enable', 'snat_port_preserve_type', 'pool',
+        'vs_acl_id', 'aclnamev6', 'erules', 'connection_limit_status',
+        'connection_limit_number', 'udp_profile', 'dns_profile', 'tcp_profile',
+        'ftp_profile', 'http_profile', 'connmulti_profile', 'tcpagent_profile',
+        'waf_profile', 'cache_profile', 'request_log_profile', 'serverssl_profile',
+        'clientssl_profile', 'rtsp_profile', 'smtp_profile', 'sip_profile',
+        'fixup_ftp'
+    ]
 
-    # 只有当vs_acl_id在参数中定义时才添加到请求中
-    if 'vs_acl_id' in module.params and module.params['vs_acl_id'] is not None:
-        vs_data['virtual_service']['vs_acl_id'] = module.params['vs_acl_id']
-
-    # 只有当aclnamev6在参数中定义时才添加到请求中
-    if 'aclnamev6' in module.params and module.params['aclnamev6']:
-        vs_data['virtual_service']['aclnamev6'] = module.params['aclnamev6']
-
-    # 只有当erules在参数中定义且不为空时才添加到请求中
-    if 'erules' in module.params and module.params['erules']:
-        vs_data['virtual_service']['erules'] = module.params['erules']
-
-    # 处理连接限制参数
-    connection_limit = {}
-    if 'connection_limit_status' in module.params and module.params['connection_limit_status'] is not None:
-        connection_limit['status'] = module.params['connection_limit_status']
-    if 'connection_limit_number' in module.params and module.params['connection_limit_number'] is not None:
-        connection_limit['connection_limit_number'] = module.params['connection_limit_number']
-
-    if connection_limit:
-        vs_data['virtual_service']['connection_limit'] = connection_limit
-
-    # 根据协议类型添加特定参数
-    protocol = module.params['protocol'] if 'protocol' in module.params else 2
-    if protocol == 22:  # DNS
-        # DNS类型必填参数
-        if 'udp_profile' in module.params:
-            vs_data['virtual_service']['udp_profile'] = module.params['udp_profile']
-        if 'dns_profile' in module.params:
-            vs_data['virtual_service']['dns_profile'] = module.params['dns_profile']
-    elif protocol == 9:  # FTP
-        # FTP类型必填参数
-        if 'tcp_profile' in module.params:
-            vs_data['virtual_service']['tcp_profile'] = module.params['tcp_profile']
-        # FTP特有参数
-        if 'ftp_profile' in module.params:
-            vs_data['virtual_service']['ftp_profile'] = module.params['ftp_profile']
-    elif protocol == 12:  # HTTP普通
-        # HTTP普通类型必填参数
-        if 'tcp_profile' in module.params:
-            vs_data['virtual_service']['tcp_profile'] = module.params['tcp_profile']
-        if 'http_profile' in module.params:
-            vs_data['virtual_service']['http_profile'] = module.params['http_profile']
-        if 'connmulti_profile' in module.params:
-            vs_data['virtual_service']['connmulti_profile'] = module.params['connmulti_profile']
-    elif protocol == 14:  # HTTP增强
-        # HTTP增强类型必填参数
-        if 'tcpagent_profile' in module.params:
-            vs_data['virtual_service']['tcpagent_profile'] = module.params['tcpagent_profile']
-        if 'http_profile' in module.params:
-            vs_data['virtual_service']['http_profile'] = module.params['http_profile']
-        if 'connmulti_profile' in module.params:
-            vs_data['virtual_service']['connmulti_profile'] = module.params['connmulti_profile']
-        if 'waf_profile' in module.params:
-            vs_data['virtual_service']['waf_profile'] = module.params['waf_profile']
-        if 'cache_profile' in module.params:
-            vs_data['virtual_service']['cache_profile'] = module.params['cache_profile']
-        if 'request_log_profile' in module.params:
-            vs_data['virtual_service']['request_log_profile'] = module.params['request_log_profile']
-    elif protocol == 15:  # HTTPS
-        # HTTPS类型必填参数
-        if 'tcpagent_profile' in module.params:
-            vs_data['virtual_service']['tcpagent_profile'] = module.params['tcpagent_profile']
-        if 'http_profile' in module.params:
-            vs_data['virtual_service']['http_profile'] = module.params['http_profile']
-        if 'connmulti_profile' in module.params:
-            vs_data['virtual_service']['connmulti_profile'] = module.params['connmulti_profile']
-        if 'waf_profile' in module.params:
-            vs_data['virtual_service']['waf_profile'] = module.params['waf_profile']
-        if 'cache_profile' in module.params:
-            vs_data['virtual_service']['cache_profile'] = module.params['cache_profile']
-        if 'serverssl_profile' in module.params:
-            vs_data['virtual_service']['serverssl_profile'] = module.params['serverssl_profile']
-        if 'clientssl_profile' in module.params:
-            vs_data['virtual_service']['clientssl_profile'] = module.params['clientssl_profile']
-    elif protocol == 8:  # RTSP
-        # RTSP类型必填参数
-        if 'tcp_profile' in module.params:
-            vs_data['virtual_service']['tcp_profile'] = module.params['tcp_profile']
-        if 'rtsp_profile' in module.params:
-            vs_data['virtual_service']['rtsp_profile'] = module.params['rtsp_profile']
-    elif protocol == 17:  # SMTP
-        # SMTP类型必填参数
-        if 'tcpagent_profile' in module.params:
-            vs_data['virtual_service']['tcpagent_profile'] = module.params['tcpagent_profile']
-        if 'smtp_profile' in module.params:
-            vs_data['virtual_service']['smtp_profile'] = module.params['smtp_profile']
-        if 'clientssl_profile' in module.params:
-            vs_data['virtual_service']['clientssl_profile'] = module.params['clientssl_profile']
-    elif protocol == 11:  # SIP
-        # SIP类型必填参数
-        if 'udp_profile' in module.params:
-            vs_data['virtual_service']['udp_profile'] = module.params['udp_profile']
-        if 'sip_profile' in module.params:
-            vs_data['virtual_service']['sip_profile'] = module.params['sip_profile']
-    elif protocol == 18:  # SIP-TCP
-        # SIP-TCP类型必填参数
-        if 'tcp_profile' in module.params:
-            vs_data['virtual_service']['tcp_profile'] = module.params['tcp_profile']
-        if 'sip_profile' in module.params:
-            vs_data['virtual_service']['sip_profile'] = module.params['sip_profile']
-    elif protocol == 20:  # TCP_AGENT
-        # TCP_AGENT类型必填参数
-        if 'tcpagent_profile' in module.params:
-            vs_data['virtual_service']['tcpagent_profile'] = module.params['tcpagent_profile']
-        if 'fixup_ftp' in module.params:
-            vs_data['virtual_service']['fixup_ftp'] = module.params['fixup_ftp']
-        if 'serverssl_profile' in module.params:
-            vs_data['virtual_service']['serverssl_profile'] = module.params['serverssl_profile']
-    elif protocol == 25:  # TCP-EXCHANGE
-        # TCP-EXCHANGE类型必填参数
-        if 'tcpagent_profile' in module.params:
-            vs_data['virtual_service']['tcpagent_profile'] = module.params['tcpagent_profile']
-        if 'connmulti_profile' in module.params:
-            vs_data['virtual_service']['connmulti_profile'] = module.params['connmulti_profile']
-    elif protocol == 26:  # MBLB
-        # MBLB类型必填参数
-        if 'tcpagent_profile' in module.params:
-            vs_data['virtual_service']['tcpagent_profile'] = module.params['tcpagent_profile']
-        if 'connmulti_profile' in module.params:
-            vs_data['virtual_service']['connmulti_profile'] = module.params['connmulti_profile']
-    elif protocol == 23:  # TFTP
-        # TFTP类型必填参数
-        if 'udp_profile' in module.params:
-            vs_data['virtual_service']['udp_profile'] = module.params['udp_profile']
-    elif protocol == 2:  # TCP
-        # TCP类型必填参数
-        if 'tcp_profile' in module.params:
-            vs_data['virtual_service']['tcp_profile'] = module.params['tcp_profile']
+    # 添加基本参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            if param == 'syncookie':
+                # 特殊处理syncookie参数
+                vs_data['virtual_service']['syncookie'] = {
+                    "syncookie": module.params[param]
+                }
+            elif param in ['connection_limit_status', 'connection_limit_number']:
+                # 特殊处理连接限制参数
+                if 'connection_limit' not in vs_data['virtual_service']:
+                    vs_data['virtual_service']['connection_limit'] = {}
+                vs_data['virtual_service']['connection_limit'][param] = module.params[param]
+            else:
+                vs_data['virtual_service'][param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(vs_data)
