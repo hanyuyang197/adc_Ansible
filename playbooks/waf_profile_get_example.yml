@@ -3,7 +3,11 @@
   hosts: adc_servers
   gather_facts: no
   vars:
+    # 添加默认的用户名和密码
+    adc_username: "admin"
+    adc_password: "admin"
     profile_name: "test_waf_profile"
+
   tasks:
     - name: Login to ADC device
       adc_login:
@@ -17,9 +21,15 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: get_profile
-        name: "{{ profile_name }}"
-      register: result
+        name: "{{ profile_name }}" # 使用变量而不是直接使用保留关键字
+      register: waf_result # 更改变量名避免使用保留关键字
 
     - name: Display WAF profile details
       debug:
-        var: result.result
+        var: waf_result # 使用新的变量名
+
+    - name: Logout from ADC device
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
