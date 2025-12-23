@@ -217,14 +217,21 @@ def adc_add_acl_item(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=acl.ipv4.std.item.add" % (
         ip, authkey)
 
-    # 构造ACL条目数据
+    # 构造ACL条目数据 - 只包含在YAML中明确定义的参数
     acl_data = {
         "id": id,
-        "sequence": sequence,
-        "acl_action": module.params['acl_action'] if 'acl_action' in module.params else 0,
-        "src_ip": module.params['src_ip'] if 'src_ip' in module.params else "0.0.0.0",
-        "src_mask": module.params['src_mask'] if 'src_mask' in module.params else "255.255.255.255"
+        "sequence": sequence
     }
+
+    # 定义可选参数列表
+    optional_params = [
+        'acl_action', 'src_ip', 'src_mask'
+    ]
+
+    # 添加可选参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            acl_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(acl_data)

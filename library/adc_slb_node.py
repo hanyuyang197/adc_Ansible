@@ -256,38 +256,25 @@ def adc_add_node(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.add" % (
         ip, authkey)
 
-    # 构造节点数据
+    # 构造节点数据 - 只包含在YAML中明确定义的参数
     node_data = {
-        "node": {
-            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
-            "graceful_time": module.params['graceful_time'] if 'graceful_time' in module.params else 0,
-            "graceful_delete": module.params['graceful_delete'] if 'graceful_delete' in module.params else 0,
-            "graceful_disable": module.params['graceful_disable'] if 'graceful_disable' in module.params else 0,
-            "graceful_persist": module.params['graceful_persist'] if 'graceful_persist' in module.params else 0,
-            "name": module.params['name'] if 'name' in module.params else "",
-            "host": module.params['host'] if 'host' in module.params else "",
-            "domain_ip_version": module.params['domain_ip_version'] if 'domain_ip_version' in module.params else 0,
-            "weight": module.params['weight'] if 'weight' in module.params else 1,
-            "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
-            "upnum": module.params['upnum'] if 'upnum' in module.params else 0,
-            "status": module.params['status'] if 'status' in module.params else 1,
-            "conn_limit": module.params['conn_limit'] if 'conn_limit' in module.params else 0,
-            "template": module.params['template'] if 'template' in module.params else "",
-            "conn_rate_limit": module.params['conn_rate_limit'] if 'conn_rate_limit' in module.params else 0,
-            "cl_log": module.params['cl_log'] if 'cl_log' in module.params else "0",
-            "desc_rserver": module.params['desc_rserver'] if 'desc_rserver' in module.params else "",
-            "slow_start_type": module.params['slow_start_type'] if 'slow_start_type' in module.params else 0,
-            "slow_start_recover": module.params['slow_start_recover'] if 'slow_start_recover' in module.params else 15,
-            "slow_start_rate": module.params['slow_start_rate'] if 'slow_start_rate' in module.params else 0,
-            "slow_start_from": module.params['slow_start_from'] if 'slow_start_from' in module.params else 128,
-            "slow_start_step": module.params['slow_start_step'] if 'slow_start_step' in module.params else 2,
-            "slow_start_interval": module.params['slow_start_interval'] if 'slow_start_interval' in module.params else 10,
-            "slow_start_interval_num": module.params['slow_start_interval_num'] if 'slow_start_interval_num' in module.params else 6,
-            "slow_start_tail": module.params['slow_start_tail'] if 'slow_start_tail' in module.params else 4096,
-            "request_rate_limit": module.params['request_rate_limit'] if 'request_rate_limit' in module.params else 0,
-            "ports": module.params['ports'] if 'ports' in module.params else []
-        }
+        "node": {}
     }
+
+    # 定义可选参数列表
+    optional_params = [
+        'tc_name', 'graceful_time', 'graceful_delete', 'graceful_disable', 'graceful_persist',
+        'name', 'host', 'domain_ip_version', 'weight', 'healthcheck', 'upnum', 'status',
+        'conn_limit', 'template', 'conn_rate_limit', 'cl_log', 'desc_rserver',
+        'slow_start_type', 'slow_start_recover', 'slow_start_rate', 'slow_start_from',
+        'slow_start_step', 'slow_start_interval', 'slow_start_interval_num', 'slow_start_tail',
+        'request_rate_limit', 'ports'
+    ]
+
+    # 添加基本参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            node_data['node'][param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(node_data)

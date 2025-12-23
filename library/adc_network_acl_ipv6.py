@@ -217,44 +217,24 @@ def adc_add_acl_item(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=acl.ipv6.ext.item.add" % (
         ip, authkey)
 
-    # 构造ACL条目数据
+    # 构造ACL条目数据 - 只包含在YAML中明确定义的参数
     acl_data = {
         "name": name,
-        "seq_num": seq_num,
-        "action": module.params['acl_action'] if 'acl_action' in module.params else "permit",
-        "src_addr": module.params['src_addr'] if 'src_addr' in module.params else "::",
-        "src_prefix": module.params['src_prefix'] if 'src_prefix' in module.params else 128,
-        "dst_addr": module.params['dst_addr'] if 'dst_addr' in module.params else "::",
-        "dst_prefix": module.params['dst_prefix'] if 'dst_prefix' in module.params else 128
+        "seq_num": seq_num
     }
 
+    # 定义可选参数列表
+    optional_params = [
+        'acl_action', 'src_addr', 'src_prefix', 'dst_addr', 'dst_prefix',
+        'protocol', 'src_port_op', 'src_port1', 'src_port2',
+        'dst_port_op', 'dst_port1', 'dst_port2', 'icmp_type', 'icmp_code',
+        'dscp', 'fragment', 'log', 'time_range'
+    ]
+
     # 添加可选参数
-    if 'protocol' in module.params and module.params['protocol'] is not None:
-        acl_data['protocol'] = module.params['protocol']
-    if 'src_port_op' in module.params and module.params['src_port_op'] is not None:
-        acl_data['src_port_op'] = module.params['src_port_op']
-    if 'src_port1' in module.params and module.params['src_port1'] is not None:
-        acl_data['src_port1'] = module.params['src_port1']
-    if 'src_port2' in module.params and module.params['src_port2'] is not None:
-        acl_data['src_port2'] = module.params['src_port2']
-    if 'dst_port_op' in module.params and module.params['dst_port_op'] is not None:
-        acl_data['dst_port_op'] = module.params['dst_port_op']
-    if 'dst_port1' in module.params and module.params['dst_port1'] is not None:
-        acl_data['dst_port1'] = module.params['dst_port1']
-    if 'dst_port2' in module.params and module.params['dst_port2'] is not None:
-        acl_data['dst_port2'] = module.params['dst_port2']
-    if 'icmp_type' in module.params and module.params['icmp_type'] is not None:
-        acl_data['icmp_type'] = module.params['icmp_type']
-    if 'icmp_code' in module.params and module.params['icmp_code'] is not None:
-        acl_data['icmp_code'] = module.params['icmp_code']
-    if 'dscp' in module.params and module.params['dscp'] is not None:
-        acl_data['dscp'] = module.params['dscp']
-    if 'fragment' in module.params and module.params['fragment'] is not None:
-        acl_data['fragment'] = module.params['fragment']
-    if 'log' in module.params and module.params['log'] is not None:
-        acl_data['log'] = module.params['log']
-    if 'time_range' in module.params and module.params['time_range'] is not None:
-        acl_data['time_range'] = module.params['time_range']
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            acl_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(acl_data)

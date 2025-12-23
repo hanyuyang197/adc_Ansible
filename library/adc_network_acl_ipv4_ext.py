@@ -217,43 +217,24 @@ def adc_add_acl_item(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=acl.ipv4.ext.item.add" % (
         ip, authkey)
 
-    # 构造ACL条目数据
+    # 构造ACL条目数据 - 只包含在YAML中明确定义的参数
     acl_data = {
         "id": id,
-        "sequence": sequence,
-        "acl_action": module.params['acl_action'] if 'acl_action' in module.params else 0,
-        "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
-        "src_ip": module.params['src_ip'] if 'src_ip' in module.params else "0.0.0.0",
-        "src_mask": module.params['src_mask'] if 'src_mask' in module.params else "255.255.255.255",
-        "dst_ip": module.params['dst_ip'] if 'dst_ip' in module.params else "0.0.0.0",
-        "dst_mask": module.params['dst_mask'] if 'dst_mask' in module.params else "255.255.255.255"
+        "sequence": sequence
     }
 
+    # 定义可选参数列表
+    optional_params = [
+        'acl_action', 'protocol', 'src_ip', 'src_mask', 'dst_ip', 'dst_mask',
+        'icmp_type', 'icmp_code', 'src_port_min', 'src_port_max',
+        'dst_port_min', 'dst_port_max', 'ip_fragments', 'vlan_id', 'dscp',
+        'tcp_established', 'description', 'timerange'
+    ]
+
     # 添加可选参数
-    if 'icmp_type' in module.params and module.params['icmp_type'] is not None:
-        acl_data['icmp_type'] = module.params['icmp_type']
-    if 'icmp_code' in module.params and module.params['icmp_code'] is not None:
-        acl_data['icmp_code'] = module.params['icmp_code']
-    if 'src_port_min' in module.params and module.params['src_port_min'] is not None:
-        acl_data['src_port_min'] = module.params['src_port_min']
-    if 'src_port_max' in module.params and module.params['src_port_max'] is not None:
-        acl_data['src_port_max'] = module.params['src_port_max']
-    if 'dst_port_min' in module.params and module.params['dst_port_min'] is not None:
-        acl_data['dst_port_min'] = module.params['dst_port_min']
-    if 'dst_port_max' in module.params and module.params['dst_port_max'] is not None:
-        acl_data['dst_port_max'] = module.params['dst_port_max']
-    if 'ip_fragments' in module.params and module.params['ip_fragments'] is not None:
-        acl_data['ip_fragments'] = module.params['ip_fragments']
-    if 'vlan_id' in module.params and module.params['vlan_id'] is not None:
-        acl_data['vlan_id'] = module.params['vlan_id']
-    if 'dscp' in module.params and module.params['dscp'] is not None:
-        acl_data['dscp'] = module.params['dscp']
-    if 'tcp_established' in module.params and module.params['tcp_established'] is not None:
-        acl_data['tcp_established'] = module.params['tcp_established']
-    if 'description' in module.params and module.params['description'] is not None:
-        acl_data['description'] = module.params['description']
-    if 'timerange' in module.params and module.params['timerange'] is not None:
-        acl_data['timerange'] = module.params['timerange']
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            acl_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(acl_data)
