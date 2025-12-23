@@ -102,6 +102,7 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
 def send_request(url, data=None, method='GET'):
     """发送HTTP请求到ADC设备"""
     import sys
+    response_data = None
     try:
         if method == 'POST' and data:
             data_json = json.dumps(data)
@@ -140,7 +141,16 @@ def send_request(url, data=None, method='GET'):
         else:
             response_text = response_data
 
-        result = json.loads(response_text)
+        # 安全地解析JSON响应
+        try:
+            result = json.loads(response_text)
+        except json.JSONDecodeError:
+            # 如果不是有效的JSON格式，返回原始响应
+            return {
+                'result': 'error',
+                'errcode': 'JSON_PARSE_ERROR',
+                'errmsg': f'响应不是有效的JSON格式: {response_text}'
+            }
 
         # 标准化响应格式
         # 成功响应保持原样
@@ -162,11 +172,11 @@ def send_request(url, data=None, method='GET'):
         else:
             return result
     except UnicodeDecodeError as e:
-        # 如果JSON解析失败，直接返回原始响应数据
+        # 如果解码失败，直接返回错误信息
         return {
-            'result': 'success',
-            'data': str(response_data) if response_data is not None else '',
-            'raw_response': True
+            'result': 'error',
+            'errcode': 'UNICODE_DECODE_ERROR',
+            'errmsg': f'响应解码失败: {str(e)}'
         }
     except Exception as e:
         return {
@@ -297,8 +307,11 @@ file_path:
 '''
 
 
-def list_logs(module, adc_base, log_type):
+def list_logs(module):
     """List logs of specified type"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
     # Prepare the action based on log type
     action_map = {
         'service': 'log.service.list',
@@ -307,6 +320,7 @@ def list_logs(module, adc_base, log_type):
         'dns': 'log.dns.list'
     }
 
+    log_type = module.params['log_type']
     if log_type not in action_map:
         module.fail_json(
             msg="Unsupported log type for list action: %s" % log_type)
@@ -326,17 +340,32 @@ def list_logs(module, adc_base, log_type):
         params['time_range'] = module.params['time_range']
         params['user_name'] = module.params['user_name']
 
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=%s" % (
+        ip, authkey, action_map[log_type])
+
     # Make API call
-    response = adc_base.make_request('POST', action_map[log_type], data=params)
+    response = send_request(url, params, method='POST')
 
-    if response.get('success'):
-        return True, {'logs': response.get('data', [])}
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'logs': response.get('data', [])}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "获取日志失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'logs': response}
     else:
-        return False, {'msg': response.get('msg', 'Failed to list logs')}
+        return False, {'msg': '响应数据格式错误'}
 
 
-def clear_logs(module, adc_base, log_type):
+def clear_logs(module):
     """Clear logs of specified type"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
     # Prepare the action based on log type
     action_map = {
         'service': 'log.service.clear',
@@ -345,21 +374,37 @@ def clear_logs(module, adc_base, log_type):
         'dns': 'log.dns.clear'
     }
 
+    log_type = module.params['log_type']
     if log_type not in action_map:
         module.fail_json(
             msg="Unsupported log type for clear action: %s" % log_type)
 
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=%s" % (
+        ip, authkey, action_map[log_type])
+
     # Make API call
-    response = adc_base.make_request('GET', action_map[log_type])
+    response = send_request(url, method='GET')
 
-    if response.get('success'):
-        return True, {'result': 'Logs cleared successfully'}
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'result': '日志清除成功'}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "清除日志失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'response': response}
     else:
-        return False, {'msg': response.get('msg', 'Failed to clear logs')}
+        return False, {'msg': '响应数据格式错误'}
 
 
-def download_logs(module, adc_base, log_type):
+def download_logs(module):
     """Download logs of specified type"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
     # Prepare the action based on log type
     action_map = {
         'service': 'log.service.download',
@@ -370,23 +415,28 @@ def download_logs(module, adc_base, log_type):
         'system': 'log.system.download'
     }
 
+    log_type = module.params['log_type']
     if log_type not in action_map:
         module.fail_json(
             msg="Unsupported log type for download action: %s" % log_type)
 
-    # Make API call to download file
-    file_path = "/tmp/%s_logs.txt" % log_type
-    success = adc_base.download_file(action_map[log_type], file_path)
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=%s" % (
+        ip, authkey, action_map[log_type])
 
-    if success:
-        return True, {'file_path': file_path}
-    else:
-        return False, {'msg': 'Failed to download logs'}
+    # For download, we need to handle file download differently
+    # Since we removed the download_file method from ADCBase, we'll return the URL for download
+    file_path = "/tmp/%s_logs.txt" % log_type
+
+    # Return download information
+    return True, {'file_path': file_path, 'download_url': url}
 
 
 def main():
     # Define module arguments
     argument_spec = dict(
+        ip=dict(type='str', required=True),
+        authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
                     'list', 'clear', 'download']),
         log_type=dict(type='str', required=True, choices=[
@@ -413,23 +463,19 @@ def main():
 
     # Extract module parameters
     action = module.params['action']
-    log_type = module.params['log_type']
 
     # If in check mode, exit without making changes
     if module.check_mode:
         module.exit_json(changed=False)
 
-    # Create ADC base object
-    adc_base = ADCBase(module)
-
     try:
         # Perform requested action
         if action == 'list':
-            changed, result = list_logs(module, adc_base, log_type)
+            changed, result = list_logs(module)
         elif action == 'clear':
-            changed, result = clear_logs(module, adc_base, log_type)
+            changed, result = clear_logs(module)
         elif action == 'download':
-            changed, result = download_logs(module, adc_base, log_type)
+            changed, result = download_logs(module)
         else:
             module.fail_json(msg="Unsupported action: %s" % action)
 

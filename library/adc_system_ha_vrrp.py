@@ -102,6 +102,8 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
 
 def send_request(url, data=None, method='GET'):
     """发送HTTP请求到ADC设备"""
+    import sys
+    response_data = None
     try:
         if method == 'POST' and data:
             data_json = json.dumps(data)
@@ -140,7 +142,16 @@ def send_request(url, data=None, method='GET'):
         else:
             response_text = response_data
 
-        result = json.loads(response_text)
+        # 安全地解析JSON响应
+        try:
+            result = json.loads(response_text)
+        except json.JSONDecodeError:
+            # 如果不是有效的JSON格式，返回原始响应
+            return {
+                'result': 'error',
+                'errcode': 'JSON_PARSE_ERROR',
+                'errmsg': f'响应不是有效的JSON格式: {response_text}'
+            }
 
         # 标准化响应格式
         # 成功响应保持原样
@@ -162,11 +173,11 @@ def send_request(url, data=None, method='GET'):
         else:
             return result
     except UnicodeDecodeError as e:
-        # 如果JSON解析失败，直接返回原始响应数据
+        # 如果解码失败，直接返回错误信息
         return {
-            'result': 'success',
-            'data': str(response_data) if response_data is not None else '',
-            'raw_response': True
+            'result': 'error',
+            'errcode': 'UNICODE_DECODE_ERROR',
+            'errmsg': f'响应解码失败: {str(e)}'
         }
     except Exception as e:
         return {
@@ -425,19 +436,41 @@ msg:
 '''
 
 
-def adc_get_vrrp_global_config(module, adc_base):
+def adc_get_vrrp_global_config(module):
     """Get VRRP global configuration"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.global.get" % (
+        ip, authkey)
+
     # Make API call
-    response = adc_base.make_request('GET', 'vrrp.global.get')
+    response = send_request(url, method='GET')
 
-    if response.get('success'):
-        return True, {'global_config': response.get('data', {})}
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'global_config': response.get('data', {})}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "获取VRRP全局配置失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'global_config': response}
     else:
-        return False, {'msg': response.get('msg', 'Failed to get VRRP global configuration')}
+        return False, {'msg': '响应数据格式错误'}
 
 
-def adc_set_vrrp_global_config(module, adc_base):
+def adc_set_vrrp_global_config(module):
     """Set VRRP global configuration"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.global.set" % (
+        ip, authkey)
+
     # Prepare parameters
     params = {}
 
@@ -458,16 +491,32 @@ def adc_set_vrrp_global_config(module, adc_base):
         params['cluster_id'] = module.params['cluster_id']
 
     # Make API call
-    response = adc_base.make_request('POST', 'vrrp.global.set', data=params)
+    response = send_request(url, params, method='POST')
 
     # Format response
-    success, result_dict = adc_base.format_adc_response_for_ansible(
-        response, "Set VRRP global configuration", True)
-    return success, result_dict
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'msg': 'VRRP全局配置设置成功'}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "设置VRRP全局配置失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'response': response}
+    else:
+        return False, {'msg': '响应数据格式错误'}
 
 
-def adc_add_vrrp_group(module, adc_base):
+def adc_add_vrrp_group(module):
     """Add VRRP group"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.group.add" % (
+        ip, authkey)
+
     # Prepare parameters
     params = {}
 
@@ -492,27 +541,58 @@ def adc_add_vrrp_group(module, adc_base):
         params['order_list'] = module.params['order_list']
 
     # Make API call
-    response = adc_base.make_request('POST', 'vrrp.group.add', data=params)
+    response = send_request(url, params, method='POST')
 
     # Format response
-    success, result_dict = adc_base.format_adc_response_for_ansible(
-        response, "Add VRRP group", True)
-    return success, result_dict
-
-
-def adc_list_vrrp_groups(module, adc_base):
-    """List VRRP groups"""
-    # Make API call
-    response = adc_base.make_request('GET', 'vrrp.group.list')
-
-    if response.get('success'):
-        return True, {'groups': response.get('data', [])}
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'msg': 'VRRP组添加成功'}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "添加VRRP组失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'response': response}
     else:
-        return False, {'msg': response.get('msg', 'Failed to list VRRP groups')}
+        return False, {'msg': '响应数据格式错误'}
 
 
-def adc_add_heartbeat_eth(module, adc_base):
+def adc_list_vrrp_groups(module):
+    """List VRRP groups"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.group.list" % (
+        ip, authkey)
+
+    # Make API call
+    response = send_request(url, method='GET')
+
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'groups': response.get('data', [])}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "获取VRRP组列表失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'groups': response}
+    else:
+        return False, {'msg': '响应数据格式错误'}
+
+
+def adc_add_heartbeat_eth(module):
     """Add Ethernet heartbeat interface"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.heart_eth.add" % (
+        ip, authkey)
+
     # Prepare parameters
     params = {}
 
@@ -534,16 +614,32 @@ def adc_add_heartbeat_eth(module, adc_base):
             msg="vlan_id is required for add heartbeat_eth action")
 
     # Make API call
-    response = adc_base.make_request('POST', 'vrrp.heart_eth.add', data=params)
+    response = send_request(url, params, method='POST')
 
     # Format response
-    success, result_dict = adc_base.format_adc_response_for_ansible(
-        response, "Add Ethernet heartbeat interface", True)
-    return success, result_dict
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'msg': '以太网心跳接口添加成功'}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "添加以太网心跳接口失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'response': response}
+    else:
+        return False, {'msg': '响应数据格式错误'}
 
 
-def adc_add_floating_ip(module, adc_base):
+def adc_add_floating_ip(module):
     """Add floating IP"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.floating_ip.add" % (
+        ip, authkey)
+
     # Prepare parameters
     params = {}
 
@@ -560,17 +656,32 @@ def adc_add_floating_ip(module, adc_base):
             msg="floating_ip is required for add floating_ip action")
 
     # Make API call
-    response = adc_base.make_request(
-        'POST', 'vrrp.floating_ip.add', data=params)
+    response = send_request(url, params, method='POST')
 
     # Format response
-    success, result_dict = adc_base.format_adc_response_for_ansible(
-        response, "Add floating IP", True)
-    return success, result_dict
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'msg': '浮动IP添加成功'}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "添加浮动IP失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'response': response}
+    else:
+        return False, {'msg': '响应数据格式错误'}
 
 
-def adc_set_force_offline(module, adc_base):
+def adc_set_force_offline(module):
     """Set force offline"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.force_offline.set" % (
+        ip, authkey)
+
     # Prepare parameters
     params = {}
 
@@ -581,17 +692,32 @@ def adc_set_force_offline(module, adc_base):
         params['all_partitions'] = module.params['all_partitions']
 
     # Make API call
-    response = adc_base.make_request(
-        'POST', 'vrrp.force_offline.set', data=params)
+    response = send_request(url, params, method='POST')
 
     # Format response
-    success, result_dict = adc_base.format_adc_response_for_ansible(
-        response, "Set force offline", True)
-    return success, result_dict
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'msg': '强制离线设置成功'}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "设置强制离线失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'response': response}
+    else:
+        return False, {'msg': '响应数据格式错误'}
 
 
-def adc_add_gateway_track(module, adc_base):
+def adc_add_gateway_track(module):
     """Add gateway tracking"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.track.gateway.add" % (
+        ip, authkey)
+
     # Prepare parameters
     params = {}
 
@@ -615,13 +741,21 @@ def adc_add_gateway_track(module, adc_base):
             msg="track_ip is required for add gateway_track action")
 
     # Make API call
-    response = adc_base.make_request(
-        'POST', 'vrrp.track.gateway.add', data=params)
+    response = send_request(url, params, method='POST')
 
     # Format response
-    success, result_dict = adc_base.format_adc_response_for_ansible(
-        response, "Add gateway tracking", True)
-    return success, result_dict
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'msg': '网关跟踪添加成功'}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "添加网关跟踪失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'response': response}
+    else:
+        return False, {'msg': '响应数据格式错误'}
 
 
 def main():
@@ -691,48 +825,45 @@ def main():
     if module.check_mode:
         module.exit_json(changed=False)
 
-    # Create ADC base object
-    adc_base = ADCBase(module)
-
     try:
         # Perform requested action based on VRRP component
         if vrrp_component == 'global':
             if action == 'get':
-                changed, result = adc_get_vrrp_global_config(module, adc_base)
+                changed, result = adc_get_vrrp_global_config(module)
             elif action == 'set':
-                changed, result = adc_set_vrrp_global_config(module, adc_base)
+                changed, result = adc_set_vrrp_global_config(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for global: %s" % action)
         elif vrrp_component == 'group':
             if action == 'add':
-                changed, result = adc_add_vrrp_group(module, adc_base)
+                changed, result = adc_add_vrrp_group(module)
             elif action == 'list':
-                changed, result = adc_list_vrrp_groups(module, adc_base)
+                changed, result = adc_list_vrrp_groups(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for group: %s" % action)
         elif vrrp_component == 'heartbeat_eth':
             if action == 'add':
-                changed, result = adc_add_heartbeat_eth(module, adc_base)
+                changed, result = adc_add_heartbeat_eth(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for heartbeat_eth: %s" % action)
         elif vrrp_component == 'floating_ip':
             if action == 'add':
-                changed, result = adc_add_floating_ip(module, adc_base)
+                changed, result = adc_add_floating_ip(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for floating_ip: %s" % action)
         elif vrrp_component == 'force_offline':
             if action == 'set':
-                changed, result = adc_set_force_offline(module, adc_base)
+                changed, result = adc_set_force_offline(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for force_offline: %s" % action)
         elif vrrp_component == 'gateway_track':
             if action == 'add':
-                changed, result = adc_add_gateway_track(module, adc_base)
+                changed, result = adc_add_gateway_track(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for gateway_track: %s" % action)

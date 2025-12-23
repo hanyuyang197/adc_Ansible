@@ -102,6 +102,8 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
 
 def send_request(url, data=None, method='GET'):
     """发送HTTP请求到ADC设备"""
+    import sys
+    response_data = None
     try:
         if method == 'POST' and data:
             data_json = json.dumps(data)
@@ -140,7 +142,16 @@ def send_request(url, data=None, method='GET'):
         else:
             response_text = response_data
 
-        result = json.loads(response_text)
+        # 安全地解析JSON响应
+        try:
+            result = json.loads(response_text)
+        except json.JSONDecodeError:
+            # 如果不是有效的JSON格式，返回原始响应
+            return {
+                'result': 'error',
+                'errcode': 'JSON_PARSE_ERROR',
+                'errmsg': f'响应不是有效的JSON格式: {response_text}'
+            }
 
         # 标准化响应格式
         # 成功响应保持原样
@@ -162,11 +173,11 @@ def send_request(url, data=None, method='GET'):
         else:
             return result
     except UnicodeDecodeError as e:
-        # 如果JSON解析失败，直接返回原始响应数据
+        # 如果解码失败，直接返回错误信息
         return {
-            'result': 'success',
-            'data': str(response_data) if response_data is not None else '',
-            'raw_response': True
+            'result': 'error',
+            'errcode': 'UNICODE_DECODE_ERROR',
+            'errmsg': f'响应解码失败: {str(e)}'
         }
     except Exception as e:
         return {
@@ -344,11 +355,11 @@ server:
     "host": "10.66.30.129",
     "port": 514,
     "log_code": 0,
-    "facility": 1,
-    "nat_log": 1,
-    "audit_log": 1,
-    "service_log": 1,
-    "dns_log": 1
+      "facility": 1,
+      "nat_log": 1,
+      "audit_log": 1,
+      "service_log": 1,
+      "dns_log": 1
   }
 msg:
   description: Result message
@@ -358,8 +369,15 @@ msg:
 '''
 
 
-def adc_add_syslog_server(module, adc_base):
+def adc_add_syslog_server(module):
     """Add syslog server configuration"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=log.syslog.server.add" % (
+        ip, authkey)
+
     # Prepare parameters
     params = {}
 
@@ -401,28 +419,58 @@ def adc_add_syslog_server(module, adc_base):
         params['keyword_type'] = module.params['keyword_type']
 
     # Make API call
-    response = adc_base.make_request(
-        'POST', 'log.syslog.server.add', data=params)
+    response = send_request(url, params, method='POST')
 
     # Format response
-    success, result_dict = adc_base.format_adc_response_for_ansible(
-        response, "Add syslog server", True)
-    return success, result_dict
-
-
-def adc_list_syslog_servers(module, adc_base):
-    """List syslog server configurations"""
-    # Make API call
-    response = adc_base.make_request('GET', 'log.syslog.server.list')
-
-    if response.get('success'):
-        return True, {'servers': response.get('data', [])}
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'msg': 'Syslog server added successfully'}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "添加syslog服务器失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'response': response}
     else:
-        return False, {'msg': response.get('msg', 'Failed to list syslog servers')}
+        return False, {'msg': '响应数据格式错误'}
 
 
-def adc_get_syslog_server(module, adc_base):
+def adc_list_syslog_servers(module):
+    """List syslog server configurations"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=log.syslog.server.list" % (
+        ip, authkey)
+
+    # Make API call
+    response = send_request(url, method='GET')
+
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'servers': response.get('data', [])}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "获取syslog服务器列表失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'servers': response}
+    else:
+        return False, {'msg': '响应数据格式错误'}
+
+
+def adc_get_syslog_server(module):
     """Get specific syslog server configuration"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=log.syslog.server.get" % (
+        ip, authkey)
+
     # Prepare parameters
     params = {}
 
@@ -438,17 +486,31 @@ def adc_get_syslog_server(module, adc_base):
         module.fail_json(msg="port is required for get action")
 
     # Make API call
-    response = adc_base.make_request(
-        'POST', 'log.syslog.server.get', data=params)
+    response = send_request(url, params, method='POST')
 
-    if response.get('success'):
-        return True, {'server': response.get('data', {})}
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'server': response.get('data', {})}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "获取syslog服务器失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'server': response}
     else:
-        return False, {'msg': response.get('msg', 'Failed to get syslog server')}
+        return False, {'msg': '响应数据格式错误'}
 
 
-def adc_edit_syslog_server(module, adc_base):
+def adc_edit_syslog_server(module):
     """Edit syslog server configuration"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=log.syslog.server.edit" % (
+        ip, authkey)
+
     # Prepare parameters
     params = {}
 
@@ -490,17 +552,32 @@ def adc_edit_syslog_server(module, adc_base):
         params['keyword_type'] = module.params['keyword_type']
 
     # Make API call
-    response = adc_base.make_request(
-        'POST', 'log.syslog.server.edit', data=params)
+    response = send_request(url, params, method='POST')
 
     # Format response
-    success, result_dict = adc_base.format_adc_response_for_ansible(
-        response, "Edit syslog server", True)
-    return success, result_dict
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'msg': 'Syslog server edited successfully'}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "编辑syslog服务器失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'response': response}
+    else:
+        return False, {'msg': '响应数据格式错误'}
 
 
-def adc_delete_syslog_server(module, adc_base):
+def adc_delete_syslog_server(module):
     """Delete syslog server configuration"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=log.syslog.server.del" % (
+        ip, authkey)
+
     # Prepare parameters
     params = {}
 
@@ -516,13 +593,21 @@ def adc_delete_syslog_server(module, adc_base):
         module.fail_json(msg="port is required for delete action")
 
     # Make API call
-    response = adc_base.make_request(
-        'POST', 'log.syslog.server.del', data=params)
+    response = send_request(url, params, method='POST')
 
     # Format response
-    success, result_dict = adc_base.format_adc_response_for_ansible(
-        response, "Delete syslog server", True)
-    return success, result_dict
+    if isinstance(response, dict):
+        if response.get('result', '').lower() == 'success':
+            # 成功响应
+            return True, {'msg': 'Syslog server deleted successfully'}
+        elif 'errcode' in response and response['errcode']:
+            # 错误响应
+            return False, {'msg': "删除syslog服务器失败: %s" % response.get('errmsg', '未知错误')}
+        else:
+            # 直接返回数据
+            return True, {'response': response}
+    else:
+        return False, {'msg': '响应数据格式错误'}
 
 
 def main():
@@ -568,21 +653,18 @@ def main():
     if module.check_mode:
         module.exit_json(changed=False)
 
-    # Create ADC base object
-    adc_base = ADCBase(module)
-
     try:
         # Perform requested action
         if action == 'add':
-            changed, result = adc_add_syslog_server(module, adc_base)
+            changed, result = adc_add_syslog_server(module)
         elif action == 'list':
-            changed, result = adc_list_syslog_servers(module, adc_base)
+            changed, result = adc_list_syslog_servers(module)
         elif action == 'get':
-            changed, result = adc_get_syslog_server(module, adc_base)
+            changed, result = adc_get_syslog_server(module)
         elif action == 'edit':
-            changed, result = adc_edit_syslog_server(module, adc_base)
+            changed, result = adc_edit_syslog_server(module)
         elif action == 'delete':
-            changed, result = adc_delete_syslog_server(module, adc_base)
+            changed, result = adc_delete_syslog_server(module)
         else:
             module.fail_json(msg="Unsupported action: %s" % action)
 

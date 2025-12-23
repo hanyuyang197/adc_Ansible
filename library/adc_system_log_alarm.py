@@ -102,6 +102,8 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
 
 def send_request(url, data=None, method='GET'):
     """发送HTTP请求到ADC设备"""
+    import sys
+    response_data = None
     try:
         if method == 'POST' and data:
             data_json = json.dumps(data)
@@ -140,7 +142,16 @@ def send_request(url, data=None, method='GET'):
         else:
             response_text = response_data
 
-        result = json.loads(response_text)
+        # 安全地解析JSON响应
+        try:
+            result = json.loads(response_text)
+        except json.JSONDecodeError:
+            # 如果不是有效的JSON格式，返回原始响应
+            return {
+                'result': 'error',
+                'errcode': 'JSON_PARSE_ERROR',
+                'errmsg': f'响应不是有效的JSON格式: {response_text}'
+            }
 
         # 标准化响应格式
         # 成功响应保持原样
@@ -162,11 +173,11 @@ def send_request(url, data=None, method='GET'):
         else:
             return result
     except UnicodeDecodeError as e:
-        # 如果JSON解析失败，直接返回原始响应数据
+        # 如果解码失败，直接返回错误信息
         return {
-            'result': 'success',
-            'data': str(response_data) if response_data is not None else '',
-            'raw_response': True
+            'result': 'error',
+            'errcode': 'UNICODE_DECODE_ERROR',
+            'errmsg': f'响应解码失败: {str(e)}'
         }
     except Exception as e:
         return {
