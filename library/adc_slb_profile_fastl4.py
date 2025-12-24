@@ -263,35 +263,26 @@ def adc_add_fastl4_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.add" % (
         ip, authkey)
 
-    # 构造模板数据
+    # 构造模板数据 - 只包含在YAML中明确定义的参数
     profile_data = {
-        "name": name,
-        "description": module.params['description'] if 'description' in module.params else "",
-        "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
-        "timeout": module.params['timeout'] if 'timeout' in module.params else 1800,
-        "reset_timeout": module.params['reset_timeout'] if 'reset_timeout' in module.params else 15,
-        "half_close_timeout": module.params['half_close_timeout'] if 'half_close_timeout' in module.params else 120,
-        "retransmit_number": module.params['retransmit_number'] if 'retransmit_number' in module.params else 5,
-        "syn_retransmit_number": module.params['syn_retransmit_number'] if 'syn_retransmit_number' in module.params else 3,
-        "time_wait": module.params['time_wait'] if 'time_wait' in module.params else 8000,
-        "receive_buff": module.params['receive_buff'] if 'receive_buff' in module.params else 51200,
-        "send_buffer": module.params['send_buffer'] if 'send_buffer' in module.params else 51200,
-        "start_win_size": module.params['start_win_size'] if 'start_win_size' in module.params else 65530,
-        "nagle": module.params['nagle'] if 'nagle' in module.params else 1,
-        "window_scale": module.params['window_scale'] if 'window_scale' in module.params else 4,
-        "keep_alive_interval": module.params['keep_alive_interval'] if 'keep_alive_interval' in module.params else 61,
-        "keep_alive_retry": module.params['keep_alive_retry'] if 'keep_alive_retry' in module.params else 8,
-        "optts": module.params['optts'] if 'optts' in module.params else 1,
-        "tcp_accelerate_client": module.params['tcp_accelerate_client'] if 'tcp_accelerate_client' in module.params else 1,
-        "tcp_accelerate_client_cnwd": module.params['tcp_accelerate_client_cnwd'] if 'tcp_accelerate_client_cnwd' in module.params else 8,
-        "tcp_accelerate_server": module.params['tcp_accelerate_server'] if 'tcp_accelerate_server' in module.params else 1,
-        "tcp_accelerate_server_cnwd": module.params['tcp_accelerate_server_cnwd'] if 'tcp_accelerate_server_cnwd' in module.params else 8,
-        "mss": module.params['mss'] if 'mss' in module.params else 512,
-        "rstnode": module.params['rstnode'] if 'rstnode' in module.params else 1,
-        "rstclient": module.params['rstclient'] if 'rstclient' in module.params else 1,
-        "zero_window_timeout": module.params['zero_window_timeout'] if 'zero_window_timeout' in module.params else 1024,
-        "syn_rto_base": module.params['syn_rto_base'] if 'syn_rto_base' in module.params else 2346
+        "name": name
     }
+
+    # 定义可选参数列表
+    optional_params = [
+        'description', 'fin_timeout', 'timeout', 'reset_timeout',
+        'half_close_timeout', 'retransmit_number', 'syn_retransmit_number',
+        'time_wait', 'receive_buff', 'send_buffer', 'start_win_size',
+        'nagle', 'window_scale', 'keep_alive_interval', 'keep_alive_retry',
+        'optts', 'tcp_accelerate_client', 'tcp_accelerate_client_cnwd',
+        'tcp_accelerate_server', 'tcp_accelerate_server_cnwd',
+        'mss', 'rstnode', 'rstclient', 'zero_window_timeout', 'syn_rto_base'
+    ]
+
+    # 添加可选参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            profile_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -346,35 +337,26 @@ def adc_edit_fastl4_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.fastl4.edit" % (
         ip, authkey)
 
-    # 构造模板数据
+    # 构造模板数据 - 只包含在YAML中明确定义的参数
     profile_data = {
-        "name": name,
-        "description": module.params['description'] if 'description' in module.params else "",
-        "fin_timeout": module.params['fin_timeout'] if 'fin_timeout' in module.params else 30,
-        "timeout": module.params['timeout'] if 'timeout' in module.params else 1800,
-        "reset_timeout": module.params['reset_timeout'] if 'reset_timeout' in module.params else 15,
-        "half_close_timeout": module.params['half_close_timeout'] if 'half_close_timeout' in module.params else 120,
-        "retransmit_number": module.params['retransmit_number'] if 'retransmit_number' in module.params else 5,
-        "syn_retransmit_number": module.params['syn_retransmit_number'] if 'syn_retransmit_number' in module.params else 3,
-        "time_wait": module.params['time_wait'] if 'time_wait' in module.params else 8000,
-        "receive_buff": module.params['receive_buff'] if 'receive_buff' in module.params else 51200,
-        "send_buffer": module.params['send_buffer'] if 'send_buffer' in module.params else 51200,
-        "start_win_size": module.params['start_win_size'] if 'start_win_size' in module.params else 65530,
-        "nagle": module.params['nagle'] if 'nagle' in module.params else 1,
-        "window_scale": module.params['window_scale'] if 'window_scale' in module.params else 4,
-        "keep_alive_interval": module.params['keep_alive_interval'] if 'keep_alive_interval' in module.params else 61,
-        "keep_alive_retry": module.params['keep_alive_retry'] if 'keep_alive_retry' in module.params else 8,
-        "optts": module.params['optts'] if 'optts' in module.params else 1,
-        "tcp_accelerate_client": module.params['tcp_accelerate_client'] if 'tcp_accelerate_client' in module.params else 1,
-        "tcp_accelerate_client_cnwd": module.params['tcp_accelerate_client_cnwd'] if 'tcp_accelerate_client_cnwd' in module.params else 8,
-        "tcp_accelerate_server": module.params['tcp_accelerate_server'] if 'tcp_accelerate_server' in module.params else 1,
-        "tcp_accelerate_server_cnwd": module.params['tcp_accelerate_server_cnwd'] if 'tcp_accelerate_server_cnwd' in module.params else 8,
-        "mss": module.params['mss'] if 'mss' in module.params else 512,
-        "rstnode": module.params['rstnode'] if 'rstnode' in module.params else 1,
-        "rstclient": module.params['rstclient'] if 'rstclient' in module.params else 1,
-        "zero_window_timeout": module.params['zero_window_timeout'] if 'zero_window_timeout' in module.params else 1024,
-        "syn_rto_base": module.params['syn_rto_base'] if 'syn_rto_base' in module.params else 2346
+        "name": name
     }
+
+    # 定义可选参数列表
+    optional_params = [
+        'description', 'fin_timeout', 'timeout', 'reset_timeout',
+        'half_close_timeout', 'retransmit_number', 'syn_retransmit_number',
+        'time_wait', 'receive_buff', 'send_buffer', 'start_win_size',
+        'nagle', 'window_scale', 'keep_alive_interval', 'keep_alive_retry',
+        'optts', 'tcp_accelerate_client', 'tcp_accelerate_client_cnwd',
+        'tcp_accelerate_server', 'tcp_accelerate_server_cnwd',
+        'mss', 'rstnode', 'rstclient', 'zero_window_timeout', 'syn_rto_base'
+    ]
+
+    # 添加可选参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            profile_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)

@@ -17,7 +17,7 @@ DOCUMENTATION = '''
 module: adc_slb_ruletable
 short_description: Manage ADC SLB Rule Tables
 description:
-    - Manage ADC SLB Rule Tables including add, edit, delete, list and get operations
+    - Manage ADC SLB Rule Tables including add, list and get operations
 version_added: "2.4"
 options:
     ip:
@@ -30,9 +30,9 @@ options:
         required: true
     action:
         description:
-            - The action to perform (list_ruletables, list_ruletables_withcommon, get_ruletable, add_ruletable, edit_ruletable, delete_ruletable, add_ruletable_entry)
+            - The action to perform (list_ruletables, list_ruletables_withcommon, get_ruletable, add_ruletable, delete_ruletable, add_ruletable_entry)
         required: true
-        choices: ['list_ruletables', 'list_ruletables_withcommon', 'get_ruletable', 'add_ruletable', 'edit_ruletable', 'delete_ruletable', 'add_ruletable_entry']
+        choices: ['list_ruletables', 'list_ruletables_withcommon', 'get_ruletable', 'add_ruletable', 'delete_ruletable', 'add_ruletable_entry']
     name:
         description:
             - The name of the rule table
@@ -65,13 +65,6 @@ EXAMPLES = '''
     ip: "192.168.1.1"
     authkey: "your_auth_key"
     action: "add_ruletable"
-    name: "my_ruletable"
-
-# Edit a rule table
-- adc_slb_ruletable:
-    ip: "192.168.1.1"
-    authkey: "your_auth_key"
-    action: "edit_ruletable"
     name: "my_ruletable"
 
 # Delete a rule table
@@ -229,29 +222,6 @@ def adc_add_ruletable(module):
     return result
 
 
-def adc_edit_ruletable(module):
-    """Edit an existing rule table"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name']
-
-    # Check required parameters
-    if not name:
-        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "编辑规则表需要提供name参数"}
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.edit" % (
-        ip, authkey)
-
-    # Construct rule table data
-    ruletable_data = {
-        "name": name
-    }
-
-    # Send POST request
-    result = send_request(url, ruletable_data, method='POST')
-    return result
-
-
 def adc_delete_ruletable(module):
     """Delete a rule table"""
     ip = module.params['ip']
@@ -310,7 +280,7 @@ def main():
             authkey=dict(type='str', required=True),
             action=dict(type='str', required=True, choices=[
                 'list_ruletables', 'list_ruletables_withcommon', 'get_ruletable',
-                'add_ruletable', 'edit_ruletable', 'delete_ruletable', 'add_ruletable_entry'
+                'add_ruletable', 'delete_ruletable', 'add_ruletable_entry'
             ]),
             name=dict(type='str', required=False),
             entrys=dict(type='list', required=False),
@@ -328,8 +298,6 @@ def main():
         result = adc_get_ruletable(module)
     elif action == 'add_ruletable':
         result = adc_add_ruletable(module)
-    elif action == 'edit_ruletable':
-        result = adc_edit_ruletable(module)
     elif action == 'delete_ruletable':
         result = adc_delete_ruletable(module)
     elif action == 'add_ruletable_entry':

@@ -180,10 +180,10 @@ def adc_list_sip_profiles_withcommon(module):
 def adc_get_sip_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    profile_name = module.params['name']
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="获取SIP模板需要提供name参数")
 
     # 构造请求URL
@@ -192,7 +192,7 @@ def adc_get_sip_profile(module):
 
     # 构造请求数据
     data = {
-        "name": name
+        "name": profile_name
     }
 
     # 发送POST请求
@@ -205,10 +205,10 @@ def adc_get_sip_profile(module):
 def adc_add_sip_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    profile_name = module.params['name']
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="添加SIP模板需要提供name参数")
 
     # 构造请求URL
@@ -217,7 +217,7 @@ def adc_add_sip_profile(module):
 
     # 构造模板数据
     profile_data = {
-        "name": name
+        "name": profile_name
     }
 
     # 只有当参数在YAML中明确定义时才包含在请求中
@@ -248,10 +248,10 @@ def adc_add_sip_profile(module):
 def adc_edit_sip_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    profile_name = module.params['name']
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="编辑SIP模板需要提供name参数")
 
     # 构造请求URL
@@ -260,7 +260,7 @@ def adc_edit_sip_profile(module):
 
     # 构造模板数据
     profile_data = {
-        "name": name
+        "name": profile_name
     }
 
     # 只有当参数在YAML中明确定义时才包含在请求中
@@ -291,10 +291,10 @@ def adc_edit_sip_profile(module):
 def adc_delete_sip_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    profile_name = module.params['name']
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="删除SIP模板需要提供name参数")
 
     # 构造请求URL
@@ -303,7 +303,7 @@ def adc_delete_sip_profile(module):
 
     # 构造请求数据
     data = {
-        "name": name
+        "name": profile_name
     }
 
     # 发送POST请求

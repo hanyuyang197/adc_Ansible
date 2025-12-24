@@ -3,7 +3,8 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    # adc_ip变量已移除，使用inventory_hostname替代  tasks:
+    # adc_ip变量已移除，使用inventory_hostname替代
+  tasks:
     - name: 登录ADC设备
       adc_login:
         ip: "{{ inventory_hostname }}"
@@ -16,11 +17,11 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "list_profiles_withcommon"
-      register: result
+      register: list_withcommon_result
 
     - name: 显示结果
       debug:
-        var: result
+        var: list_withcommon_result
 
     - name: 登出ADC设备
       adc_logout:

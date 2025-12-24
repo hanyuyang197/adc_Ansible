@@ -192,10 +192,10 @@ def adc_get_tcp_profile(module):
     """获取TCP模板详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    profile_name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="获取TCP模板详情需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
@@ -204,7 +204,7 @@ def adc_get_tcp_profile(module):
 
     # 构造请求数据
     profile_data = {
-        "name": name
+        "name": profile_name
     }
 
     # 转换为JSON格式
@@ -253,33 +253,32 @@ def adc_add_tcp_profile(module):
     """添加TCP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    profile_name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="添加TCP模板需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.tcp.add" % (
         ip, authkey)
 
-    # 构造模板数据
+    # 构造模板数据 - 只包含在YAML中明确定义的参数
     profile_data = {
-        "name": name,
-        "description": module.params['description'] if 'description' in module.params else "",
-        "timeout": module.params['timeout'] if 'timeout' in module.params else 1800,
-        "reset_timeout": module.params['reset_timeout'] if 'reset_timeout' in module.params else 15,
-        "start_win_size": module.params['start_win_size'] if 'start_win_size' in module.params else 65530,
-        "half_close_timeout": module.params['half_close_timeout'] if 'half_close_timeout' in module.params else 120,
-        "insertcip": module.params['insertcip'] if 'insertcip' in module.params else 1,
-        "generate_isn": module.params['generate_isn'] if 'generate_isn' in module.params else 1,
-        "rstnode": module.params['rstnode'] if 'rstnode' in module.params else 1,
-        "rstclient": module.params['rstclient'] if 'rstclient' in module.params else 1,
-        "timestamp": module.params['timestamp'] if 'timestamp' in module.params else 2,
-        "loose_initiation": module.params['loose_initiation'] if 'loose_initiation' in module.params else 0,
-        "loose_close": module.params['loose_close'] if 'loose_close' in module.params else 0,
-        "time_wait": module.params['time_wait'] if 'time_wait' in module.params else 8000
+        "name": profile_name
     }
+
+    # 定义可选参数列表
+    optional_params = [
+        'description', 'timeout', 'reset_timeout', 'start_win_size',
+        'half_close_timeout', 'insertcip', 'generate_isn', 'rstnode',
+        'rstclient', 'timestamp', 'loose_initiation', 'loose_close', 'time_wait'
+    ]
+
+    # 添加可选参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            profile_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -324,10 +323,10 @@ def adc_edit_tcp_profile(module):
     """编辑TCP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    profile_name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="编辑TCP模板需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
@@ -336,7 +335,7 @@ def adc_edit_tcp_profile(module):
 
     # 构造模板数据
     profile_data = {
-        "name": name
+        "name": profile_name
     }
 
     # 添加可选参数
@@ -410,10 +409,10 @@ def adc_delete_tcp_profile(module):
     """删除TCP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    profile_name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="删除TCP模板需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
@@ -422,7 +421,7 @@ def adc_delete_tcp_profile(module):
 
     # 构造请求数据
     profile_data = {
-        "name": name
+        "name": profile_name
     }
 
     # 转换为JSON格式

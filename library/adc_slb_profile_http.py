@@ -263,48 +263,29 @@ def adc_add_http_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.http.add" % (
         ip, authkey)
 
-    # 构造模板数据
+    # 构造模板数据 - 只包含在YAML中明确定义的参数
     profile_data = {
-        "name": name,
-        "description": module.params['description'] if 'description' in module.params else "",
-        "fallback_url": module.params['fallback_url'] if 'fallback_url' in module.params else "",
-        "force_reselect": module.params['force_reselect'] if 'force_reselect' in module.params else 0,
-        "clientip_insert": module.params['clientip_insert'] if 'clientip_insert' in module.params else "",
-        "clientip_insert_replace": module.params['clientip_insert_replace'] if 'clientip_insert_replace' in module.params else 0,
-        "retry_503": module.params['retry_503'] if 'retry_503' in module.params else 0,
-        "websocket": module.params['websocket'] if 'websocket' in module.params else 0,
-        "node_select_fail_response_504": module.params['node_select_fail_response_504'] if 'node_select_fail_response_504' in module.params else 1,
-        "cookie_encrypt_name": module.params['cookie_encrypt_name'] if 'cookie_encrypt_name' in module.params else "",
-        "cookie_encrypt_password": module.params['cookie_encrypt_password'] if 'cookie_encrypt_password' in module.params else "",
-        "req_header_del": module.params['req_header_del'] if 'req_header_del' in module.params else [],
-        "rsp_header_del": module.params['rsp_header_del'] if 'rsp_header_del' in module.params else [],
-        "req_header_insert": module.params['req_header_insert'] if 'req_header_insert' in module.params else [],
-        "rsp_header_insert": module.params['rsp_header_insert'] if 'rsp_header_insert' in module.params else [],
-        "url_class": module.params['url_class'] if 'url_class' in module.params else [],
-        "host_class": module.params['host_class'] if 'host_class' in module.params else [],
-        "url_hash": module.params['url_hash'] if 'url_hash' in module.params else 0,
-        "url_hash_len": module.params['url_hash_len'] if 'url_hash_len' in module.params else 0,
-        "url_hash_offset": module.params['url_hash_offset'] if 'url_hash_offset' in module.params else 0,
-        "redirect_modify": module.params['redirect_modify'] if 'redirect_modify' in module.params else [],
-        "redirect_modify_https": module.params['redirect_modify_https'] if 'redirect_modify_https' in module.params else 0,
-        "redirect_modify_https_port": module.params['redirect_modify_https_port'] if 'redirect_modify_https_port' in module.params else 0,
-        "cookie_select": module.params['cookie_select'] if 'cookie_select' in module.params else 0,
-        "cookie_expire": module.params['cookie_expire'] if 'cookie_expire' in module.params else 0,
-        "cookie_expire_enable": module.params['cookie_expire_enable'] if 'cookie_expire_enable' in module.params else 0,
-        "compress": module.params['compress'] if 'compress' in module.params else 0,
-        "compress_keep_header": module.params['compress_keep_header'] if 'compress_keep_header' in module.params else 0,
-        "compress_level": module.params['compress_level'] if 'compress_level' in module.params else 1,
-        "compress_min_len": module.params['compress_min_len'] if 'compress_min_len' in module.params else 0,
-        "chunking_request": module.params['chunking_request'] if 'chunking_request' in module.params else 0,
-        "chunking_response": module.params['chunking_response'] if 'chunking_response' in module.params else 0,
-        "compress_content_type": module.params['compress_content_type'] if 'compress_content_type' in module.params else [],
-        "compress_content_type_exclude": module.params['compress_content_type_exclude'] if 'compress_content_type_exclude' in module.params else [],
-        "compress_url_exclude": module.params['compress_url_exclude'] if 'compress_url_exclude' in module.params else [],
-        "req_header_insert_cert": module.params['req_header_insert_cert'] if 'req_header_insert_cert' in module.params else [],
-        "req_url_insert_cert": module.params['req_url_insert_cert'] if 'req_url_insert_cert' in module.params else [],
-        "req_cookie_insert_cert": module.params['req_cookie_insert_cert'] if 'req_cookie_insert_cert' in module.params else [],
-        "client_cert_code": module.params['client_cert_code'] if 'client_cert_code' in module.params else []
+        "name": name
     }
+
+    # 定义可选参数列表
+    optional_params = [
+        'description', 'fallback_url', 'force_reselect', 'clientip_insert',
+        'clientip_insert_replace', 'retry_503', 'websocket', 'node_select_fail_response_504',
+        'cookie_encrypt_name', 'cookie_encrypt_password', 'req_header_del', 'rsp_header_del',
+        'req_header_insert', 'rsp_header_insert', 'url_class', 'host_class',
+        'url_hash', 'url_hash_len', 'url_hash_offset', 'redirect_modify',
+        'redirect_modify_https', 'redirect_modify_https_port', 'cookie_select',
+        'cookie_expire', 'cookie_expire_enable', 'compress', 'compress_keep_header',
+        'compress_level', 'compress_min_len', 'chunking_request', 'chunking_response',
+        'compress_content_type', 'compress_content_type_exclude', 'compress_url_exclude',
+        'req_header_insert_cert', 'req_url_insert_cert', 'req_cookie_insert_cert', 'client_cert_code'
+    ]
+
+    # 添加可选参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            profile_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)

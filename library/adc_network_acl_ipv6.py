@@ -96,7 +96,7 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
 
 
 def adc_list_acls(module):
-    """获取IPv6访问列表"""
+    """获取IPv6访问列表列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -145,10 +145,10 @@ def adc_get_acl(module):
     """获取IPv6访问列表详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    acl_name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
-    if not name:
+    if not acl_name:
         module.fail_json(msg="获取IPv6访问列表详情需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
@@ -157,7 +157,7 @@ def adc_get_acl(module):
 
     # 构造请求数据
     acl_data = {
-        "name": name
+        "name": acl_name
     }
 
     # 转换为JSON格式
@@ -206,11 +206,11 @@ def adc_add_acl_item(module):
     """添加IPv6访问列表条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    acl_name = module.params['name'] if 'name' in module.params else ""
     seq_num = module.params['seq_num'] if 'seq_num' in module.params else ""
 
     # 检查必需参数
-    if not name or not seq_num:
+    if not acl_name or not seq_num:
         module.fail_json(msg="添加IPv6访问列表条目需要提供name和seq_num参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
@@ -219,7 +219,7 @@ def adc_add_acl_item(module):
 
     # 构造ACL条目数据 - 只包含在YAML中明确定义的参数
     acl_data = {
-        "name": name,
+        "name": acl_name,
         "seq_num": seq_num
     }
 
@@ -279,11 +279,11 @@ def adc_edit_acl_item(module):
     """编辑IPv6访问列表条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    acl_name = module.params['name'] if 'name' in module.params else ""
     seq_num = module.params['seq_num'] if 'seq_num' in module.params else ""
 
     # 检查必需参数
-    if not name or not seq_num:
+    if not acl_name or not seq_num:
         module.fail_json(msg="编辑IPv6访问列表条目需要提供name和seq_num参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
@@ -292,7 +292,7 @@ def adc_edit_acl_item(module):
 
     # 构造ACL条目数据
     acl_data = {
-        "name": name,
+        "name": acl_name,
         "seq_num": seq_num
     }
 
@@ -377,10 +377,10 @@ def adc_delete_acl_item(module):
     """删除IPv6访问列表条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    acl_name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
-    if not name:
+    if not acl_name:
         module.fail_json(msg="删除IPv6访问列表条目需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
@@ -389,7 +389,7 @@ def adc_delete_acl_item(module):
 
     # 构造请求数据
     acl_data = {
-        "name": name
+        "name": acl_name
     }
 
     # 如果提供了seq_num参数，则添加到请求数据中
@@ -439,11 +439,10 @@ def adc_set_acl_description(module):
     """设置IPv6访问列表描述"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
-    description = module.params['description'] if 'description' in module.params else ""
+    acl_name = module.params['name'] if 'name' in module.params else ""
 
     # 检查必需参数
-    if not name:
+    if not acl_name:
         module.fail_json(msg="设置IPv6访问列表描述需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
@@ -452,9 +451,12 @@ def adc_set_acl_description(module):
 
     # 构造请求数据
     acl_data = {
-        "name": name,
-        "description": description
+        "name": acl_name
     }
+
+    # 添加可选参数
+    if 'description' in module.params and module.params['description'] is not None:
+        acl_data['description'] = module.params['description']
 
     # 转换为JSON格式
     post_data = json.dumps(acl_data)

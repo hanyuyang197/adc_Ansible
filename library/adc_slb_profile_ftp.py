@@ -229,25 +229,25 @@ def main():
 
     # 根据action执行相应操作
     if action == 'list_profiles':
-        result = adc_list_ftp_profiles(module)
+        module_result = adc_list_ftp_profiles(module)
     elif action == 'list_profiles_withcommon':
-        result = adc_list_ftp_profiles_withcommon(module)
+        module_result = adc_list_ftp_profiles_withcommon(module)
     elif action == 'get_profile':
-        result = adc_get_ftp_profile(module)
+        module_result = adc_get_ftp_profile(module)
     elif action == 'add_profile':
-        result = adc_add_ftp_profile(module)
+        module_result = adc_add_ftp_profile(module)
     elif action == 'edit_profile':
-        result = adc_edit_ftp_profile(module)
+        module_result = adc_edit_ftp_profile(module)
     elif action == 'delete_profile':
-        result = adc_delete_ftp_profile(module)
+        module_result = adc_delete_ftp_profile(module)
     else:
         module.fail_json(msg="不支持的操作: %s" % action)
 
     # 处理结果
-    if 'status' in result and result['status'] == 'error':
-        module.fail_json(msg=result['msg'])
+    if 'status' in module_result and module_result['status'] == 'error':
+        module.fail_json(msg=module_result['msg'])
     else:
-        module.exit_json(changed=True, result=result)
+        module.exit_json(changed=True, result=module_result)
 
 
 if __name__ == '__main__':

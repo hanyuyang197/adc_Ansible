@@ -263,15 +263,20 @@ def adc_add_udp_profile(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.udp.add" % (
         ip, authkey)
 
-    # 构造模板数据
+    # 构造模板数据 - 只包含在YAML中明确定义的参数
     profile_data = {
-        "name": name,
-        "description": module.params['description'] if 'description' in module.params else "",
-        "timeout": module.params['timeout'] if 'timeout' in module.params else 120,
-        "aging": module.params['aging'] if 'aging' in module.params else "",
-        "delayed_timeout": module.params['delayed_timeout'] if 'delayed_timeout' in module.params else 0,
-        "node_reselect": module.params['node_reselect'] if 'node_reselect' in module.params else 0
+        "name": name
     }
+
+    # 定义可选参数列表
+    optional_params = [
+        'description', 'timeout', 'aging', 'delayed_timeout', 'node_reselect'
+    ]
+
+    # 添加可选参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            profile_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
