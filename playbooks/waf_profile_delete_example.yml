@@ -16,14 +16,12 @@
         password: "{{ adc_password }}"
       register: login_result
 
-    - name: Delete WAF profile (using HTTP module directly since WAF module doesn't support delete)
-      uri:
-        url: "http://{{ inventory_hostname }}/adcapi/v2.0/?authkey={{ login_result.authkey }}&action=waf.profile.del"
-        method: POST
-        body_format: json
-        body:
-          name: "{{ profile_name }}"
-        status_code: 200
+    - name: Delete WAF profile
+      adc_waf_profile:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "delete_profile"
+        name: "{{ profile_name }}"
       register: waf_delete_result
 
     - name: Display result

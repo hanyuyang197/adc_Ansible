@@ -92,10 +92,10 @@ def adc_list_udp_profiles_withcommon(module):
 def adc_get_udp_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    profile_name = module.params['name']
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="获取UDP模板需要提供name参数")
 
     # 构造请求URL
@@ -104,7 +104,7 @@ def adc_get_udp_profile(module):
 
     # 构造请求数据
     data = {
-        "name": name
+        "name": profile_name
     }
 
     # 发送POST请求
@@ -117,10 +117,10 @@ def adc_get_udp_profile(module):
 def adc_add_udp_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    profile_name = module.params['name']
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="添加UDP模板需要提供name参数")
 
     # 构造请求URL
@@ -129,7 +129,7 @@ def adc_add_udp_profile(module):
 
     # 构造模板数据
     profile_data = {
-        "name": name
+        "name": profile_name
     }
 
     # 只有当参数在YAML中明确定义时才包含在请求中
@@ -151,10 +151,10 @@ def adc_add_udp_profile(module):
 def adc_edit_udp_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    profile_name = module.params['name']
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="编辑UDP模板需要提供name参数")
 
     # 构造请求URL
@@ -163,7 +163,7 @@ def adc_edit_udp_profile(module):
 
     # 构造模板数据
     profile_data = {
-        "name": name
+        "name": profile_name
     }
 
     # 只有当参数在YAML中明确定义时才包含在请求中
@@ -185,10 +185,10 @@ def adc_edit_udp_profile(module):
 def adc_delete_udp_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    profile_name = module.params['name']
 
     # 检查必需参数
-    if not name:
+    if not profile_name:
         module.fail_json(msg="删除UDP模板需要提供name参数")
 
     # 构造请求URL
@@ -197,7 +197,7 @@ def adc_delete_udp_profile(module):
 
     # 构造请求数据
     data = {
-        "name": name
+        "name": profile_name
     }
 
     # 发送POST请求
@@ -222,25 +222,25 @@ def main():
 
     # 根据action执行相应操作
     if action == 'list_profiles':
-        result = adc_list_udp_profiles(module)
+        module_result = adc_list_udp_profiles(module)
     elif action == 'list_profiles_withcommon':
-        result = adc_list_udp_profiles_withcommon(module)
+        module_result = adc_list_udp_profiles_withcommon(module)
     elif action == 'get_profile':
-        result = adc_get_udp_profile(module)
+        module_result = adc_get_udp_profile(module)
     elif action == 'add_profile':
-        result = adc_add_udp_profile(module)
+        module_result = adc_add_udp_profile(module)
     elif action == 'edit_profile':
-        result = adc_edit_udp_profile(module)
+        module_result = adc_edit_udp_profile(module)
     elif action == 'delete_profile':
-        result = adc_delete_udp_profile(module)
+        module_result = adc_delete_udp_profile(module)
     else:
         module.fail_json(msg="不支持的操作: %s" % action)
 
     # 处理结果
-    if 'status' in result and result['status'] == 'error':
-        module.fail_json(msg=result['msg'])
+    if 'status' in module_result and module_result['status'] == 'error':
+        module.fail_json(msg=module_result['msg'])
     else:
-        module.exit_json(changed=True, result=result)
+        module.exit_json(changed=True, result=module_result)
 
 
 if __name__ == '__main__':

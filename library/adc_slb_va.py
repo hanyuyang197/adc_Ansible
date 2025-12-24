@@ -210,20 +210,32 @@ def adc_add_va(module):
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.add" % (ip, authkey)
 
-    # 构造虚拟地址数据
+    # 构造虚拟地址数据 - 只包含在YAML中明确定义的参数
     va_data = {
-        "virtual_address": {
-            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
-            "name": module.params['name'] if 'name' in module.params else "",
-            "status": module.params['status'] if 'status' in module.params else 1,
-            "arp_status": module.params['arp_status'] if 'arp_status' in module.params else 1,
-            "vrid": module.params['vrid'] if 'vrid' in module.params else 0,
-            "redistribution": module.params['redistribution'] if 'redistribution' in module.params else 0,
-            "policy_profile": module.params['policy_profile'] if 'policy_profile' in module.params else "",
-            "natlog_profile": module.params['natlog_profile'] if 'natlog_profile' in module.params else "",
-            "virtual_services": module.params['virtual_services'] if 'virtual_services' in module.params else []
-        }
+        "virtual_address": {}
     }
+
+    # 添加必需参数（如果提供）
+    if 'name' in module.params and module.params['name']:
+        va_data['virtual_address']['name'] = module.params['name']
+    if 'tc_name' in module.params and module.params['tc_name']:
+        va_data['virtual_address']['tc_name'] = module.params['tc_name']
+
+    # 添加可选参数（只包含实际定义的参数）
+    if 'status' in module.params and module.params['status'] is not None:
+        va_data['virtual_address']['status'] = module.params['status']
+    if 'arp_status' in module.params and module.params['arp_status'] is not None:
+        va_data['virtual_address']['arp_status'] = module.params['arp_status']
+    if 'vrid' in module.params and module.params['vrid'] is not None:
+        va_data['virtual_address']['vrid'] = module.params['vrid']
+    if 'redistribution' in module.params and module.params['redistribution'] is not None:
+        va_data['virtual_address']['redistribution'] = module.params['redistribution']
+    if 'policy_profile' in module.params and module.params['policy_profile']:
+        va_data['virtual_address']['policy_profile'] = module.params['policy_profile']
+    if 'natlog_profile' in module.params and module.params['natlog_profile']:
+        va_data['virtual_address']['natlog_profile'] = module.params['natlog_profile']
+    if 'virtual_services' in module.params and module.params['virtual_services']:
+        va_data['virtual_address']['virtual_services'] = module.params['virtual_services']
 
     # 根据类型添加特定参数
     if va_type == "ipv4" or va_type == "ipv6":
@@ -309,21 +321,28 @@ def adc_edit_va(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.edit" % (
         ip, authkey)
 
-    # 构造虚拟地址数据
+    # 构造虚拟地址数据 - 只包含在YAML中明确定义的参数
     va_data = {
         "virtual_address": {
-            "name": name,
-            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
-            "status": module.params['status'] if 'status' in module.params else 1,
-            "arp_status": module.params['arp_status'] if 'arp_status' in module.params else 1,
-            "vrid": module.params['vrid'] if 'vrid' in module.params else 0,
-            "redistribution": module.params['redistribution'] if 'redistribution' in module.params else 0,
-            "policy_profile": module.params['policy_profile'] if 'policy_profile' in module.params else "",
-            "natlog_profile": module.params['natlog_profile'] if 'natlog_profile' in module.params else ""
+            "name": name  # name是必需参数，必须包含
         }
     }
 
-    # 添加可选参数
+    # 添加可选参数（只包含实际定义的参数）
+    if 'tc_name' in module.params and module.params['tc_name']:
+        va_data['virtual_address']['tc_name'] = module.params['tc_name']
+    if 'status' in module.params and module.params['status'] is not None:
+        va_data['virtual_address']['status'] = module.params['status']
+    if 'arp_status' in module.params and module.params['arp_status'] is not None:
+        va_data['virtual_address']['arp_status'] = module.params['arp_status']
+    if 'vrid' in module.params and module.params['vrid'] is not None:
+        va_data['virtual_address']['vrid'] = module.params['vrid']
+    if 'redistribution' in module.params and module.params['redistribution'] is not None:
+        va_data['virtual_address']['redistribution'] = module.params['redistribution']
+    if 'policy_profile' in module.params and module.params['policy_profile']:
+        va_data['virtual_address']['policy_profile'] = module.params['policy_profile']
+    if 'natlog_profile' in module.params and module.params['natlog_profile']:
+        va_data['virtual_address']['natlog_profile'] = module.params['natlog_profile']
     if 'address' in module.params and module.params['address']:
         va_data['virtual_address']['address'] = module.params['address']
     if 'icmp_probe' in module.params and module.params['icmp_probe'] is not None:

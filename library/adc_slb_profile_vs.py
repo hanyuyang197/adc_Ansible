@@ -172,48 +172,49 @@ def adc_add_vs_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    description = module.params['description']
 
     # 检查必需参数
     if not name:
         module.fail_json(msg="添加虚拟服务模板需要提供name参数")
 
-    # 检查必填参数
-    required_params = [
-        'ignored_tcp_msl', 'reset_unknown_conn', 'reset_l7_on_failover',
-        'syn_otherflags', 'conn_limit_switch', 'conn_limit',
-        'conn_over_limit_action', 'log_conn_limit_exceed',
-        'conn_rate_limit_switch', 'conn_rate_limit',
-        'conn_rate_over_limit_action', 'conn_rate_unit',
-        'log_conn_rate_limit_exceed'
-    ]
-
-    for param in required_params:
-        if module.params[param] is None:
-            module.fail_json(msg="添加虚拟服务模板需要提供%s参数" % param)
-
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.add" % (
         ip, authkey)
 
-    # 构造模板数据
+    # 构造模板数据 - 只包含在YAML中明确定义的参数
     profile_data = {
-        "name": name,
-        "description": description,
-        "ignored_tcp_msl": module.params['ignored_tcp_msl'],
-        "reset_unknown_conn": module.params['reset_unknown_conn'],
-        "reset_l7_on_failover": module.params['reset_l7_on_failover'],
-        "syn_otherflags": module.params['syn_otherflags'],
-        "conn_limit_switch": module.params['conn_limit_switch'],
-        "conn_limit": module.params['conn_limit'],
-        "conn_over_limit_action": module.params['conn_over_limit_action'],
-        "log_conn_limit_exceed": module.params['log_conn_limit_exceed'],
-        "conn_rate_limit_switch": module.params['conn_rate_limit_switch'],
-        "conn_rate_limit": module.params['conn_rate_limit'],
-        "conn_rate_over_limit_action": module.params['conn_rate_over_limit_action'],
-        "conn_rate_unit": module.params['conn_rate_unit'],
-        "log_conn_rate_limit_exceed": module.params['log_conn_rate_limit_exceed']
+        "name": name
     }
+
+    # 添加可选参数（只包含实际定义的参数）
+    if 'description' in module.params and module.params['description'] is not None:
+        profile_data["description"] = module.params['description']
+    if 'ignored_tcp_msl' in module.params and module.params['ignored_tcp_msl'] is not None:
+        profile_data["ignored_tcp_msl"] = module.params['ignored_tcp_msl']
+    if 'reset_unknown_conn' in module.params and module.params['reset_unknown_conn'] is not None:
+        profile_data["reset_unknown_conn"] = module.params['reset_unknown_conn']
+    if 'reset_l7_on_failover' in module.params and module.params['reset_l7_on_failover'] is not None:
+        profile_data["reset_l7_on_failover"] = module.params['reset_l7_on_failover']
+    if 'syn_otherflags' in module.params and module.params['syn_otherflags'] is not None:
+        profile_data["syn_otherflags"] = module.params['syn_otherflags']
+    if 'conn_limit_switch' in module.params and module.params['conn_limit_switch'] is not None:
+        profile_data["conn_limit_switch"] = module.params['conn_limit_switch']
+    if 'conn_limit' in module.params and module.params['conn_limit'] is not None:
+        profile_data["conn_limit"] = module.params['conn_limit']
+    if 'conn_over_limit_action' in module.params and module.params['conn_over_limit_action'] is not None:
+        profile_data["conn_over_limit_action"] = module.params['conn_over_limit_action']
+    if 'log_conn_limit_exceed' in module.params and module.params['log_conn_limit_exceed'] is not None:
+        profile_data["log_conn_limit_exceed"] = module.params['log_conn_limit_exceed']
+    if 'conn_rate_limit_switch' in module.params and module.params['conn_rate_limit_switch'] is not None:
+        profile_data["conn_rate_limit_switch"] = module.params['conn_rate_limit_switch']
+    if 'conn_rate_limit' in module.params and module.params['conn_rate_limit'] is not None:
+        profile_data["conn_rate_limit"] = module.params['conn_rate_limit']
+    if 'conn_rate_over_limit_action' in module.params and module.params['conn_rate_over_limit_action'] is not None:
+        profile_data["conn_rate_over_limit_action"] = module.params['conn_rate_over_limit_action']
+    if 'conn_rate_unit' in module.params and module.params['conn_rate_unit'] is not None:
+        profile_data["conn_rate_unit"] = module.params['conn_rate_unit']
+    if 'log_conn_rate_limit_exceed' in module.params and module.params['log_conn_rate_limit_exceed'] is not None:
+        profile_data["log_conn_rate_limit_exceed"] = module.params['log_conn_rate_limit_exceed']
 
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')
@@ -226,48 +227,49 @@ def adc_edit_vs_profile(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    description = module.params['description']
 
     # 检查必需参数
     if not name:
         module.fail_json(msg="编辑虚拟服务模板需要提供name参数")
 
-    # 检查必填参数
-    required_params = [
-        'ignored_tcp_msl', 'reset_unknown_conn', 'reset_l7_on_failover',
-        'syn_otherflags', 'conn_limit_switch', 'conn_limit',
-        'conn_over_limit_action', 'log_conn_limit_exceed',
-        'conn_rate_limit_switch', 'conn_rate_limit',
-        'conn_rate_over_limit_action', 'conn_rate_unit',
-        'log_conn_rate_limit_exceed'
-    ]
-
-    for param in required_params:
-        if module.params[param] is None:
-            module.fail_json(msg="编辑虚拟服务模板需要提供%s参数" % param)
-
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.profile.vs.edit" % (
         ip, authkey)
 
-    # 构造模板数据
+    # 构造模板数据 - 只包含在YAML中明确定义的参数
     profile_data = {
-        "name": name,
-        "description": description,
-        "ignored_tcp_msl": module.params['ignored_tcp_msl'],
-        "reset_unknown_conn": module.params['reset_unknown_conn'],
-        "reset_l7_on_failover": module.params['reset_l7_on_failover'],
-        "syn_otherflags": module.params['syn_otherflags'],
-        "conn_limit_switch": module.params['conn_limit_switch'],
-        "conn_limit": module.params['conn_limit'],
-        "conn_over_limit_action": module.params['conn_over_limit_action'],
-        "log_conn_limit_exceed": module.params['log_conn_limit_exceed'],
-        "conn_rate_limit_switch": module.params['conn_rate_limit_switch'],
-        "conn_rate_limit": module.params['conn_rate_limit'],
-        "conn_rate_over_limit_action": module.params['conn_rate_over_limit_action'],
-        "conn_rate_unit": module.params['conn_rate_unit'],
-        "log_conn_rate_limit_exceed": module.params['log_conn_rate_limit_exceed']
+        "name": name
     }
+
+    # 添加可选参数（只包含实际定义的参数）
+    if 'description' in module.params and module.params['description'] is not None:
+        profile_data["description"] = module.params['description']
+    if 'ignored_tcp_msl' in module.params and module.params['ignored_tcp_msl'] is not None:
+        profile_data["ignored_tcp_msl"] = module.params['ignored_tcp_msl']
+    if 'reset_unknown_conn' in module.params and module.params['reset_unknown_conn'] is not None:
+        profile_data["reset_unknown_conn"] = module.params['reset_unknown_conn']
+    if 'reset_l7_on_failover' in module.params and module.params['reset_l7_on_failover'] is not None:
+        profile_data["reset_l7_on_failover"] = module.params['reset_l7_on_failover']
+    if 'syn_otherflags' in module.params and module.params['syn_otherflags'] is not None:
+        profile_data["syn_otherflags"] = module.params['syn_otherflags']
+    if 'conn_limit_switch' in module.params and module.params['conn_limit_switch'] is not None:
+        profile_data["conn_limit_switch"] = module.params['conn_limit_switch']
+    if 'conn_limit' in module.params and module.params['conn_limit'] is not None:
+        profile_data["conn_limit"] = module.params['conn_limit']
+    if 'conn_over_limit_action' in module.params and module.params['conn_over_limit_action'] is not None:
+        profile_data["conn_over_limit_action"] = module.params['conn_over_limit_action']
+    if 'log_conn_limit_exceed' in module.params and module.params['log_conn_limit_exceed'] is not None:
+        profile_data["log_conn_limit_exceed"] = module.params['log_conn_limit_exceed']
+    if 'conn_rate_limit_switch' in module.params and module.params['conn_rate_limit_switch'] is not None:
+        profile_data["conn_rate_limit_switch"] = module.params['conn_rate_limit_switch']
+    if 'conn_rate_limit' in module.params and module.params['conn_rate_limit'] is not None:
+        profile_data["conn_rate_limit"] = module.params['conn_rate_limit']
+    if 'conn_rate_over_limit_action' in module.params and module.params['conn_rate_over_limit_action'] is not None:
+        profile_data["conn_rate_over_limit_action"] = module.params['conn_rate_over_limit_action']
+    if 'conn_rate_unit' in module.params and module.params['conn_rate_unit'] is not None:
+        profile_data["conn_rate_unit"] = module.params['conn_rate_unit']
+    if 'log_conn_rate_limit_exceed' in module.params and module.params['log_conn_rate_limit_exceed'] is not None:
+        profile_data["log_conn_rate_limit_exceed"] = module.params['log_conn_rate_limit_exceed']
 
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')

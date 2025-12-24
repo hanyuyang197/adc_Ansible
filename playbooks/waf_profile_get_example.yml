@@ -21,12 +21,12 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: get_profile
-        name: "{{ profile_name }}" # 使用变量而不是直接使用保留关键字
-      register: waf_result # 更改变量名避免使用保留关键字
+        name: "{{ profile_name }}"
+      register: waf_result
 
     - name: Display WAF profile details
       debug:
-        var: waf_result # 使用新的变量名
+        var: waf_result
 
     - name: Logout from ADC device
       adc_logout:

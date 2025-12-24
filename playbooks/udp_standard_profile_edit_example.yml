@@ -3,7 +3,8 @@
   hosts: adc_servers
   gather_facts: no
   vars:
-    # adc_ip变量已移除，使用inventory_hostname替代  tasks:
+    # adc_ip变量已移除，使用inventory_hostname替代
+  tasks:
     - name: 登录ADC设备
       adc_login:
         ip: "{{ inventory_hostname }}"
@@ -21,11 +22,11 @@
         aging: "fast"
         delayed_timeout: 15
         node_reselect: 1
-      register: result
+      register: edit_result
 
     - name: 显示结果
       debug:
-        var: result
+        var: edit_result
 
     - name: 登出ADC设备
       adc_logout:

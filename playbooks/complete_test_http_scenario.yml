@@ -339,7 +339,7 @@
       adc_slb_pool:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: "list_pools"
+        action: "get_pools"
       register: list_pools_result
       when: login_result is succeeded
 

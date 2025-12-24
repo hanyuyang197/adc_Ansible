@@ -8,25 +8,26 @@
     adc_password: "admin"
 
   tasks:
-    - name: 登录ADC设备
+    - name: Login to ADC device
       adc_login:
         ip: "{{ inventory_hostname }}"
         username: "{{ adc_username }}"
         password: "{{ adc_password }}"
       register: login_result
 
-    - name: Get list of WAF profiles
+    - name: List WAF profiles
       adc_waf_profile:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: list_profiles
-      register: waf_result # 更改变量名避免使用保留关键字
+      register: waf_list_result
 
-    - name: Display WAF profiles
+    - name: Display WAF profiles list
       debug:
-        var: waf_result # 使用新的变量名
+        var: waf_list_result
 
-    - name: 登出ADC设备
+    - name: Logout from ADC device
       adc_logout:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
+      register: logout_result
