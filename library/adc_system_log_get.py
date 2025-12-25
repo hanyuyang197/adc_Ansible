@@ -402,6 +402,8 @@ def clear_logs(module):
 
 def download_logs(module):
     """Download logs of specified type"""
+    import sys
+    import os
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -424,12 +426,39 @@ def download_logs(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=%s" % (
         ip, authkey, action_map[log_type])
 
-    # For download, we need to handle file download differently
-    # Since we removed the download_file method from ADCBase, we'll return the URL for download
-    file_path = "/tmp/%s_logs.txt" % log_type
+    # 实际下载文件
+    try:
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            response = urllib_request.urlopen(url)
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            response = urllib_request.urlopen(url)
 
-    # Return download information
-    return True, {'file_path': file_path, 'download_url': url}
+        # 读取响应内容（二进制数据）
+        content = response.read()
+
+        # 生成本地文件路径 - 使用.tar.gz扩展名
+        import tempfile
+        import time
+        timestamp = int(time.time())
+        file_path = os.path.join(tempfile.gettempdir(), f"{log_type}_logs_{timestamp}.tar.gz")
+
+        # 以二进制模式写入文件
+        with open(file_path, 'wb') as f:
+            f.write(content)
+
+        # 返回下载结果
+        return True, {
+            'file_path': file_path, 
+            'download_url': url,
+            'file_size': len(content),
+            'msg': f'日志文件已下载并保存到 {file_path}'
+        }
+    except Exception as e:
+        return False, {'msg': f'下载日志文件失败: {str(e)}'}
 
 
 def main():

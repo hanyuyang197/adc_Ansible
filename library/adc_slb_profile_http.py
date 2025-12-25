@@ -538,7 +538,7 @@ def main():
         websocket=dict(type='int', required=False),
         node_select_fail_response_504=dict(type='int', required=False),
         cookie_encrypt_name=dict(type='str', required=False),
-        cookie_encrypt_password=dict(type='str', required=False),
+        cookie_encrypt_password=dict(type='str', required=False, no_log=True),
         req_header_del=dict(type='list', required=False),
         rsp_header_del=dict(type='list', required=False),
         req_header_insert=dict(type='list', required=False),

@@ -363,7 +363,7 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             ip=dict(type='str', required=True),
-            authkey=dict(type='str', required=True),
+            authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
                 'list_profiles', 'list_profiles_withcommon', 'get_profile',
                 'add_profile', 'edit_profile', 'delete_profile'
@@ -371,14 +371,14 @@ def main():
             name=dict(type='str', required=False),
             cert=dict(type='str', required=False),
             chain_cert=dict(type='str', required=False),
-            key=dict(type='str', required=False),
+            key=dict(type='str', required=False, no_log=True),
             password=dict(type='str', required=False, no_log=True),
             dcert=dict(type='str', required=False),
             dchain_cert=dict(type='str', required=False),
-            dkey=dict(type='str', required=False),
+            dkey=dict(type='str', required=False, no_log=True),
             dpassword=dict(type='str', required=False, no_log=True),
             ecert=dict(type='str', required=False),
-            ekey=dict(type='str', required=False),
+            ekey=dict(type='str', required=False, no_log=True),
             epassword=dict(type='str', required=False, no_log=True),
             resume_mode=dict(type='int', required=False),
             cache_num=dict(type='int', required=False),

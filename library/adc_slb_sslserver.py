@@ -258,14 +258,14 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             ip=dict(type='str', required=True),
-            authkey=dict(type='str', required=True),
+            authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
                 'list_profiles', 'list_profiles_withcommon', 'get_profile',
                 'add_profile', 'edit_profile', 'delete_profile'
             ]),
             name=dict(type='str', required=False),
             cert=dict(type='str', required=False),
-            key=dict(type='str', required=False),
+            key=dict(type='str', required=False, no_log=True),
         ),
         supports_check_mode=False
     )

@@ -460,7 +460,7 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             ip=dict(type='str', required=True),
-            authkey=dict(type='str', required=True),
+            authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
                 'add_profile', 'list_profiles', 'get_profile', 'edit_profile', 'delete_profile'
             ]),

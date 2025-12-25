@@ -277,7 +277,7 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             ip=dict(type='str', required=True),
-            authkey=dict(type='str', required=True),
+            authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
                 'list_ruletables', 'list_ruletables_withcommon', 'get_ruletable',
                 'add_ruletable', 'delete_ruletable', 'add_ruletable_entry'
