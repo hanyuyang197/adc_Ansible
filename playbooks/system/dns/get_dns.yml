@@ -20,7 +20,21 @@
         authkey: "{{ login_result.authkey }}"
         action: get_dns
       register: result
+      when: login_result is succeeded
 
     - name: 显示DNS配置信息
       debug:
         var: result
+      when: result is defined
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

@@ -22,7 +22,21 @@
         login_banner: "Welcome to Horizon ADC System"
         login_success_banner: "[type ? for help]"
       register: result
+      when: login_result is succeeded
 
     - name: 显示设置结果
       debug:
         var: result
+      when: result is defined
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined
