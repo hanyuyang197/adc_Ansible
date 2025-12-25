@@ -112,14 +112,14 @@ def adc_list_domain_tables(module):
         if sys.version_info[0] >= 3:
             # Python 3
             import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='POST')
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
             import urllib2 as urllib_request
             req = urllib_request.Request(url)
-            req.get_method = lambda: 'POST'
+            req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -284,14 +284,14 @@ def adc_list_domain_files(module):
         if sys.version_info[0] >= 3:
             # Python 3
             import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='POST')
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
             import urllib2 as urllib_request
             req = urllib_request.Request(url)
-            req.get_method = lambda: 'POST'
+            req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -337,7 +337,7 @@ def adc_delete_domain_file(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.domaintable.file.del" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.domaintable.file.delete" % (
         ip, authkey)
 
     # 构造域名文件数据

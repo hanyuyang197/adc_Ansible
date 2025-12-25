@@ -145,12 +145,8 @@ def send_request(url, data=None, method='GET'):
         try:
             result = json.loads(response_text)
         except json.JSONDecodeError:
-            # 如果不是有效的JSON格式，返回原始响应
-            return {
-                'result': 'error',
-                'errcode': 'JSON_PARSE_ERROR',
-                'errmsg': f'响应不是有效的JSON格式: {response_text}'
-            }
+            # 如果不是有效的JSON格式，直接返回原始响应内容
+            return response_text
 
         # 标准化响应格式
         # 成功响应保持原样
@@ -355,10 +351,11 @@ def list_logs(module):
             # 错误响应
             return False, {'msg': "获取日志失败: %s" % response.get('errmsg', '未知错误')}
         else:
-            # 直接返回数据
+            # 直接返回数据，不尝试解析为JSON格式
             return True, {'logs': response}
     else:
-        return False, {'msg': '响应数据格式错误'}
+        # 直接返回原始响应，不尝试解析为JSON格式
+        return True, {'logs': response if response is not None else 'No response data'}
 
 
 def clear_logs(module):
@@ -394,10 +391,11 @@ def clear_logs(module):
             # 错误响应
             return False, {'msg': "清除日志失败: %s" % response.get('errmsg', '未知错误')}
         else:
-            # 直接返回数据
+            # 直接返回数据，不尝试解析为JSON格式
             return True, {'response': response}
     else:
-        return False, {'msg': '响应数据格式错误'}
+        # 直接返回原始响应，不尝试解析为JSON格式
+        return True, {'response': response if response is not None else 'No response data'}
 
 
 def download_logs(module):
@@ -444,7 +442,8 @@ def download_logs(module):
         import tempfile
         import time
         timestamp = int(time.time())
-        file_path = os.path.join(tempfile.gettempdir(), f"{log_type}_logs_{timestamp}.tar.gz")
+        file_path = os.path.join(
+            tempfile.gettempdir(), f"{log_type}_logs_{timestamp}.tar.gz")
 
         # 以二进制模式写入文件
         with open(file_path, 'wb') as f:
@@ -452,7 +451,7 @@ def download_logs(module):
 
         # 返回下载结果
         return True, {
-            'file_path': file_path, 
+            'file_path': file_path,
             'download_url': url,
             'file_size': len(content),
             'msg': f'日志文件已下载并保存到 {file_path}'

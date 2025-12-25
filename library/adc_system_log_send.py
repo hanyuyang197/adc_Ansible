@@ -146,12 +146,8 @@ def send_request(url, data=None, method='GET'):
         try:
             result = json.loads(response_text)
         except json.JSONDecodeError:
-            # 如果不是有效的JSON格式，返回原始响应
-            return {
-                'result': 'error',
-                'errcode': 'JSON_PARSE_ERROR',
-                'errmsg': f'响应不是有效的JSON格式: {response_text}'
-            }
+            # 如果不是有效的JSON格式，直接返回原始响应内容
+            return response_text
 
         # 标准化响应格式
         # 成功响应保持原样
@@ -430,10 +426,11 @@ def adc_add_syslog_server(module):
             # 错误响应
             return False, {'msg': "添加syslog服务器失败: %s" % response.get('errmsg', '未知错误')}
         else:
-            # 直接返回数据
+            # 直接返回数据，不尝试解析为JSON格式
             return True, {'response': response}
     else:
-        return False, {'msg': '响应数据格式错误'}
+        # 直接返回原始响应，不尝试解析为JSON格式
+        return True, {'response': response if response is not None else 'No response data'}
 
 
 def adc_list_syslog_servers(module):
@@ -456,10 +453,11 @@ def adc_list_syslog_servers(module):
             # 错误响应
             return False, {'msg': "获取syslog服务器列表失败: %s" % response.get('errmsg', '未知错误')}
         else:
-            # 直接返回数据
+            # 直接返回数据，不尝试解析为JSON格式
             return True, {'servers': response}
     else:
-        return False, {'msg': '响应数据格式错误'}
+        # 直接返回原始响应，不尝试解析为JSON格式
+        return True, {'servers': response if response is not None else 'No response data'}
 
 
 def adc_get_syslog_server(module):
@@ -496,10 +494,11 @@ def adc_get_syslog_server(module):
             # 错误响应
             return False, {'msg': "获取syslog服务器失败: %s" % response.get('errmsg', '未知错误')}
         else:
-            # 直接返回数据
+            # 直接返回数据，不尝试解析为JSON格式
             return True, {'server': response}
     else:
-        return False, {'msg': '响应数据格式错误'}
+        # 直接返回原始响应，不尝试解析为JSON格式
+        return True, {'server': response if response is not None else 'No response data'}
 
 
 def adc_edit_syslog_server(module):
@@ -563,10 +562,11 @@ def adc_edit_syslog_server(module):
             # 错误响应
             return False, {'msg': "编辑syslog服务器失败: %s" % response.get('errmsg', '未知错误')}
         else:
-            # 直接返回数据
+            # 直接返回数据，不尝试解析为JSON格式
             return True, {'response': response}
     else:
-        return False, {'msg': '响应数据格式错误'}
+        # 直接返回原始响应，不尝试解析为JSON格式
+        return True, {'response': response if response is not None else 'No response data'}
 
 
 def adc_delete_syslog_server(module):
@@ -604,10 +604,11 @@ def adc_delete_syslog_server(module):
             # 错误响应
             return False, {'msg': "删除syslog服务器失败: %s" % response.get('errmsg', '未知错误')}
         else:
-            # 直接返回数据
+            # 直接返回数据，不尝试解析为JSON格式
             return True, {'response': response}
     else:
-        return False, {'msg': '响应数据格式错误'}
+        # 直接返回原始响应，不尝试解析为JSON格式
+        return True, {'response': response if response is not None else 'No response data'}
 
 
 def main():
@@ -679,4 +680,5 @@ def main():
 
 
 if __name__ == '__main__':
+    main()
     main()
