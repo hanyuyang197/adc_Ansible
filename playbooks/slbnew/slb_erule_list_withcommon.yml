@@ -1,5 +1,7 @@
 ---
 - name: erule文件获取 common 和本分区
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

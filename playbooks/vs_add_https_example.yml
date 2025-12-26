@@ -1,5 +1,7 @@
 ---
 - name: 添加HTTPS类型虚拟服务示例
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:
@@ -28,7 +30,7 @@
         name: "https"
         protocol: 15
         port: 443
-        pool: "pool_https"  # 明确定义pool，会包含在请求中
+        pool: "pool_https" # 明确定义pool，会包含在请求中
         connection_limit_status: 0
         connection_limit_number: 8000000
         vs_enable_intf: ""
@@ -42,13 +44,13 @@
         # erules未定义，因此不会包含在请求中
         send_reset: 0
         source_nat: ""
-        tcpagent_profile: ""  # HTTPS类型必填参数
-        http_profile: ""  # HTTPS类型必填参数
-        connmulti_profile: ""  # HTTPS类型必填参数
-        waf_profile: ""  # HTTPS类型可选参数
-        cache_profile: ""  # HTTPS类型可选参数
-        clientssl_profile: ""  # HTTPS类型可选参数
-        serverssl_profile: ""  # HTTPS类型可选参数
+        tcpagent_profile: "" # HTTPS类型必填参数
+        http_profile: "" # HTTPS类型必填参数
+        connmulti_profile: "" # HTTPS类型必填参数
+        waf_profile: "" # HTTPS类型可选参数
+        cache_profile: "" # HTTPS类型可选参数
+        clientssl_profile: "" # HTTPS类型可选参数
+        serverssl_profile: "" # HTTPS类型可选参数
         srcip_persist: ""
         traffic_control: ""
         force_update_mac: 1

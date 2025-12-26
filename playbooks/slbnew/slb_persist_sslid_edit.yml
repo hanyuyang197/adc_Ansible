@@ -1,5 +1,7 @@
 ---
 - name: ssl地址连接保持编辑
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

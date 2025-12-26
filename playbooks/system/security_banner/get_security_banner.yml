@@ -1,5 +1,7 @@
 ---
 - name: 获取登录安全标识
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

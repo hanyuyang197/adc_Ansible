@@ -1,0 +1,12 @@
+---
+requires_ansible: '>=2.9.10'
+
+plugin_routing:
+  modules:
+    adc_login:
+      redirect: horizon.modules.adc_login
+    adc_logout:
+      redirect: horizon.modules.adc_logout
+    adc_slb_node:
+      redirect: horizon.modules.adc_slb_node
+    # 更多模块重定向...

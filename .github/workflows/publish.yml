@@ -1,0 +1,30 @@
+name: Publish Collection to Ansible Galaxy
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install Ansible
+        run: pip install ansible-core
+
+      - name: Build Collection
+        run: |
+          python build_collection.py
+
+      - name: Publish to Galaxy
+        run: |
+          ansible-galaxy collection publish horizon-modules-1.0.0.tar.gz --api-key ${{ secrets.GALAXY_API_KEY }}
+        env:
+          GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}

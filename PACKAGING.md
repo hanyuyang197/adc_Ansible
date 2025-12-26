@@ -139,4 +139,9 @@ adc2 ansible_host=192.168.1.101
 
 - 初始版本
 - 包含所有 ADC 管理模块
+
+## 发布到 Ansible Galaxy
+
+此集合包可以发布到 Ansible Galaxy。详细发布指南请参考 [PUBLISHING_GUIDE.md](./PUBLISHING_GUIDE.md) 和 [GALAXY_PUBLISHING.md](./GALAXY_PUBLISHING.md)。
+
 - 支持所有主要 ADC 功能

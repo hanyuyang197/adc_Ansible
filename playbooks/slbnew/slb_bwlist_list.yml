@@ -1,5 +1,7 @@
 ---
 - name: 获取黑白名单文件列表
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

@@ -794,7 +794,9 @@ ansible-galaxy collection install horizon.modules.horizon_modules
 
 ### 使用打包后的模块
 
-安装集合后，可以在 playbook 中使用完整命名空间引用模块：
+安装集合后，可以在 playbook 中使用两种方式引用模块：
+
+**方式 1：使用完整命名空间（旧方式）**
 
 ```yaml
 - name: 添加节点示例
@@ -808,7 +810,42 @@ ansible-galaxy collection install horizon.modules.horizon_modules
   register: result
 ```
 
+**方式 2：使用 collections 声明（推荐方式）**
+
+```yaml
+---
+- name: 添加节点示例
+  collections:
+    - horizon.modules
+  hosts: adc_servers
+  gather_facts: no
+
+  tasks:
+    - name: 添加节点
+      adc_slb_node:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "add_node"
+        name: "test_node"
+        addr: "10.0.0.1"
+        status: 1
+      register: result
+```
+
+**注意：当前项目中的所有 playbook 均已更新为使用 collections 声明方式。**
+
 详细信息请参考 `PACKAGING.md` 文件。
+
+## 发布到 Ansible Galaxy
+
+此集合包可以发布到 Ansible Galaxy 供社区使用，类似 F5 的 f5_modules 集合。详细发布指南请参考 [GALAXY_PUBLISHING.md](./GALAXY_PUBLISHING.md)。
+
+发布到 Galaxy 后，用户可以通过以下方式安装：
+
+```bash
+# 从 Galaxy 安装（发布后）
+ansible-galaxy collection install horizon.modules
+```
 
 ## 注意事项
 

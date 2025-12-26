@@ -1,5 +1,7 @@
 ---
 - name: 添加HTTP普通类型虚拟服务示例
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:
@@ -28,7 +30,7 @@
         name: "http"
         protocol: 12
         port: 80
-        pool: "pool_http"  # 明确定义pool，会包含在请求中
+        pool: "pool_http" # 明确定义pool，会包含在请求中
         connection_limit_status: 0
         connection_limit_number: 8000000
         vs_enable_intf: ""
@@ -42,8 +44,8 @@
         # erules未定义，因此不会包含在请求中
         send_reset: 0
         source_nat: ""
-        tcp_profile: ""  # HTTP普通类型必填参数
-        http_profile: ""  # HTTP普通类型可选参数
+        tcp_profile: "" # HTTP普通类型必填参数
+        http_profile: "" # HTTP普通类型可选参数
         srcip_persist: ""
         traffic_control: ""
         force_update_mac: 1

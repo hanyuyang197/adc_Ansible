@@ -1,5 +1,7 @@
 ---
 - name: Delete Rule Table
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

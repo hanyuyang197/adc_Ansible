@@ -1,5 +1,7 @@
 ---
 - name: 被动健康检查添加
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

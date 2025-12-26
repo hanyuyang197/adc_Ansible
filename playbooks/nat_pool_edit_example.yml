@@ -1,5 +1,7 @@
 ---
 - name: 编辑NAT地址池示例
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

@@ -1,5 +1,7 @@
 ---
 - name: 获取时间配置
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

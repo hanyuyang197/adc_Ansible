@@ -1,5 +1,7 @@
 ---
 - name: 被动健康检查获取 common 和本分区
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

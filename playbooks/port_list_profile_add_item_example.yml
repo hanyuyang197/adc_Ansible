@@ -1,5 +1,7 @@
 ---
 - name: 添加端口列表模板条目示例
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

@@ -1,5 +1,7 @@
 ---
 - name: 服务池成员删除
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

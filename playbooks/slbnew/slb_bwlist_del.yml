@@ -1,5 +1,7 @@
 ---
 - name: 删除黑白名单文件
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

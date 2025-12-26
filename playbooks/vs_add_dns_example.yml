@@ -1,5 +1,7 @@
 ---
 - name: 添加DNS类型虚拟服务示例
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:
@@ -28,7 +30,7 @@
         name: "dns"
         protocol: 22
         port: 53
-        pool: "pool_dns"  # 明确定义pool，会包含在请求中
+        pool: "pool_dns" # 明确定义pool，会包含在请求中
         connection_limit_status: 0
         connection_limit_number: 8000000
         vs_enable_intf: ""
@@ -42,14 +44,14 @@
         # erules未定义，因此不会包含在请求中
         send_reset: 0
         source_nat: ""
-        udp_profile: ""  # DNS类型必填参数
+        udp_profile: "" # DNS类型必填参数
         srcip_persist: ""
         traffic_control: ""
         force_update_mac: 1
         dstip_persist: ""
         cookie_persist: ""
         sslid_persis: ""
-        dns_profile: ""  # DNS类型必填参数
+        dns_profile: "" # DNS类型必填参数
         policy_profile: ""
         aclsnats: []
         immediate_action_on_service_down: 0

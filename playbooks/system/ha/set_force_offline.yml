@@ -1,5 +1,7 @@
 ---
 - name: Set force offline
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

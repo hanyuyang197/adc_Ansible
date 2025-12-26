@@ -1,5 +1,7 @@
 ---
 - name: 设置 SLB 全局虚拟 MAC
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

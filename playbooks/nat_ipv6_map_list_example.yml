@@ -1,5 +1,7 @@
 ---
 - name: 获取IPv6 NAT映射列表示例
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

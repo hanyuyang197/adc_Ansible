@@ -1,0 +1,9 @@
+---
+changelog:
+  - version: 1.0.0
+    changes:
+      description: Initial release of Horizon Modules collection
+      release_summary: Initial release containing modules for Horizon ADC device management
+    fragments:
+      - initial-release.yaml
+    release_date: '2025-01-01'

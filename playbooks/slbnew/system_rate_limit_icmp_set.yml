@@ -1,5 +1,7 @@
 ---
 - name: 设置 ICMP 速率限制配置
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

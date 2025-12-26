@@ -1,5 +1,7 @@
 ---
 - name: 获取 tcp 新建保护配置
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

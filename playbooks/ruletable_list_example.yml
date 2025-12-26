@@ -1,5 +1,7 @@
 ---
 - name: List Rule Tables
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

@@ -1,5 +1,7 @@
 ---
 - name: 完整测试场景 - HTTP
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

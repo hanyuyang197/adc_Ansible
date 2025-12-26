@@ -1,5 +1,7 @@
 ---
 - name: 获取 SLB 全局连接镜像
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

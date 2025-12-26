@@ -1,5 +1,7 @@
 ---
 - name: 获取指定虚拟服务模板详情
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

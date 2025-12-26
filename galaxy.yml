@@ -1,0 +1,25 @@
+### 集合元数据文件
+### 用于发布到Ansible Galaxy
+
+namespace: horizon
+name: modules
+version: 1.0.0
+readme: README.md
+authors:
+  - "Horizon ADC Team"
+description: Ansible collection for Horizon ADC device management
+license:
+  - GPL-3.0-only
+license_file: ""
+tags:
+  - horizon
+  - adc
+  - networking
+  - loadbalancer
+  - slb
+dependencies: {}
+repository: "https://github.com/horizon/horizon-ansible-modules"
+documentation: "https://horizon.com/docs/ansible-modules"
+homepage: "https://horizon.com"
+issues: "https://github.com/horizon/horizon-ansible-modules/issues"
+build_ignore: []

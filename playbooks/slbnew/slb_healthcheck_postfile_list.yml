@@ -1,5 +1,7 @@
 ---
 - name: 健康检查 POST 文件列表
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   tasks:

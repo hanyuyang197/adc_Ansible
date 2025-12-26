@@ -1,5 +1,7 @@
 ---
 - name: 添加FTP类型虚拟服务示例
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:
@@ -28,7 +30,7 @@
         name: "ftpvs"
         protocol: 9
         port: 21
-        pool: ""  # 明确定义pool，会包含在请求中
+        pool: "" # 明确定义pool，会包含在请求中
         connection_limit_status: 0
         connection_limit_number: 8000000
         vs_enable_intf: ""
@@ -47,7 +49,7 @@
         force_update_mac: 1
         syncookie: 0
         source_nat: ""
-        tcp_profile: ""  # FTP类型必填参数
+        tcp_profile: "" # FTP类型必填参数
         srcip_persist: ""
         policy_profile: ""
         aclsnats: []

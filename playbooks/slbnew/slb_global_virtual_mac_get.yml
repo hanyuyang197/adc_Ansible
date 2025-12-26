@@ -1,5 +1,7 @@
 ---
 - name: 获取 SLB 全局虚拟 MAC
+  collections:
+    - horizon.modules
   hosts: localhost
   gather_facts: no
   vars:

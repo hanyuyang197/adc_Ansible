@@ -1,5 +1,7 @@
 ---
 - name: 设置主机名IPv6地址
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

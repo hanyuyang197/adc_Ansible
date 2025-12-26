@@ -1,5 +1,7 @@
 ---
 - name: Edit WAF Profile
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

@@ -1,5 +1,7 @@
 ---
 - name: 添加域名解析自定义
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

@@ -1,5 +1,7 @@
 ---
 - name: Set email alarm configuration
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:

@@ -1,0 +1,16 @@
+---
+ancestor: null
+releases:
+  1.0.0:
+    modules:
+      - name: adc_login
+        description: Login module for Horizon ADC devices
+        namespace: ''
+      - name: adc_logout
+        description: Logout module for Horizon ADC devices
+        namespace: ''
+      - name: adc_slb_node
+        description: Node management module for Horizon ADC devices
+        namespace: ''
+      # 更多模块...
+    release_summary: Initial release of Horizon Modules collection

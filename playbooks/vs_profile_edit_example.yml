@@ -1,5 +1,7 @@
 ---
 - name: 编辑虚拟服务模板
+  collections:
+    - horizon.modules
   hosts: adc_servers
   gather_facts: no
   vars:
