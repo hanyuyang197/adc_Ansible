@@ -1,0 +1,18 @@
+---
+- name: 获取 SLB 全局虚拟 MAC
+  hosts: localhost
+  gather_facts: no
+  vars:
+    adc_ip: "{{ lookup('env', 'ADC_IP') | default('192.168.70.73') }}"
+    adc_authkey: "{{ lookup('env', 'ADC_AUTHKEY') | default('your_authkey_here') }}"
+  tasks:
+    - name: 获取 SLB 全局虚拟 MAC
+      adc_system_global_config:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ adc_authkey }}"
+        action: "slb_global_virtual_mac_get"
+      register: result
+
+    - name: 输出结果
+      debug:
+        msg: "{{ result }}"

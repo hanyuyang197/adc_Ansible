@@ -27,13 +27,36 @@ ansible-galaxy collection install horizon-modules-1.0.0.tar.gz
 
 #### 方法 3：从本地构建安装
 
-在本地构建集合并安装：
+在本地构建集合并安装。项目提供三种构建方式：
+
+#### Python 脚本方式（通用）
 
 ```bash
-# 构建集合
+# 使用Python构建（推荐）
+python build_collection.py
+
+# 安装集合
+ansible-galaxy collection install horizon-modules-1.0.0.tar.gz
+```
+
+#### Shell 脚本方式（Linux/macOS）
+
+```bash
+# 构建集合（Linux/macOS）
+chmod +x build_collection.sh
 ./build_collection.sh
 
 # 安装集合
+ansible-galaxy collection install horizon-modules-1.0.0.tar.gz
+```
+
+#### 批处理脚本方式（Windows）
+
+```cmd
+REM 构建集合（Windows）
+build_collection.bat
+
+REM 安装集合
 ansible-galaxy collection install horizon-modules-1.0.0.tar.gz
 ```
 

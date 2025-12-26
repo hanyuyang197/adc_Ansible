@@ -1,0 +1,60 @@
+---
+- name: HORIZON ADC模块集合使用示例
+  hosts: adc_servers
+  gather_facts: no
+  tasks:
+    - name: 登录ADC设备
+      horizon.modules.horizon_modules.adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 显示登录结果
+      debug:
+        var: login_result
+
+    - name: 添加节点
+      horizon.modules.horizon_modules.adc_slb_node:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "add_node"
+        name: "example_node"
+        addr: "192.168.1.100"
+        status: 1
+        weight: 1
+      register: node_result
+      when: login_result is succeeded
+
+    - name: 显示节点操作结果
+      debug:
+        var: node_result
+      when: node_result is defined
+
+    - name: 添加服务池
+      horizon.modules.horizon_modules.adc_slb_pool:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "pool_add"
+        name: "example_pool"
+        lb_method: 0
+        status: 1
+      register: pool_result
+      when: login_result is succeeded
+
+    - name: 显示服务池操作结果
+      debug:
+        var: pool_result
+      when: pool_result is defined
+
+    - name: 登出ADC设备
+      horizon.modules.horizon_modules.adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

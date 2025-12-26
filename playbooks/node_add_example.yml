@@ -6,7 +6,7 @@
     # adc_ip变量已移除，使用inventory_hostname替代
     adc_username: "admin"
     adc_password: "admin"
-  
+
   tasks:
     - name: 登录ADC设备
       adc_login:
@@ -14,11 +14,11 @@
         username: "{{ adc_username }}"
         password: "{{ adc_password }}"
       register: login_result
-    
+
     - name: 显示登录结果
       debug:
         var: login_result
-    
+
     - name: 添加第一个节点
       adc_slb_node:
         ip: "{{ inventory_hostname }}"
@@ -58,12 +58,12 @@
             nat_strategy: ""
       register: add_node_result_1
       when: login_result is succeeded
-    
+
     - name: 显示第一个节点添加结果
       debug:
         var: add_node_result_1
       when: add_node_result_1 is defined
-    
+
     - name: 添加第二个节点
       adc_slb_node:
         ip: "{{ inventory_hostname }}"
@@ -103,19 +103,19 @@
             nat_strategy: ""
       register: add_node_result_2
       when: login_result is succeeded
-    
+
     - name: 显示第二个节点添加结果
       debug:
         var: add_node_result_2
       when: add_node_result_2 is defined
-    
+
     - name: 登出ADC设备
       adc_logout:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
       register: logout_result
       when: login_result is succeeded
-    
+
     - name: 显示登出结果
       debug:
         var: logout_result

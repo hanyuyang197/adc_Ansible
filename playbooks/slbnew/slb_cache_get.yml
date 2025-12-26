@@ -1,0 +1,41 @@
+---
+- name: 缓存模板获取
+  hosts: adc_servers
+  gather_facts: no
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 显示登录结果
+      debug:
+        var: login_result
+
+    - name: 获取缓存模板
+      adc_slb_cache:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "cache_get"
+        name: "test_cache"
+      register: result
+      when: login_result is succeeded
+
+    - name: 输出结果
+      debug:
+        var: result
+      when: result is defined
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

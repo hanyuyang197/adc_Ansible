@@ -756,6 +756,14 @@ ansible-playbook playbooks/waf_profile_get_example.yml
 
 ### 打包方法
 
+项目提供三种构建方式：
+
+#### Python 脚本方式（通用）
+
+```bash
+python build_collection.py
+```
+
 #### Linux/macOS 系统：
 
 ```bash
@@ -768,7 +776,7 @@ ansible-playbook playbooks/waf_profile_get_example.yml
 build_collection.bat
 ```
 
-这将创建一个名为 `horizon-modules-1.0.0.tar.gz` 的集合包。
+所有方式都将创建一个名为 `horizon-modules-1.0.0.tar.gz` 的集合包。
 
 ### 安装方法
 
