@@ -2,6 +2,38 @@
 # -*- coding: utf-8 -*-
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.horizon.modules.plugins.module_utils.adc_common import (
+    make_adc_request,
+    format_adc_response,
+    check_adc_auth,
+    handle_adc_error,
+    build_adc_params,
+    validate_adc_params,
+    adc_result_check,
+    adc_format_output,
+    build_params_with_optional,
+    make_http_request,
+    get_param_if_exists,
+    create_adc_module_args,
+    adc_response_to_ansible_result,
+    format_adc_response_for_ansible
+)
+from ansible_collections.horizon.modules.plugins.module_utils.adc_common import (
+    make_adc_request,
+    format_adc_response,
+    check_adc_auth,
+    handle_adc_error,
+    build_adc_params,
+    validate_adc_params,
+    adc_result_check,
+    adc_format_output,
+    build_params_with_optional,
+    make_http_request,
+    get_param_if_exists,
+    create_adc_module_args,
+    adc_response_to_ansible_result,
+    format_adc_response_for_ansible
+)
 import json
 # Python 2/3兼容性处理
 try:

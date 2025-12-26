@@ -2,97 +2,26 @@
 # -*- coding: utf-8 -*-
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.horizon.modules.plugins.module_utils.adc_common import (
+    make_adc_request,
+    format_adc_response,
+    check_adc_auth,
+    handle_adc_error,
+    build_adc_params,
+    validate_adc_params,
+    adc_result_check,
+    adc_format_output,
+    build_params_with_optional,
+    make_http_request,
+    get_param_if_exists,
+    create_adc_module_args,
+    adc_response_to_ansible_result,
+    format_adc_response_for_ansible
+)
 import json
 import sys
 
 # ADC API响应解析函数
-
-
-def format_adc_response_for_ansible(response_data, action="", changed_default=True):
-    """
-    格式化ADC响应为Ansible模块返回格式
-
-    Args:
-        response_data (str/dict): API响应数据
-        action (str): 执行的操作名称
-        changed_default (bool): 默认的changed状态
-
-    Returns:
-        tuple: (success, result_dict)
-            - success (bool): 操作是否成功
-            - result_dict (dict): Ansible模块返回字典
-    """
-
-    # 初始化返回结果
-    result = {
-        'success': False,
-        'result': '',
-        'errcode': '',
-        'errmsg': '',
-        'data': {}
-    }
-
-    try:
-        # 如果是字符串，尝试解析为JSON
-        if isinstance(response_data, str):
-            parsed_data = json.loads(response_data)
-        else:
-            parsed_data = response_data
-
-        result['data'] = parsed_data
-
-        # 提取基本字段
-        result['result'] = parsed_data.get('result', '')
-        result['errcode'] = parsed_data.get('errcode', '')
-        result['errmsg'] = parsed_data.get('errmsg', '')
-
-        # 判断操作是否成功
-        if result['result'].lower() == 'success':
-            result['success'] = True
-        else:
-            # 处理幂等性问题 - 检查错误信息中是否包含"已存在"等表示已存在的关键词
-            errmsg = result['errmsg'].lower() if isinstance(
-                result['errmsg'], str) else str(result['errmsg']).lower()
-            if any(keyword in errmsg for keyword in ['已存在', 'already exists', 'already exist', 'exists']):
-                # 幂等性处理：如果是因为已存在而导致的"失败"，实际上算成功
-                result['success'] = True
-                result['result'] = 'success (already exists)'
-
-    except json.JSONDecodeError as e:
-        result['errmsg'] = "JSON解析失败: %s" % str(e)
-        result['errcode'] = 'JSON_PARSE_ERROR'
-    except Exception as e:
-        result['errmsg'] = "响应解析异常: %s" % str(e)
-        result['errcode'] = 'PARSE_EXCEPTION'
-
-    # 格式化为Ansible返回格式
-    if result['success']:
-        # 操作成功
-        result_dict = {
-            'changed': changed_default,
-            'msg': '%s操作成功' % action if action else '操作成功',
-            'response': result['data']
-        }
-
-        # 如果是幂等性成功（已存在），调整消息
-        if 'already exists' in result['result']:
-            result_dict['changed'] = False
-            result_dict['msg'] = '%s操作成功（资源已存在，无需更改）' % action if action else '操作成功（资源已存在，无需更改）'
-
-        return True, result_dict
-    else:
-        # 操作失败
-        result_dict = {
-            'changed': False,
-            'msg': '%s操作失败' % action if action else '操作失败',
-            'error': {
-                'result': result['result'],
-                'errcode': result['errcode'],
-                'errmsg': result['errmsg']
-            },
-            'response': result['data']
-        }
-        return False, result_dict
 
 
 def adc_add_snmp_v3_view(module):
