@@ -17,11 +17,15 @@
         var: login_result
 
     - name: 执行 流量控制rule增加
-      adc_network_tc_rule:
+      adc_network_tc:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
+        action: add_tc_rule
+        tc_name: "tc001"
+        rule_id: "rule001"
+        source_ip: "192.168.1.0/24"
+        destination_ip: "10.0.0.0/8"
+        protocol: "tcp"
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

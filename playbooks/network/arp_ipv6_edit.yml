@@ -17,11 +17,12 @@
         var: login_result
 
     - name: 执行 编辑指定arp配置
-      adc_arp_ipv6:
+      adc_network_arp:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        ip: "example_value"
+        action: edit_ipv6_entry
+        ip_addr: "2001:db8::1"
+        mac_addr: "00:11:22:33:44:55"
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

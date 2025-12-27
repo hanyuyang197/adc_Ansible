@@ -20,8 +20,10 @@
       adc_network_tc:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
+        action: add_tc_entry
+        name: "tc001"
+        description: "Traffic control for testing"
+        bandwidth: 1000
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

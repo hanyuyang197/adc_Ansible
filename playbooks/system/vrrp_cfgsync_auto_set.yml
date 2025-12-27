@@ -20,9 +20,8 @@
       adc_vrrp_cfgsync_auto:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        group: "example_value"
-        # 根据实际需求添加更多参数
+        action: set
+        enabled: 1
       register: result
       when: login_result is succeeded
 

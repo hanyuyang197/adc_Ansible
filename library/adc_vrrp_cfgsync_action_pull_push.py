@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_cfgsync_action_pull_push_pull_push(module):
+def adc_vrrp_cfgsync_action_pull_push(module):
     """配置同步pull-push"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -108,7 +108,7 @@ def main():
     )
 
     # 执行操作
-    adc_vrrp_cfgsync_action_pull_push_pull_push(module)
+    adc_vrrp_cfgsync_action_pull_push(module)
 
 
 if __name__ == '__main__':

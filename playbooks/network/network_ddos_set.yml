@@ -20,8 +20,9 @@
       adc_network_ddos:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
+        action: set_ddos_config
+        enable: 1
+        threshold: 100
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

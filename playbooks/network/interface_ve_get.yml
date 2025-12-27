@@ -17,11 +17,11 @@
         var: login_result
 
     - name: 执行 虚拟接口获取
-      adc_interface_ve:
+      adc_network_interface:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        interface: "example_value"
+        action: get_ve_interface
+        ve_id: 1
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

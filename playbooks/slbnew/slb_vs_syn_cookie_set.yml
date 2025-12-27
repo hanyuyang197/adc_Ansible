@@ -1,5 +1,5 @@
 ---
-- name: 设置没虚拟服务SYN Cookie配置
+name: 设置虚拟服务SYN Cookie配置
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,16 @@
       debug:
         var: login_result
 
-    - name: 执行 设置没虚拟服务SYN Cookie配置
+    - name: 执行 设置虚拟服务SYN Cookie配置
       adc_slb_vs_syn_cookie:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
+        action: set
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded
 
-    - name: 显示 设置没虚拟服务SYN Cookie配置 结果
+    - name: 显示 设置虚拟服务SYN Cookie配置 结果
       debug:
         var: result
       when: result is defined

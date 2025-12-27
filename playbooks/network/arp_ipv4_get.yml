@@ -17,11 +17,11 @@
         var: login_result
 
     - name: 执行 获取指定静态arp配置
-      adc_arp_ipv4:
+      adc_network_arp:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        ip: "example_value"
+        action: get_ipv4_entry
+        ip_addr: "192.168.1.100"
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

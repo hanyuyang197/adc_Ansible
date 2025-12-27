@@ -20,9 +20,8 @@
       adc_vrrp_l3_peer:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        group: "example_value"
-        # 根据实际需求添加更多参数
+        action: get
+        name: "l3peer1"
       register: result
       when: login_result is succeeded
 

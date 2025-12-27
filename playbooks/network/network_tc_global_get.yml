@@ -17,11 +17,10 @@
         var: login_result
 
     - name: 执行 流量控制使能全局获取
-      adc_network_tc_global:
+      adc_network_tc:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
+        action: get_global_tc_config
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

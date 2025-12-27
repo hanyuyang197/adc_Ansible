@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_cfgsync_action_sync_sync(module):
+def adc_vrrp_cfgsync_action_sync(module):
     """触发配置同步"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -108,7 +108,7 @@ def main():
     )
 
     # 执行操作
-    adc_vrrp_cfgsync_action_sync_sync(module)
+    adc_vrrp_cfgsync_action_sync(module)
 
 
 if __name__ == '__main__':

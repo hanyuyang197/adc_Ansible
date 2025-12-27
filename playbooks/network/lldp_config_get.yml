@@ -17,11 +17,10 @@
         var: login_result
 
     - name: 执行 LLDP配置获取
-      adc_lldp_config:
+      adc_network_lldp:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
+        action: get_lldp_config
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

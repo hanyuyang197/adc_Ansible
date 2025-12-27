@@ -17,11 +17,10 @@
         var: login_result
 
     - name: 执行 获取动态arp信息
-      adc_arp_ipv4:
+      adc_network_arp:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        ip: "example_value"
+        action: get_ipv4_statistics
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

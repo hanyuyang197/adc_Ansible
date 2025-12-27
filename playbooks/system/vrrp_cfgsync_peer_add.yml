@@ -20,9 +20,13 @@
       adc_vrrp_cfgsync_peer:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        group: "example_value"
-        # 根据实际需求添加更多参数
+        action: add
+        name: "peer1"
+        ip_addr: "192.168.1.100"
+        port: 80
+        user: "admin"
+        password: "password"
+        save: 1
       register: result
       when: login_result is succeeded
 

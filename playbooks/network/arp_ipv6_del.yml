@@ -17,11 +17,11 @@
         var: login_result
 
     - name: 执行 删除arp
-      adc_arp_ipv6:
+      adc_network_arp:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        ip: "example_value"
+        action: delete_ipv6_entry
+        ip_addr: "2001:db8::1"
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded
