@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 流量控制增加
-      horizon.modules.adc_network_tc:
+      adc_network_tc:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

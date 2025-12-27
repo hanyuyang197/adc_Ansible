@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 tacacs认证获取
-      horizon.modules.adc_aaa_tacacs:
+      adc_aaa_tacacs:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

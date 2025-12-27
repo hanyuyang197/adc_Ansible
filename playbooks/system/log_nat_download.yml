@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 下载NAT日志
-      horizon.modules.adc_log_nat:
+      adc_log_nat:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

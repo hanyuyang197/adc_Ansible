@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 http模板删除
-      horizon.modules.adc_slb_profile_http:
+      adc_slb_profile_http:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

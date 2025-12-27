@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 触发配置同步
-      horizon.modules.adc_vrrp_cfgsync_action_sync:
+      adc_vrrp_cfgsync_action_sync:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

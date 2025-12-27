@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 编辑以太网心跳接口
-      horizon.modules.adc_vrrp_heart_eth:
+      adc_vrrp_heart_eth:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

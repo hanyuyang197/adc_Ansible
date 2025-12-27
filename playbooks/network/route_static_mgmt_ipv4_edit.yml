@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 ipv4静态管理路由配置编辑
-      horizon.modules.adc_route_static_mgmt_ipv4:
+      adc_route_static_mgmt_ipv4:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

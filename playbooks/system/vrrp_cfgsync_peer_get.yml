@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取指定vrrp配置同步对端
-      horizon.modules.adc_vrrp_cfgsync_peer:
+      adc_vrrp_cfgsync_peer:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

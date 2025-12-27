@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取common和分区ssl保持模板
-      horizon.modules.adc_slb_persist_sslid:
+      adc_slb_persist_sslid:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

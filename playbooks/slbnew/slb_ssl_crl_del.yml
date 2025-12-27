@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 吊销列表删除
-      horizon.modules.adc_slb_ssl_crl:
+      adc_slb_ssl_crl:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

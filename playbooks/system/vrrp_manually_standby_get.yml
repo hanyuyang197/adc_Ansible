@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取vrrp强制备机信息
-      horizon.modules.adc_vrrp_manually_standby:
+      adc_vrrp_manually_standby:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

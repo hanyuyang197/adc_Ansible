@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 LLDP配置获取
-      horizon.modules.adc_lldp_config:
+      adc_lldp_config:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

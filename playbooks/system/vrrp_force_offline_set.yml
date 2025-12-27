@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 设置组vrrp强制下线
-      horizon.modules.adc_vrrp_force_offline:
+      adc_vrrp_force_offline:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

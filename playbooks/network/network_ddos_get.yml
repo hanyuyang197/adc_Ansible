@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取网络安全DDOS配置
-      horizon.modules.adc_network_ddos:
+      adc_network_ddos:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

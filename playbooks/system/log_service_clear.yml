@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 清除业务日志日志
-      horizon.modules.adc_log_service:
+      adc_log_service:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

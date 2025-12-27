@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 端口列表模板删除
-      horizon.modules.adc_port_list_profile:
+      adc_port_list_profile:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 生成CSR
-      horizon.modules.adc_system_sys_csr:
+      adc_system_sys_csr:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

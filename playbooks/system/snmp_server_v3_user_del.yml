@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 删除用户
-      horizon.modules.adc_snmp_server_v3_user:
+      adc_snmp_server_v3_user:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

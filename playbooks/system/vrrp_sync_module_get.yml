@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取vrrp同步模块列表
-      horizon.modules.adc_vrrp_sync_module:
+      adc_vrrp_sync_module:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

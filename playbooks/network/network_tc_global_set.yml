@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 流量控制使能全局设置
-      horizon.modules.adc_network_tc_global:
+      adc_network_tc_global:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

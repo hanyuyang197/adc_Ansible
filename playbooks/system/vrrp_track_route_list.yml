@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取vrrp路由监控条件列表
-      horizon.modules.adc_vrrp_track_route:
+      adc_vrrp_track_route:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

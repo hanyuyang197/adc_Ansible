@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 ipv6静态业务路由配置列表
-      horizon.modules.adc_route_static_static_ctrl_ipv6:
+      adc_route_static_static_ctrl_ipv6:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

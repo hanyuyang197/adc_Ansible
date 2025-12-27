@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取没虚拟服务SYN Cookie配置
-      horizon.modules.adc_slb_vs_syn_cookie:
+      adc_slb_vs_syn_cookie:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

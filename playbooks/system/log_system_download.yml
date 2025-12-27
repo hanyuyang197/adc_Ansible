@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 下载系统日志
-      horizon.modules.adc_log_system:
+      adc_log_system:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

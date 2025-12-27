@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 编辑vrrp L3使能状态
-      horizon.modules.adc_vrrp_l3peer_enable:
+      adc_vrrp_l3peer_enable:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

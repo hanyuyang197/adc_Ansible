@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取指定vrrp L3 邻居
-      horizon.modules.adc_vrrp_l3_peer:
+      adc_vrrp_l3_peer:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取汇聚接口心跳口配置
-      horizon.modules.adc_vrrp_heart_trunk:
+      adc_vrrp_heart_trunk:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

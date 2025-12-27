@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 http2模板列表
-      horizon.modules.adc_slb_profile_http2:
+      adc_slb_profile_http2:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

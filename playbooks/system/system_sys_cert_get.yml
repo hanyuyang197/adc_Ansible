@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取证书
-      horizon.modules.adc_system_sys_cert:
+      adc_system_sys_cert:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 管理口配置设置
-      horizon.modules.adc_interface_mgmt:
+      adc_interface_mgmt:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

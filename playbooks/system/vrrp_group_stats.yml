@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取vrrp组状态列表
-      horizon.modules.adc_vrrp_group:
+      adc_vrrp_group:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

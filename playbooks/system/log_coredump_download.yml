@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 下载诊断日志
-      horizon.modules.adc_log_coredump:
+      adc_log_coredump:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

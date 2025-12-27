@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 删除自签名私钥
-      horizon.modules.adc_slb_ssl_key:
+      adc_slb_ssl_key:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute

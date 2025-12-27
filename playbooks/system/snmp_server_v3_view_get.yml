@@ -17,7 +17,7 @@
         var: login_result
 
     - name: 执行 获取视图
-      horizon.modules.adc_snmp_server_v3_view:
+      adc_snmp_server_v3_view:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: execute
