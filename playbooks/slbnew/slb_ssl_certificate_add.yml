@@ -20,9 +20,13 @@
       adc_slb_ssl_certificate:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
-        # 根据实际需求添加更多参数
+        action: add
+        name: "{{ name | default('self_signed_cert') }}"
+        common_name: "{{ common_name | default('example.com') }}"
+        type: "{{ type | default(1) }}"
+        organization: "{{ organization | default('My Organization') }}"
+        country: "{{ country | default('CN') }}"
+        key_size: "{{ key_size | default(2048) }}"
       register: result
       when: login_result is succeeded
 

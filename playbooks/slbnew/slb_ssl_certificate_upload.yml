@@ -1,5 +1,5 @@
 ---
-- name: 证书上传
+- name: 上传SSL证书
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,17 @@
       debug:
         var: login_result
 
-    - name: 执行 证书上传
+    - name: 执行 上传SSL证书
       adc_slb_ssl_certificate:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
-        # 根据实际需求添加更多参数
+        action: upload
+        file_path: "{{ file_path | default('/path/to/certificate.crt') }}"
+        cert_name: "{{ cert_name | default('certificate.crt') }}"
       register: result
       when: login_result is succeeded
 
-    - name: 显示 证书上传 结果
+    - name: 显示 上传SSL证书 结果
       debug:
         var: result
       when: result is defined

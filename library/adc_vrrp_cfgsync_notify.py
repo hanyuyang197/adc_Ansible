@@ -28,20 +28,21 @@ def adc_vrrp_cfgsync_notify_get(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.cfgsync.notify.get" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.cfgsync.notify.get" % (
+        ip, authkey)
 
     # 构造请求数据
     request_data = {
         "ip": ip,
         "authkey": authkey
     }
-    
+
     # 定义可选参数列表（根据API具体需求调整）
     optional_params = [
-        'group', 'description', 'status', 'config', 'setting', 'value', 'enable', 'name', 'ip', 'port'
+        'notify', 'description', 'status', 'config', 'setting', 'value', 'enable', 'name', 'ip', 'port'
         # 根据具体API需求添加更多参数
     ]
-    
+
     # 添加可选参数
     for param in optional_params:
         if get_param_if_exists(module, param) is not None:
@@ -77,7 +78,63 @@ def adc_vrrp_cfgsync_notify_get(module):
     # 使用通用响应解析函数
     if response_data:
         success, result_dict = format_adc_response_for_ansible(
-            response_data, "获取vrrp同步通知配置信息", True)
+            response_data, "获取vrrp同步通知配置信息", False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_vrrp_cfgsync_notify_set(module):
+    """设置vrrp同步通知配置"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    notify = module.params['notify']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.cfgsync.notify.set" % (
+        ip, authkey)
+
+    # 构造请求数据
+    request_data = {
+        "ip": ip,
+        "authkey": authkey,
+        "notify": notify
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(request_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="设置vrrp同步通知配置失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "设置vrrp同步通知配置", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -91,14 +148,16 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['execute']),
-        group=dict(type='str', required=False),
+        action=dict(type='str', required=True, choices=['get', 'set']),
+        notify=dict(type='int', required=False),
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
         config=dict(type='dict', required=False),
         setting=dict(type='dict', required=False),
         value=dict(type='str', required=False),
-        enable=dict(type='bool', required=False)
+        enable=dict(type='bool', required=False),
+        name=dict(type='str', required=False),
+        port=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -107,8 +166,13 @@ def main():
         supports_check_mode=False
     )
 
-    # 执行操作
-    adc_vrrp_cfgsync_notify_get(module)
+    # 根据action执行相应操作
+    action = module.params['action']
+
+    if action == 'get':
+        adc_vrrp_cfgsync_notify_get(module)
+    elif action == 'set':
+        adc_vrrp_cfgsync_notify_set(module)
 
 
 if __name__ == '__main__':

@@ -17,12 +17,24 @@
         var: login_result
 
     - name: 执行 ldap认证配置
-      adc_aaa_ldap:
+      adc_system_aaa:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
-        # 根据实际需求添加更多参数
+        action: set_ldap_config
+        serverstatus: 1
+        hostname: "192.168.100.1"
+        ldap_cn: "cn"
+        ldap_dn: "ou=Horizon,dc=test,dc=com"
+        ldap_timeout: 3
+        ldap_port: 389
+        ldap_ssl: 0
+        serverstatus2: 0
+        hostname2: "192.168.200.1"
+        ldap_cn2: "cn"
+        ldap_dn2: "ou=Horizon,dc=test,dc=com"
+        ldap_timeout2: 3
+        ldap_port2: 389
+        ldap_ssl2: 0
       register: result
       when: login_result is succeeded
 

@@ -17,12 +17,10 @@
         var: login_result
 
     - name: 执行 AAA全局配置获取
-      adc_aaa_general:
+      adc_system_aaa:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
-        # 根据实际需求添加更多参数
+        action: get_aaa_general_config
       register: result
       when: login_result is succeeded
 

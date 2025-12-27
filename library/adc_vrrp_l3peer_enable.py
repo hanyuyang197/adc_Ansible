@@ -26,26 +26,21 @@ def adc_vrrp_l3peer_enable_set(module):
     """编辑vrrp L3使能状态"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    enabled = module.params['enabled']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.l3peer.enable.set" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.l3peer.enable.set" % (
+        ip, authkey)
 
     # 构造请求数据
     request_data = {
         "ip": ip,
         "authkey": authkey
     }
-    
-    # 定义可选参数列表（根据API具体需求调整）
-    optional_params = [
-        'group', 'description', 'status', 'config', 'setting', 'value', 'enable', 'name', 'ip', 'port'
-        # 根据具体API需求添加更多参数
-    ]
-    
+
     # 添加可选参数
-    for param in optional_params:
-        if get_param_if_exists(module, param) is not None:
-            request_data[param] = get_param_if_exists(module, param)
+    if enabled is not None:
+        request_data["enabled"] = enabled
 
     # 转换为JSON格式
     post_data = json.dumps(request_data)
@@ -86,19 +81,67 @@ def adc_vrrp_l3peer_enable_set(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def adc_vrrp_l3peer_enable_get(module):
+    """获取vrrp L3使能状态"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.l3peer.enable.get" % (
+        ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取vrrp L3使能状态失败: %s" % str(e))
+
+    # 对于获取操作，直接返回响应数据
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            # 检查是否有错误信息
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取vrrp L3使能状态失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, config=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
 def main():
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['execute']),
-        group=dict(type='str', required=False),
+        action=dict(type='str', required=True, choices=['set', 'get']),
+        enabled=dict(type='int', required=False),
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
         config=dict(type='dict', required=False),
         setting=dict(type='dict', required=False),
         value=dict(type='str', required=False),
-        enable=dict(type='bool', required=False)
+        enable=dict(type='bool', required=False),
+        name=dict(type='str', required=False),
+        port=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -107,8 +150,13 @@ def main():
         supports_check_mode=False
     )
 
-    # 执行操作
-    adc_vrrp_l3peer_enable_set(module)
+    # 根据action执行相应操作
+    action = module.params['action']
+
+    if action == 'set':
+        adc_vrrp_l3peer_enable_set(module)
+    elif action == 'get':
+        adc_vrrp_l3peer_enable_get(module)
 
 
 if __name__ == '__main__':

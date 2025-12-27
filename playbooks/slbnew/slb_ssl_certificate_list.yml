@@ -20,9 +20,7 @@
       adc_slb_ssl_certificate:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
-        # 根据实际需求添加更多参数
+        action: list
       register: result
       when: login_result is succeeded
 

@@ -17,12 +17,20 @@
         var: login_result
 
     - name: 执行 tacacs认证配置
-      adc_aaa_tacacs:
+      adc_system_aaa:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
-        # 根据实际需求添加更多参数
+        action: set_tacacs_config
+        server_status: 1
+        server_hostname: "192.168.100.1"
+        server_secret: "secret123"
+        server_authentication: 49
+        server_timeout: 5
+        server_status2: 0
+        server_hostname2: "192.168.200.1"
+        server_secret2: "secret123"
+        server_authentication2: 49
+        server_timeout2: 5
       register: result
       when: login_result is succeeded
 

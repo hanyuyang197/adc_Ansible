@@ -17,12 +17,18 @@
         var: login_result
 
     - name: 执行 radius认证配置
-      adc_aaa_radius:
+      adc_system_aaa:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
-        # 根据实际需求添加更多参数
+        action: set_radius_config
+        server_status: 1
+        server_hostname: "192.168.100.1"
+        server_secret: "secret123"
+        server_authentication: 1
+        server_account: 1
+        server_retransmit: 3
+        server_timeout: 5
+        def_priv_enabled: 0
       register: result
       when: login_result is succeeded
 

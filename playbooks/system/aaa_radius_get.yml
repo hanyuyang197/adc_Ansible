@@ -17,12 +17,10 @@
         var: login_result
 
     - name: 执行 radius认证获取
-      adc_aaa_radius:
+      adc_system_aaa:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
-        # 根据实际需求添加更多参数
+        action: get_radius_config
       register: result
       when: login_result is succeeded
 

@@ -463,6 +463,146 @@ def adc_get_tacacs_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def adc_set_ldap_config(module):
+    """设置LDAP认证配置"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    serverstatus = module.params['serverstatus']
+    hostname = module.params['hostname']
+    ldap_cn = module.params['ldap_cn']
+    ldap_dn = module.params['ldap_dn']
+    ldap_timeout = module.params['ldap_timeout']
+    ldap_port = module.params['ldap_port']
+    ldap_ssl = module.params['ldap_ssl']
+    serverstatus2 = module.params['serverstatus2']
+    hostname2 = module.params['hostname2']
+    ldap_cn2 = module.params['ldap_cn2']
+    ldap_dn2 = module.params['ldap_dn2']
+    ldap_timeout2 = module.params['ldap_timeout2']
+    ldap_port2 = module.params['ldap_port2']
+    ldap_ssl2 = module.params['ldap_ssl2']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=aaa.ldap.set" % (
+        ip, authkey)
+
+    # 构造LDAP配置数据
+    ldap_data = {}
+
+    # 添加可选参数
+    if serverstatus is not None:
+        ldap_data["serverstatus"] = serverstatus
+    if hostname is not None:
+        ldap_data["hostname"] = hostname
+    if ldap_cn is not None:
+        ldap_data["ldap_cn"] = ldap_cn
+    if ldap_dn is not None:
+        ldap_data["ldap_dn"] = ldap_dn
+    if ldap_timeout is not None:
+        ldap_data["ldap_timeout"] = ldap_timeout
+    if ldap_port is not None:
+        ldap_data["ldap_port"] = ldap_port
+    if ldap_ssl is not None:
+        ldap_data["ldap_ssl"] = ldap_ssl
+    if serverstatus2 is not None:
+        ldap_data["serverstatus2"] = serverstatus2
+    if hostname2 is not None:
+        ldap_data["hostname2"] = hostname2
+    if ldap_cn2 is not None:
+        ldap_data["ldap_cn2"] = ldap_cn2
+    if ldap_dn2 is not None:
+        ldap_data["ldap_dn2"] = ldap_dn2
+    if ldap_timeout2 is not None:
+        ldap_data["ldap_timeout2"] = ldap_timeout2
+    if ldap_port2 is not None:
+        ldap_data["ldap_port2"] = ldap_port2
+    if ldap_ssl2 is not None:
+        ldap_data["ldap_ssl2"] = ldap_ssl2
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = json.dumps(ldap_data)
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            post_data = json.dumps(ldap_data)
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="设置LDAP认证配置失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "设置LDAP认证配置", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_get_ldap_config(module):
+    """获取LDAP认证配置"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=aaa.ldap.get" % (
+        ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取LDAP认证配置失败: %s" % str(e))
+
+    # 对于获取操作，直接返回响应数据
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            # 检查是否有错误信息
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取LDAP认证配置失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, config=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
 def main():
     # 定义模块参数
     module_args = dict(
@@ -471,7 +611,8 @@ def main():
         action=dict(type='str', required=True, choices=[
             'set_aaa_general_config', 'get_aaa_general_config',
             'set_radius_config', 'get_radius_config',
-            'set_tacacs_config', 'get_tacacs_config']),
+            'set_tacacs_config', 'get_tacacs_config',
+            'set_ldap_config', 'get_ldap_config']),
         # AAA全局配置参数
         local_disabled=dict(type='int', required=False),
         auth_order=dict(type='int', required=False),
@@ -495,6 +636,21 @@ def main():
         # TACACS+配置参数
         # server_status, server_hostname, server_secret, server_authentication, server_timeout 已定义
         # server_status2, server_hostname2, server_secret2, server_authentication2, server_timeout2 已定义
+        # LDAP配置参数
+        serverstatus=dict(type='int', required=False),
+        hostname=dict(type='str', required=False),
+        ldap_cn=dict(type='str', required=False),
+        ldap_dn=dict(type='str', required=False),
+        ldap_timeout=dict(type='int', required=False),
+        ldap_port=dict(type='int', required=False),
+        ldap_ssl=dict(type='int', required=False),
+        serverstatus2=dict(type='int', required=False),
+        hostname2=dict(type='str', required=False),
+        ldap_cn2=dict(type='str', required=False),
+        ldap_dn2=dict(type='str', required=False),
+        ldap_timeout2=dict(type='int', required=False),
+        ldap_port2=dict(type='int', required=False),
+        ldap_ssl2=dict(type='int', required=False),
     )
 
     # 创建AnsibleModule实例
@@ -518,6 +674,10 @@ def main():
         adc_set_tacacs_config(module)
     elif action == 'get_tacacs_config':
         adc_get_tacacs_config(module)
+    elif action == 'set_ldap_config':
+        adc_set_ldap_config(module)
+    elif action == 'get_ldap_config':
+        adc_get_ldap_config(module)
 
 
 if __name__ == '__main__':
