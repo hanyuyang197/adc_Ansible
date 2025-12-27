@@ -1,264 +1,264 @@
 ntp服务器api缺少
-1.添加NTP服务器 ---system.ntp.add
-2.获取NTP服务器列表 ---system.ntp.list
-3.获取指定NTP服务器  ---system.ntp.get
-4.编辑NTP服务器  ---system.ntp.edit
-5.删除NTP服务器  ---system.ntp.del
+1.添加NTP服务器 system.ntp.add
+2.获取NTP服务器列表 system.ntp.list
+3.获取指定NTP服务器  system.ntp.get
+4.编辑NTP服务器  system.ntp.edit
+5.删除NTP服务器  system.ntp.del
 
 
 域名解析
-1.上传域名表文件  ---system.domaintable.file.upload
-2.下载域名表文件  ----system.domaintable.file.download
+1.上传域名表文件  system.domaintable.file.upload
+2.下载域名表文件  system.domaintable.file.download
 
 
 snmp
-1.设置snmp服务  ---snmp.server.set
-2.获取snmp服务配置  ----snmp.server.get
-3.添加团体字   ---snmp.comm.item.add
-4.获取团体字列表   ----snmp.comm.item.list
-5.删除snmp团体字   ----snmp.comm.item.del
-6.添加snmp v3视图   ---snmp.server.v3.view.add
-7.获取视图列表     ---snmp.server.v3.view.list
-8.获取视图   ------snmp.server.v3.view.get
-9.编辑视图   -------snmp.server.v3.view.edit
-10.删除视图    ---snmp.server.v3.view.del
-11.添加snmp v3组   ---snmp.server.v3.group.add
-12.获取组列表     ---snmp.server.v3.group.list
-13.获取组   ------snmp.server.v3.group.get
-14.编辑组   -------snmp.server.v3.group.edit
-15.删除组    ---snmp.server.v3.group.del
-16.添加snmp v3用户   ---snmp.server.v3.user.add
-17.获取用户列表     ---snmp.server.v3.user.list
-18.获取用户   ------snmp.server.v3.user.get
-19.编辑用户   -------snmp.server.v3.user.edit
-20.删除用户    ---snmp.server.v3.user.del
+1.设置snmp服务  snmp.server.set
+2.获取snmp服务配置  snmp.server.get
+3.添加团体字   snmp.comm.item.add
+4.获取团体字列表   snmp.comm.item.list
+5.删除snmp团体字   snmp.comm.item.del
+6.添加snmp v3视图   snmp.server.v3.view.add
+7.获取视图列表     snmp.server.v3.view.list
+8.获取视图   snmp.server.v3.view.get
+9.编辑视图   snmp.server.v3.view.edit
+10.删除视图    snmp.server.v3.view.del
+11.添加snmp v3组   snmp.server.v3.group.add
+12.获取组列表     snmp.server.v3.group.list
+13.获取组   snmp.server.v3.group.get
+14.编辑组   snmp.server.v3.group.edit
+15.删除组    snmp.server.v3.group.del
+16.添加snmp v3用户   snmp.server.v3.user.add
+17.获取用户列表     snmp.server.v3.user.list
+18.获取用户   snmp.server.v3.user.get
+19.编辑用户   snmp.server.v3.user.edit
+20.删除用户    snmp.server.v3.user.del
 
 认证
-1.AAA全局配置  ---aaa.general.set
-2.AAA全局配置获取   ---aaa.general.get
-3.radius认证配置  ---aaa.radius.set
-4.radius认证获取  ---aaa.radius.get
-5.tacacs认证配置  ---aaa.tacacs.set
-6.tacacs认证获取  ---aaa.tacacs.get
-7.ldap认证配置  ---aaa.ldap.set
-8.ldap认证获取  ---aaa.ldap.get
+1.AAA全局配置  aaa.general.set
+2.AAA全局配置获取   aaa.general.get
+3.radius认证配置  aaa.radius.set
+4.radius认证获取  aaa.radius.get
+5.tacacs认证配置  aaa.tacacs.set
+6.tacacs认证获取  aaa.tacacs.get
+7.ldap认证配置  aaa.ldap.set
+8.ldap认证获取  aaa.ldap.get
 
 vrrp
-1.获取指定vrrp组  ---vrrp.group.get
-2.编辑指定vrrp组  ---vrrp.group.edit
-3.获取vrrp组状态列表 ---vrrp.group.stats
-4.删除指定vrrp组   ---vrrp.group.del
-5.获取vrrp浮动地址列表  ---vrrp.floating_ip.list
-6.删除vrrp浮动地址   ---vrrp.floating_ip.del
-7.编辑以太网心跳接口 ---vrrp.heart_eth.edit
-8.获取以太网心跳口配置列表  ---vrrp.heart_eth.list
-9.添加汇聚接口作为心跳口  ---vrrp.heart_trunk.add
-10.编辑汇聚接口心跳口 ----vrrp.heart_trunk.edit
-11.获取汇聚接口心跳口配置  ---vrrp.heart_trunk.list
-12.删除以太网心跳口  ---vrrp.heart_eth.del
-13.删除汇聚心跳口  ---vrrp.heart_trunk.del
-14.获取所有心跳口接口列表  ----vrrp.heart_all.list
-15.获取vrrp网关监控条件列表   ---vrrp.track.gateway.list
-16.编辑vrrp网关监控条件   ---vrrp.track.gateway.edit
-17.删除vrrp网关监控条件  ----vrrp.track.gateway.del
-18.添加vrrp虚拟接口监控条件   ----vrrp.track.vlan.add
-19.获取vrrp虚拟接口监控条件列表   ---vrrp.track.vlan.list
-20.编辑vrrp虚拟接口监控条件    ---vrrp.track.vlan.edit
-21.删除vrrp虚拟接口监控条件  ----vrrp.track.vlan.del
-22.添加vrrp路由监控条件   ----vrrp.track.route.add
-23.获取vrrp路由监控条件列表   ---vrrp.track.route.list
-24.编辑vrrp路由监控条件    ---vrrp.track.route.edit
-25.删除vrrp路由监控条件  ----vrrp.track.route.del
-26.添加vrrp服务池监控条件   ----vrrp.track.pool.add
-27.获取vrrp服务池监控条件列表   ---vrrp.track.pool.list
-28.编辑vrrp服务池监控条件    ---vrrp.track.pool.edit
-29.删除vrrp服务池监控条件  ----vrrp.track.pool.del
-30.添加vrrp L3邻居   -----vrrp.l3.peer.add
-31.获取vrrp L3邻居列表   ---vrrp.l3.peer.list
-32.获取指定vrrp L3 邻居   ---vrrp.l3.peer.get
-33.删除指定vrrp L3  邻居     ----vrrp.l3.peer.del
-34.获取vrrp L3使能状态   ---vrrp.l3peer.enable.get
-35.编辑vrrp L3使能状态   ---vrrp.l3peer.enable.set
-36.添加vrrp mgmt邻居   ----vrrp.mgmt.peer.add
-37.获取vrrp mgmt邻居列表   ----vrrp.mgmt.peer.list
-38.获取执行vrrp mgmt 邻居  -----vrrp.mgmt.peer.get
-39.删除指定vrrp mgmt邻居  ---vrrp.mgmt.peer.del
-40.获取vrrp配置同步对端列表 ---vrrp.cfgsync.peer.list
-41.添加vrrp同步对端   ---vrrp.cfgsync.peer.add
-42.获取指定vrrp配置同步对端   ----vrrp.cfgsync.peer.get
-43.编辑指定vrrp配置同步对端   ----vrrp.cfgsync.peer.edit
-44.删除指定VRRP配置同步列表  -----vrrp.cfgsync.peer.del
-45.获取vrrp同步模块列表  -----vrrp.sync.module.get
-46.编辑vrrp同步模块    -----vrrp.sync.module.set
-47.触发配置同步   ---vrrp.cfgsync.action.sync
-48.配置同步pull-push  ----vrrp.cfgsync.action.pull_push
-49.设置vrrp自动同步配置   ----vrrp.cfgsync.auto.set
-50.获取vrrp自动同步配置信息   ----vrrp.cfgsync.auto.get
-51.设置vrrp同步通知配置    ----vrrp.cfgsync.notify.set
-52.获取vrrp同步通知配置信息    ----vrrp.cfgsync.notify.get
-53.获取vrrp同步状态    ----vrrp.cfgsync.flag.get
-54.获取vrrp强制备机信息  ----vrrp.manually_standby.get
-55.获取vrrp强制下线信息   ---vrrp.force_offline.get
-56.设置组vrrp强制下线   -----vrrp.force_offline.set
-57.设置组vrrp主动升主  ----vrrp.manually_active.set
-58.设置vrrp主动降备   ---vrrp.manually_active.set
-59.获取vrrp mgmt 统计信息  ---vrrp.mgmt.peer.list
-60.获取以太网心跳统计信息   ---vrrp.heart_eth.statis
-60.获取所有心跳统计信息   ---vrrp.heart_all.statis
-60.获取汇聚口心跳统计信息   ---vrrp.heart_trunk.statis
+1.获取指定vrrp组  vrrp.group.get
+2.编辑指定vrrp组  vrrp.group.edit
+3.获取vrrp组状态列表 vrrp.group.stats
+4.删除指定vrrp组   vrrp.group.del
+5.获取vrrp浮动地址列表  vrrp.floating_ip.list
+6.删除vrrp浮动地址   vrrp.floating_ip.del
+7.编辑以太网心跳接口 vrrp.heart_eth.edit
+8.获取以太网心跳口配置列表  vrrp.heart_eth.list
+9.添加汇聚接口作为心跳口  vrrp.heart_trunk.add
+10.编辑汇聚接口心跳口 vrrp.heart_trunk.edit
+11.获取汇聚接口心跳口配置  vrrp.heart_trunk.list
+12.删除以太网心跳口  vrrp.heart_eth.del
+13.删除汇聚心跳口  vrrp.heart_trunk.del
+14.获取所有心跳口接口列表  vrrp.heart_all.list
+15.获取vrrp网关监控条件列表   vrrp.track.gateway.list
+16.编辑vrrp网关监控条件   vrrp.track.gateway.edit
+17.删除vrrp网关监控条件  vrrp.track.gateway.del
+18.添加vrrp虚拟接口监控条件   vrrp.track.vlan.add
+19.获取vrrp虚拟接口监控条件列表   vrrp.track.vlan.list
+20.编辑vrrp虚拟接口监控条件    vrrp.track.vlan.edit
+21.删除vrrp虚拟接口监控条件  vrrp.track.vlan.del
+22.添加vrrp路由监控条件   vrrp.track.route.add
+23.获取vrrp路由监控条件列表   vrrp.track.route.list
+24.编辑vrrp路由监控条件    vrrp.track.route.edit
+25.删除vrrp路由监控条件  vrrp.track.route.del
+26.添加vrrp服务池监控条件   vrrp.track.pool.add
+27.获取vrrp服务池监控条件列表   vrrp.track.pool.list
+28.编辑vrrp服务池监控条件    vrrp.track.pool.edit
+29.删除vrrp服务池监控条件  vrrp.track.pool.del
+30.添加vrrp L3邻居   vrrp.l3.peer.add
+31.获取vrrp L3邻居列表   vrrp.l3.peer.list
+32.获取指定vrrp L3 邻居   vrrp.l3.peer.get
+33.删除指定vrrp L3  邻居     vrrp.l3.peer.del
+34.获取vrrp L3使能状态   vrrp.l3peer.enable.get
+35.编辑vrrp L3使能状态   vrrp.l3peer.enable.set
+36.添加vrrp mgmt邻居   vrrp.mgmt.peer.add
+37.获取vrrp mgmt邻居列表   vrrp.mgmt.peer.list
+38.获取执行vrrp mgmt 邻居  vrrp.mgmt.peer.get
+39.删除指定vrrp mgmt邻居  vrrp.mgmt.peer.del
+40.获取vrrp配置同步对端列表 vrrp.cfgsync.peer.list
+41.添加vrrp同步对端   vrrp.cfgsync.peer.add
+42.获取指定vrrp配置同步对端   vrrp.cfgsync.peer.get
+43.编辑指定vrrp配置同步对端   vrrp.cfgsync.peer.edit
+44.删除指定VRRP配置同步列表  vrrp.cfgsync.peer.del
+45.获取vrrp同步模块列表  vrrp.sync.module.get
+46.编辑vrrp同步模块    vrrp.sync.module.set
+47.触发配置同步   vrrp.cfgsync.action.sync
+48.配置同步pull-push  vrrp.cfgsync.action.pull_push
+49.设置vrrp自动同步配置   vrrp.cfgsync.auto.set
+50.获取vrrp自动同步配置信息   vrrp.cfgsync.auto.get
+51.设置vrrp同步通知配置    vrrp.cfgsync.notify.set
+52.获取vrrp同步通知配置信息    vrrp.cfgsync.notify.get
+53.获取vrrp同步状态    vrrp.cfgsync.flag.get
+54.获取vrrp强制备机信息  vrrp.manually_standby.get
+55.获取vrrp强制下线信息   vrrp.force_offline.get
+56.设置组vrrp强制下线   vrrp.force_offline.set
+57.设置组vrrp主动升主  vrrp.manually_active.set
+58.设置vrrp主动降备   vrrp.manually_active.set
+59.获取vrrp mgmt 统计信息  vrrp.mgmt.peer.list
+60.获取以太网心跳统计信息   vrrp.heart_eth.statis
+60.获取所有心跳统计信息   vrrp.heart_all.statis
+60.获取汇聚口心跳统计信息   vrrp.heart_trunk.statis
 
 日志
-1.清除DNS日志    ---log.dns.clear
-2.清除操作日志    ---log.audit.clear
-3.清除业务日志日志  ---log.service.clear
-4.获取指定日志发送配置  ---log.syslog.server.get
-5.下载NAT日志   ----log.nat.download
-6.下载业务日志    ----log.server.download
-7.下载系统日志    ----log.system.download
-8.下载诊断日志    ----log.coredump.download
-9.下载操作日志    ----log.audit.downloads
+1.清除DNS日志    log.dns.clear
+2.清除操作日志    log.audit.clear
+3.清除业务日志日志  log.service.clear
+4.获取指定日志发送配置  log.syslog.server.get
+5.下载NAT日志   log.nat.download
+6.下载业务日志    log.server.download
+7.下载系统日志    log.system.download
+8.下载诊断日志    log.coredump.download
+9.下载操作日志    log.audit.downloads
 
 
 LLDP
-1.LLDP配置获取   ---lldp.config.get
-2.LLDP邻居查询   ---lldp.neighbors.get
-3.LLDP配置获取   ---lldp.config.set
+1.LLDP配置获取   lldp.config.get
+2.LLDP邻居查询   lldp.neighbors.get
+3.LLDP配置获取   lldp.config.set
 
 
 时间对象
-1.添加时间对象  ----system.timerange.add
-2.获取时间对象列表   ---system.timerange.list
-3.时间对象获取   ---system.timerange.get
-4.时间对象编辑   ----system.timerange.edit
-5.时间对象删除   ----system.timerange.del
+1.添加时间对象  system.timerange.add
+2.获取时间对象列表   system.timerange.list
+3.时间对象获取   system.timerange.get
+4.时间对象编辑   system.timerange.edit
+5.时间对象删除   system.timerange.del
 
 
 地址解析
-1.增加静态arp配置   ---arp.ipv4.add
-2.获取静态arp列表   ----arp.ipv4.list
-3.获取指定静态arp配置   ---arp.ipv4.get
-4.编辑指定arp配置    ----arp.ipv4.edit
-5.删除arp         ----arp.ipv4.del
-6.获取动态arp信息   ---arp.ipv4.statis
-7.清除动态arp   ----arp.ipv4.clear
-8.增加静态arp配置   ---arp.ipv6.add
-9.获取静态arp列表   ----arp.ipv6.list
-10.获取指定静态arp配置   ---arp.ipv6.get
-11.编辑指定arp配置    ----arp.ipv6.edit
-12.删除arp         ----arp.ipv6.del
-13.获取动态arp信息   ---arp.ipv6.statis
-14.清除动态arp   ----arp.ipv6.clear
+1.增加静态arp配置   arp.ipv4.add
+2.获取静态arp列表   arp.ipv4.list
+3.获取指定静态arp配置   arp.ipv4.get
+4.编辑指定arp配置    arp.ipv4.edit
+5.删除arp         arp.ipv4.del
+6.获取动态arp信息   arp.ipv4.statis
+7.清除动态arp   arp.ipv4.clear
+8.增加静态arp配置   arp.ipv6.add
+9.获取静态arp列表   arp.ipv6.list
+10.获取指定静态arp配置   arp.ipv6.get
+11.编辑指定arp配置    arp.ipv6.edit
+12.删除arp         arp.ipv6.del
+13.获取动态arp信息   arp.ipv6.statis
+14.清除动态arp   arp.ipv6.clear
 
 
 安全
-1.获取网络安全DDOS配置  ----network.ddos.get
-2.设置网络安全DDOS配置  ----network.ddos.set
-3.获取全局SYN Cookie配置  --slb.syn_cookie.get
-4.设置全局SYN Cookie配置  --slb.syn_cookie.set
-5.设置没虚拟服务SYN Cookie配置     ---slb.vs.syn_cookie.set
-6.获取没虚拟服务SYN Cookie配置     ---slb.vs.syn_cookie.get
+1.获取网络安全DDOS配置  network.ddos.get
+2.设置网络安全DDOS配置  network.ddos.set
+3.获取全局SYN Cookie配置  snmpslb.syn_cookie.get
+4.设置全局SYN Cookie配置  snmpslb.syn_cookie.set
+5.设置没虚拟服务SYN Cookie配置     slb.vs.syn_cookie.set
+6.获取没虚拟服务SYN Cookie配置     slb.vs.syn_cookie.get
 
 流量控制
-1.流量控制使能全局获取   ----network.tc.global.get
-2.流量控制使能全局设置   ----network.tc.global.set
-3.流量控制列表   ---network.tc.list
-4.流量控制获取    ----network.tc.get
-5.流量控制增加   ----network.tc.add
-6.流量控制编辑   ---network.tc.edit
-7.流量控制删除  ----network.tc.del
-8.流量控制rule列表   ---network.tc.rule.list
-9.流量控制rule获取    ----network.tc.rule.get
-10.流量控制rule增加   ----network.tc.rule.add
-11.流量控制rule编辑   ---network.tc.rule.edit
-12.流量控制rule删除  ----network.tc.rule.del
+1.流量控制使能全局获取   network.tc.global.get
+2.流量控制使能全局设置   network.tc.global.set
+3.流量控制列表   network.tc.list
+4.流量控制获取    network.tc.get
+5.流量控制增加   network.tc.add
+6.流量控制编辑   network.tc.edit
+7.流量控制删除  network.tc.del
+8.流量控制rule列表   network.tc.rule.list
+9.流量控制rule获取    network.tc.rule.get
+10.流量控制rule增加   network.tc.rule.add
+11.流量控制rule编辑   network.tc.rule.edit
+12.流量控制rule删除  network.tc.rule.del
 
 
 接口
-1.管理口配置获取   ----interface.mgmt.get
-2.管理口配置设置  ----interface.mgmt.set
-3.以太网接口列表   ----interface.ethernet.list
-4.以太网接口获取    ----interface.ethernet.get
-5.以太网接口编辑   ----interface.ethernet.edit
-6.获取接口统计信息   ----interface.ethernet.statis
-7.虚拟接口列表   ----interface.ve.list
-8.虚拟接口获取    ----interface.ve.get
-9.虚拟接口编辑   ----interface.ve.edit
-10.汇聚接口列表   ----interface.trunk.list
-11.汇聚接口获取    ----interface.trunk.get
-12.汇聚接口编辑   ----interface.trunk.edit
+1.管理口配置获取   interface.mgmt.get
+2.管理口配置设置  interface.mgmt.set
+3.以太网接口列表   interface.ethernet.list
+4.以太网接口获取    interface.ethernet.get
+5.以太网接口编辑   interface.ethernet.edit
+6.获取接口统计信息   interface.ethernet.statis
+7.虚拟接口列表   interface.ve.list
+8.虚拟接口获取    interface.ve.get
+9.虚拟接口编辑   interface.ve.edit
+10.汇聚接口列表   interface.trunk.list
+11.汇聚接口获取    interface.trunk.get
+12.汇聚接口编辑   interface.trunk.edit
 
 
 SSl
-1.http模板增加   ---slb.profile.http.add
-2.http模板列表   ---slb.profile.http.list
-3.http模板获取   ----slb.profile.http.get
-4.http模板编辑   ----slb.profile.http.edit 
-5.http模板删除   ----slb.profile.http.del
-6.http2模板增加   ---slb.profile.http2.add
-7.http2模板列表   ---slb.profile.http2.list
-8.http2模板获取   ----slb.profile.http2.get
-9.http2模板编辑   ----slb.profile.http2.edit 
-10.http2模板删除   ----slb.profile.http2.del
-11.证书上传       ----slb.ssl.certificate.upload
-12.私钥上传      ----slb.ssl.key.upload
-13.吊销列表上传  ----slb.ssl.crl.upload
-14.pfx证书上传   ---slb.ssl.pfx.upload&password=admin
-15.CFCA上传签名私钥  ----slb.ssl.key.upload
-16.CFCA加密私钥上传   -----slb.ssl.enckey.cfca.upload&sign_file_name=test_sign_s.key&sign_file_password=admin
-17.生成SSL自签名证书   ----slb.ssl.certificate.add
-18.生成CSR   ----system.sys.csr.add
-19.获取SSL证书列表   ----slb.ssl.certificate.list.withcommon
-20.获取SSL证书列表   ----slb.ssl.certificate.list
-21.获取证书过滤列表   ----slb.ssl.filtercert.list
-22.获取证书  ---system.sys.cert.get
-23.证书删除   ----slb.ssl.certificate.del
-24.私钥删除   ----slb.ssl.key.del
-25.吊销列表删除  ----slb.ssl.crl.del
-26.删除PFX证书   ---slb.ssl.certificate.del
-27.删除PFX私钥   ----slb.ssl.key.del
-28.删除CSR   ----system.sys.csr.del
-29.删除CSR的key   ----slb.ssl.key.del
-30.CFCA签名私钥删除   ---slb.ssl.key.del
-31.删除自签名私钥   ---slb.ssl.key.del
-32.删除自签名证书   ----slb.ssl.certificate.del
-33.证书和私钥校验   ---slb.ssl.certkey.match&cert_name=ecc_ca.crt&key_name=11&password=admin
-34.增加SSL连接保持模板   ----slb.persist.sslid.add
-35.获取SSL连接保持模板列表   ---slb.persist.sslid.list
-36.获取指定SSL保持模板   -----slb.persist.sslid.get
-37.获取common和分区ssl保持模板  ----slb.persist.sslid.list.withcommon
-38.编辑SSL保持模板   ----slb.persist.sslid.edit
-39.删除SSL模板   ---slb.persist.sslid.del
+1.http模板增加   slb.profile.http.add
+2.http模板列表   slb.profile.http.list
+3.http模板获取   slb.profile.http.get
+4.http模板编辑   slb.profile.http.edit 
+5.http模板删除   slb.profile.http.del
+6.http2模板增加   slb.profile.http2.add
+7.http2模板列表   slb.profile.http2.list
+8.http2模板获取   slb.profile.http2.get
+9.http2模板编辑   slb.profile.http2.edit 
+10.http2模板删除   slb.profile.http2.del
+11.证书上传       slb.ssl.certificate.upload
+12.私钥上传      slb.ssl.key.upload
+13.吊销列表上传  slb.ssl.crl.upload
+14.pfx证书上传   slb.ssl.pfx.upload&password=admin
+15.CFCA上传签名私钥  slb.ssl.key.upload
+16.CFCA加密私钥上传   slb.ssl.enckey.cfca.upload&sign_file_name=test_sign_s.key&sign_file_password=admin
+17.生成SSL自签名证书   slb.ssl.certificate.add
+18.生成CSR   system.sys.csr.add
+19.获取SSL证书列表   slb.ssl.certificate.list.withcommon
+20.获取SSL证书列表   slb.ssl.certificate.list
+21.获取证书过滤列表   slb.ssl.filtercert.list
+22.获取证书  system.sys.cert.get
+23.证书删除   slb.ssl.certificate.del
+24.私钥删除   slb.ssl.key.del
+25.吊销列表删除  slb.ssl.crl.del
+26.删除PFX证书   slb.ssl.certificate.del
+27.删除PFX私钥   slb.ssl.key.del
+28.删除CSR   system.sys.csr.del
+29.删除CSR的key   slb.ssl.key.del
+30.CFCA签名私钥删除   slb.ssl.key.del
+31.删除自签名私钥   slb.ssl.key.del
+32.删除自签名证书   slb.ssl.certificate.del
+33.证书和私钥校验   slb.ssl.certkey.match&cert_name=ecc_ca.crt&key_name=11&password=admin
+34.增加SSL连接保持模板   slb.persist.sslid.add
+35.获取SSL连接保持模板列表   slb.persist.sslid.list
+36.获取指定SSL保持模板   slb.persist.sslid.get
+37.获取common和分区ssl保持模板  slb.persist.sslid.list.withcommon
+38.编辑SSL保持模板   slb.persist.sslid.edit
+39.删除SSL模板   slb.persist.sslid.del
 
 
 
 端口列表模板
-1.端口列表模板列表   ----port-list.profile.list
-2.端口列表模板获取   ----port-list.profile.get
-3.端口列表模板增加  -----port-list.profile.add
-4.端口列表模板明细增加  -----port-list.profile.item.add
-5.端口列表模板编辑   ----port-list.profile.edit
-6.端口列表模板删除   -----port-list.profile.del
-7.端口列表模板明细删除    ----port-list.profile.item.del
+1.端口列表模板列表   port-list.profile.list
+2.端口列表模板获取   port-list.profile.get
+3.端口列表模板增加  port-list.profile.add
+4.端口列表模板明细增加  port-list.profile.item.add
+5.端口列表模板编辑   port-list.profile.edit
+6.端口列表模板删除   port-list.profile.del
+7.端口列表模板明细删除    port-list.profile.item.del
 
 
 静态路由
-1.ipv4静态管理路由配置列表   ---route.static.mgmt.ipv4.list
-2.ipv4静态管理路由配置获取   ----oute.static.mgmt.ipv4.get
-3.ipv4静态管理路由配置增加   ----oute.static.mgmt.ipv4.add
-4.ipv4静态管理路由配置编辑   ----oute.static.mgmt.ipv4.edit
-5.ipv4静态管理路由配置删除   ----oute.static.mgmt.ipv4.del
-6.ipv6静态管理路由配置列表   ---route.static.mgmt.ipv6.list
-7.ipv6静态管理路由配置获取   ----oute.static.mgmt.ipv6.get
-8.ipv6静态管理路由配置增加   ----oute.static.mgmt.ipv6.add
-9.ipv6静态管理路由配置编辑   ----oute.static.mgmt.ipv6.edit
-10.ipv6静态管理路由配置删除   ----oute.static.mgmt.ipv6.del
-11.ipv4静态业务路由配置列表   ---route.static.static.ctrl.ipv4.list
-12.ipv4静态业务路由配置获取   ----oute.static.static.ctrl.ipv4.get
-13.ipv4静态业务路由配置增加   ----oute.static.static.ctrl.ipv4.add
-14.ipv4静态业务路由配置编辑   ----oute.static.static.ctrl.ipv4.edit
-15.ipv4静态业务路由配置删除   ----oute.static.static.ctrl.ipv4.del
-16.ipv6静态业务路由配置列表   ---route.static.static.ctrl.ipv6.list
-17.ipv6静态业务路由配置获取   ----oute.static.static.ctrl.ipv6.get
-18.ipv6静态业务路由配置增加   ----oute.static.static.ctrl.ipv6.add
-19.ipv6静态业务路由配置编辑   ----oute.static.static.ctrl.ipv6.edit
-20.ipv6静态业务路由配置删除   ----oute.static.static.ctrl.ipv6.del
+1.ipv4静态管理路由配置列表   route.static.mgmt.ipv4.list
+2.ipv4静态管理路由配置获取   route.static.mgmt.ipv4.get
+3.ipv4静态管理路由配置增加   route.static.mgmt.ipv4.add
+4.ipv4静态管理路由配置编辑   route.static.mgmt.ipv4.edit
+5.ipv4静态管理路由配置删除   route.static.mgmt.ipv4.del
+6.ipv6静态管理路由配置列表   route.static.mgmt.ipv6.list
+7.ipv6静态管理路由配置获取   route.static.mgmt.ipv6.get
+8.ipv6静态管理路由配置增加   route.static.mgmt.ipv6.add
+9.ipv6静态管理路由配置编辑   route.static.mgmt.ipv6.edit
+10.ipv6静态管理路由配置删除   route.static.mgmt.ipv6.del
+11.ipv4静态业务路由配置列表   route.static.static.ctrl.ipv4.list
+12.ipv4静态业务路由配置获取   route.static.static.ctrl.ipv4.get
+13.ipv4静态业务路由配置增加   route.static.static.ctrl.ipv4.add
+14.ipv4静态业务路由配置编辑   route.static.static.ctrl.ipv4.edit
+15.ipv4静态业务路由配置删除   route.static.static.ctrl.ipv4.del
+16.ipv6静态业务路由配置列表   route.static.static.ctrl.ipv6.list
+17.ipv6静态业务路由配置获取   route.static.static.ctrl.ipv6.get
+18.ipv6静态业务路由配置增加   route.static.static.ctrl.ipv6.add
+19.ipv6静态业务路由配置编辑   route.static.static.ctrl.ipv6.edit
+20.ipv6静态业务路由配置删除   route.static.static.ctrl.ipv6.del
