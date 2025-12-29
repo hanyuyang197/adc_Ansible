@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "slb_global_allow_promis_intf_vip_set"
-        enable: 1
+        status: 1
       register: result
       when: login_result is succeeded
 

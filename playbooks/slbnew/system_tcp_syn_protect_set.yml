@@ -21,8 +21,8 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "system_tcp_syn_protect_set"
-        enable: 1
-        rate: 1000
+        reset: 1
+        rate_limit: 1000
       register: result
       when: login_result is succeeded
 

@@ -21,7 +21,10 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "slb_graceful_shutdown_set"
-        enable: 1
+        time: 10000
+        delete: 1
+        disable: 1
+        persist: 1
       register: result
       when: login_result is succeeded
 

@@ -23,7 +23,9 @@
         action: add_ipv4_entry
         ip_addr: "192.168.1.100"
         mac_addr: "00:11:22:33:44:55"
-        # 根据实际需求添加更多参数
+        port_type: 0  # 0:表示不指定接口(默认同网段的接口), 1：以太口, 3:trunk 接口
+        #slot_num: 0  # 接口插槽号，当指定 port_type 为 1 时需要指定该参数
+        #port_num: 0  # 接口号，当指定 port_type 为 1 或者 3 时需要指定该参数
       register: result
       when: login_result is succeeded
 

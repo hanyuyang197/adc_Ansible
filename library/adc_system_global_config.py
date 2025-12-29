@@ -141,13 +141,13 @@ def adc_slb_global_allow_promis_intf_vip_set(module):
     """设置 slb 全局混杂配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable']
+    status = module.params['status']
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.global.allow_promis_intf_vip.set" % (
         ip, authkey)
 
     config_data = {
-        "enable": enable
+        "status": status
     }
 
     post_data = json.dumps(config_data)
@@ -184,14 +184,26 @@ def adc_slb_graceful_shutdown_set(module):
     """设置 slb 全局软关机"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable']
+    time = module.params.get('time')
+    delete = module.params.get('delete')
+    disable = module.params.get('disable')
+    persist = module.params.get('persist')
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.graceful-shutdown.set" % (
         ip, authkey)
 
     config_data = {
-        "enable": enable
+        "graceful_shutdown_node": {}
     }
+    
+    if time is not None:
+        config_data["graceful_shutdown_node"]["time"] = time
+    if delete is not None:
+        config_data["graceful_shutdown_node"]["delete"] = delete
+    if disable is not None:
+        config_data["graceful_shutdown_node"]["disable"] = disable
+    if persist is not None:
+        config_data["graceful_shutdown_node"]["persist"] = persist
 
     post_data = json.dumps(config_data)
 
@@ -227,14 +239,23 @@ def adc_system_rate_limit_icmp_set(module):
     """设置 ICMP 速率限制配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    rate = module.params['rate']
+    normal_rate_limit = module.params.get('normal_rate_limit')
+    max_rate_limit = module.params.get('max_rate_limit')
+    lockup_period = module.params.get('lockup_period')
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.rate_limit_icmp.set" % (
         ip, authkey)
 
     config_data = {
-        "rate": rate
+        "rate_limit_icmp": {}
     }
+    
+    if normal_rate_limit is not None:
+        config_data["rate_limit_icmp"]["normal_rate_limit"] = normal_rate_limit
+    if max_rate_limit is not None:
+        config_data["rate_limit_icmp"]["max_rate_limit"] = max_rate_limit
+    if lockup_period is not None:
+        config_data["rate_limit_icmp"]["lockup_period"] = lockup_period
 
     post_data = json.dumps(config_data)
 
@@ -270,18 +291,18 @@ def adc_system_tcp_syn_protect_set(module):
     """设置 tcp 新建保护配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable']
-    rate = module.params.get('rate')
+    reset = module.params['reset']
+    rate_limit = module.params.get('rate_limit')
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.tcp_syn_protect.set" % (
         ip, authkey)
 
     config_data = {
-        "enable": enable
+        "reset": reset
     }
 
-    if rate is not None:
-        config_data["rate"] = rate
+    if rate_limit is not None:
+        config_data["rate_limit"] = rate_limit
 
     post_data = json.dumps(config_data)
 
@@ -324,7 +345,9 @@ def adc_system_vlan_keyed_connection_set(module):
         ip, authkey)
 
     config_data = {
-        "enable": enable
+        "vlan_keyed_connection": {
+            "enable": enable
+        }
     }
 
     post_data = json.dumps(config_data)
@@ -361,13 +384,13 @@ def adc_global_connection_mirror_set(module):
     """设置 SLB 全局连接镜像"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable']
+    global_connection_mirror = module.params['global_connection_mirror']
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=global.connection_mirror.set" % (
         ip, authkey)
 
     config_data = {
-        "enable": enable
+        "global_connection_mirror": global_connection_mirror
     }
 
     post_data = json.dumps(config_data)
@@ -404,13 +427,13 @@ def adc_global_path_persist_set(module):
     """设置 SLB 全局路径保持"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable']
+    global_path_persist = module.params['global_path_persist']
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=global.path_persist.set" % (
         ip, authkey)
 
     config_data = {
-        "enable": enable
+        "global_path_persist": global_path_persist
     }
 
     post_data = json.dumps(config_data)
@@ -447,13 +470,13 @@ def adc_global_slb_snat_on_vip_set(module):
     """设置 SLB 全局策略地址转换配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable']
+    global_policy_snat = module.params['global_policy_snat']
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=global.slb_snat_on_vip.set" % (
         ip, authkey)
 
     config_data = {
-        "enable": enable
+        "global_policy_snat": global_policy_snat
     }
 
     post_data = json.dumps(config_data)
@@ -491,13 +514,13 @@ def adc_global_slb_snat_interface_iprr_set(module):
     """设置 SLB 全局源 NAT 接口地址轮询"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable']
+    global_snat_interface_iprr = module.params['global_snat_interface_iprr']
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=global.slb_snat_interface_iprr.set" % (
         ip, authkey)
 
     config_data = {
-        "enable": enable
+        "global_snat_interface_iprr": global_snat_interface_iprr
     }
 
     post_data = json.dumps(config_data)
@@ -534,14 +557,14 @@ def adc_slb_global_virtual_mac_set(module):
     """设置 SLB 全局虚拟 MAC"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable']
+    gvm = module.params['gvm']
     mac = module.params.get('mac')
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.global.virtual_mac.set" % (
         ip, authkey)
 
     config_data = {
-        "enable": enable
+        "gvm": gvm
     }
 
     if mac is not None:
@@ -579,9 +602,36 @@ def main():
             'slb_global_virtual_mac_get', 'slb_global_virtual_mac_set'
         ]),
         # 配置参数
+        # 用于 global.connection_mirror.set
+        global_connection_mirror=dict(type='int', required=False, choices=[0, 1]),
+        # 用于 global.path_persist.set
+        global_path_persist=dict(type='int', required=False, choices=[0, 1]),
+        # 用于 global.slb_snat_on_vip.set
+        global_policy_snat=dict(type='int', required=False, choices=[0, 1]),
+        # 用于 global.slb_snat_interface_iprr.set
+        global_snat_interface_iprr=dict(type='int', required=False, choices=[0, 1]),
+        # 用于 slb.global.virtual_mac.set
+        gvm=dict(type='int', required=False, choices=[0, 1]),
+        # 用于其他需要enable参数的set操作
         enable=dict(type='int', required=False, choices=[0, 1]),
+        # 用于rate相关参数
         rate=dict(type='int', required=False),
-        mac=dict(type='str', required=False)
+        # 用于mac相关参数
+        mac=dict(type='str', required=False),
+        # 用于 system.rate_limit_icmp.set
+        normal_rate_limit=dict(type='int', required=False),
+        max_rate_limit=dict(type='int', required=False),
+        lockup_period=dict(type='int', required=False),
+        # 用于 slb.global.allow_promis_intf_vip.set
+        status=dict(type='int', required=False, choices=[0, 1]),
+        # 用于 system.tcp_syn_protect.set
+        reset=dict(type='int', required=False, choices=[0, 1]),
+        rate_limit=dict(type='int', required=False),
+        # 用于 slb.graceful-shutdown.set
+        time=dict(type='int', required=False),
+        delete=dict(type='int', required=False, choices=[0, 1]),
+        disable=dict(type='int', required=False, choices=[0, 1]),
+        persist=dict(type='int', required=False, choices=[0, 1])
     )
 
     # 创建AnsibleModule实例

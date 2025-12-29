@@ -151,6 +151,18 @@ def adc_add_ipv4_entry(module):
         "ip_addr": ip_addr,
         "mac_addr": mac_addr
     }
+    
+    # 添加可选参数
+    port_type = module.params.get('port_type')
+    slot_num = module.params.get('slot_num')
+    port_num = module.params.get('port_num')
+    
+    if port_type is not None:
+        entry_data["port_type"] = port_type
+    if slot_num is not None:
+        entry_data["slot_num"] = slot_num
+    if port_num is not None:
+        entry_data["port_num"] = port_num
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -211,6 +223,18 @@ def adc_edit_ipv4_entry(module):
         "ip_addr": ip_addr,
         "mac_addr": mac_addr
     }
+    
+    # 添加可选参数
+    port_type = module.params.get('port_type')
+    slot_num = module.params.get('slot_num')
+    port_num = module.params.get('port_num')
+    
+    if port_type is not None:
+        entry_data["port_type"] = port_type
+    if slot_num is not None:
+        entry_data["slot_num"] = slot_num
+    if port_num is not None:
+        entry_data["port_num"] = port_num
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -525,6 +549,18 @@ def adc_add_ipv6_entry(module):
         "ip_addr": ip_addr,
         "mac_addr": mac_addr
     }
+    
+    # 添加可选参数
+    port_type = module.params.get('port_type')
+    slot_num = module.params.get('slot_num')
+    port_num = module.params.get('port_num')
+    
+    if port_type is not None:
+        entry_data["port_type"] = port_type
+    if slot_num is not None:
+        entry_data["slot_num"] = slot_num
+    if port_num is not None:
+        entry_data["port_num"] = port_num
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -585,6 +621,18 @@ def adc_edit_ipv6_entry(module):
         "ip_addr": ip_addr,
         "mac_addr": mac_addr
     }
+    
+    # 添加可选参数
+    port_type = module.params.get('port_type')
+    slot_num = module.params.get('slot_num')
+    port_num = module.params.get('port_num')
+    
+    if port_type is not None:
+        entry_data["port_type"] = port_type
+    if slot_num is not None:
+        entry_data["slot_num"] = slot_num
+    if port_num is not None:
+        entry_data["port_num"] = port_num
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -784,7 +832,11 @@ def main():
             'get_ipv6_statistics', 'clear_ipv6_statistics']),
         # ARP参数
         ip_addr=dict(type='str', required=False),
-        mac_addr=dict(type='str', required=False)
+        mac_addr=dict(type='str', required=False),
+        port_type=dict(type='int', required=False, choices=[0, 1, 3]),
+        slot_num=dict(type='int', required=False),
+        port_num=dict(type='int', required=False),
+        vlan_id=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例

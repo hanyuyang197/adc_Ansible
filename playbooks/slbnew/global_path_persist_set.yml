@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "global_path_persist_set"
-        enable: 1
+        global_path_persist: 1
       register: result
       when: login_result is succeeded
 

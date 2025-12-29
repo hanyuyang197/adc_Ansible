@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "global_connection_mirror_set"
-        enable: 1
+        global_connection_mirror: 1
       register: result
       when: login_result is succeeded
 

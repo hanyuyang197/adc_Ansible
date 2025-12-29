@@ -21,7 +21,9 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "system_rate_limit_icmp_set"
-        rate: 100
+        normal_rate_limit: 100
+        max_rate_limit: 200
+        lockup_period: 100
       register: result
       when: login_result is succeeded
 

@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "slb_global_virtual_mac_set"
-        enable: 1
+        gvm: 1
       register: result
       when: login_result is succeeded
 
