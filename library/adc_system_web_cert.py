@@ -235,43 +235,94 @@ def adc_upload_web_key(module):
     """上传web私钥文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    file_path = module.params.get('file_path')
+
+    # 检查必需参数
+    if not file_path or not os.path.exists(file_path):
+        module.fail_json(msg="上传web私钥文件需要提供有效的file_path参数")
+
+    # 读取文件内容
+    try:
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+    except Exception as e:
+        module.fail_json(msg="读取文件失败: %s" % str(e))
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.web.key.upload" % (
         ip, authkey)
 
-    # 初始化响应数据
-    response_data = ""
-
     try:
-        # 根据Python版本处理请求
+        # 根据Python版本处理文件上传
         if sys.version_info[0] >= 3:
-            # Python 3
+            # Python 3 - 使用urllib处理multipart/form-data上传
             import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='POST')
+
+            # 构建multipart/form-data请求
+            boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+            # 准备表单数据
+            body_parts = []
+            body_parts.append('--%s' % boundary)
+            body_parts.append(
+                'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+            body_parts.append('Content-Type: application/x-pem-key')  # 私钥文件类型
+            body_parts.append('')
+            # 将body_parts转换为bytes并加上文件内容
+            body_content = b''
+            for part in body_parts:
+                body_content += part.encode('utf-8') + b'\r\n'
+            body_content += file_content
+            body_content += b'\r\n--%s--\r\n' % boundary.encode('utf-8')
+
+            req = urllib_request.Request(url, data=body_content, headers={
+                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                'Content-Length': str(len(body_content))
+            })
+
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
+            # Python 2 - 使用urllib2处理multipart/form-data上传
             import urllib2 as urllib_request
-            req = urllib_request.Request(url)
-            req.get_method = lambda: 'POST'
+
+            # 构建multipart/form-data请求
+            boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+            # 准备表单数据
+            body_parts = []
+            body_parts.append('--%s' % boundary)
+            body_parts.append(
+                'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+            body_parts.append('Content-Type: application/x-pem-key')  # 私钥文件类型
+            body_parts.append('')
+            # 将body_parts转换为字符串并加上文件内容
+            body_content = ''
+            for part in body_parts:
+                body_content += part + '\r\n'
+            body_content += file_content
+            body_content += '\r\n--%s--\r\n' % boundary
+
+            req = urllib_request.Request(url, data=body_content, headers={
+                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                'Content-Length': str(len(body_content))
+            })
+
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
+        # 使用通用响应解析函数
+        if response_data:
+            success, result_dict = format_adc_response_for_ansible(
+                response_data, "上传web私钥文件", True)
+            if success:
+                module.exit_json(**result_dict)
+            else:
+                module.fail_json(**result_dict)
+        else:
+            module.fail_json(msg="未收到有效响应")
     except Exception as e:
         module.fail_json(msg="上传web私钥文件失败: %s" % str(e))
-
-    # 使用通用响应解析函数
-    if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "上传web私钥文件", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
-    else:
-        module.fail_json(msg="未收到有效响应")
 
 
 def adc_download_web_key(module):
@@ -335,43 +386,94 @@ def adc_upload_web_cert(module):
     """上传web证书文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    file_path = module.params.get('file_path')
+
+    # 检查必需参数
+    if not file_path or not os.path.exists(file_path):
+        module.fail_json(msg="上传web证书文件需要提供有效的file_path参数")
+
+    # 读取文件内容
+    try:
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+    except Exception as e:
+        module.fail_json(msg="读取文件失败: %s" % str(e))
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.web.cert.upload" % (
         ip, authkey)
 
-    # 初始化响应数据
-    response_data = ""
-
     try:
-        # 根据Python版本处理请求
+        # 根据Python版本处理文件上传
         if sys.version_info[0] >= 3:
-            # Python 3
+            # Python 3 - 使用urllib处理multipart/form-data上传
             import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='POST')
+
+            # 构建multipart/form-data请求
+            boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+            # 准备表单数据
+            body_parts = []
+            body_parts.append('--%s' % boundary)
+            body_parts.append(
+                'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+            body_parts.append('Content-Type: application/x-x509-ca-cert')  # 证书文件类型
+            body_parts.append('')
+            # 将body_parts转换为bytes并加上文件内容
+            body_content = b''
+            for part in body_parts:
+                body_content += part.encode('utf-8') + b'\r\n'
+            body_content += file_content
+            body_content += b'\r\n--%s--\r\n' % boundary.encode('utf-8')
+
+            req = urllib_request.Request(url, data=body_content, headers={
+                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                'Content-Length': str(len(body_content))
+            })
+
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
+            # Python 2 - 使用urllib2处理multipart/form-data上传
             import urllib2 as urllib_request
-            req = urllib_request.Request(url)
-            req.get_method = lambda: 'POST'
+
+            # 构建multipart/form-data请求
+            boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+            # 准备表单数据
+            body_parts = []
+            body_parts.append('--%s' % boundary)
+            body_parts.append(
+                'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+            body_parts.append('Content-Type: application/x-x509-ca-cert')  # 证书文件类型
+            body_parts.append('')
+            # 将body_parts转换为字符串并加上文件内容
+            body_content = ''
+            for part in body_parts:
+                body_content += part + '\r\n'
+            body_content += file_content
+            body_content += '\r\n--%s--\r\n' % boundary
+
+            req = urllib_request.Request(url, data=body_content, headers={
+                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                'Content-Length': str(len(body_content))
+            })
+
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
+        # 使用通用响应解析函数
+        if response_data:
+            success, result_dict = format_adc_response_for_ansible(
+                response_data, "上传web证书文件", True)
+            if success:
+                module.exit_json(**result_dict)
+            else:
+                module.fail_json(**result_dict)
+        else:
+            module.fail_json(msg="未收到有效响应")
     except Exception as e:
         module.fail_json(msg="上传web证书文件失败: %s" % str(e))
-
-    # 使用通用响应解析函数
-    if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "上传web证书文件", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
-    else:
-        module.fail_json(msg="未收到有效响应")
 
 
 def adc_download_web_cert(module):
@@ -441,13 +543,18 @@ def main():
             'upload_web_key', 'download_web_key',
             'upload_web_cert', 'download_web_cert']),
         # 证书参数
-        name=dict(type='str', required=False)
+        name=dict(type='str', required=False),
+        file_path=dict(type='str', required=False)  # 上传时的本地文件路径
     )
 
     # 创建AnsibleModule实例
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=False
+        supports_check_mode=False,
+        required_if=[
+            ['action', 'upload_web_key', ['file_path']],
+            ['action', 'upload_web_cert', ['file_path']]
+        ]
     )
 
     # 根据action执行相应操作

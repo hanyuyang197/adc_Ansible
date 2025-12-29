@@ -34,39 +34,30 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
         'data': {}
     }
 
-    try:
-        if isinstance(response_data, str):
-            parsed_data = json.loads(response_data)
-        else:
-            parsed_data = response_data
+    if isinstance(response_data, str):
+        parsed_data = json.loads(response_data)
+    else:
+        parsed_data = response_data
 
-        result['data'] = parsed_data
-        result['result'] = parsed_data.get('result', '')
-        result['errcode'] = parsed_data.get('errcode', '')
-        result['errmsg'] = parsed_data.get('errmsg', '')
+    result['data'] = parsed_data
+    result['result'] = parsed_data.get('result', '')
+    result['errcode'] = parsed_data.get('errcode', '')
+    result['errmsg'] = parsed_data.get('errmsg', '')
 
-        if result['result'].lower() == 'success':
+    if result['result'].lower() == 'success':
+        result['success'] = True
+    else:
+        errmsg = result['errmsg'].lower() if isinstance(
+            result['errmsg'], str) else str(result['errmsg']).lower()
+        if any(keyword in errmsg for keyword in ['已存在', 'already exists', 'already exist', 'exists']):
             result['success'] = True
-        else:
-            errmsg = result['errmsg'].lower() if isinstance(
-                result['errmsg'], str) else str(result['errmsg']).lower()
-            if any(keyword in errmsg for keyword in ['已存在', 'already exists', 'already exist', 'exists']):
-                result['success'] = True
-                result['result'] = 'success (already exists)'
-
-    except json.JSONDecodeError as e:
-        # 直接返回原始响应内容，不尝试解析为JSON
-        result['errmsg'] = response_data
-        result['errcode'] = 'RAW_RESPONSE'
-    except Exception as e:
-        result['errmsg'] = "响应解析异常: %s" % str(e)
-        result['errcode'] = 'PARSE_EXCEPTION'
+            result['result'] = 'success (already exists)'
 
     if result['success']:
         result_dict = {
             'changed': changed_default,
             'msg': '%s操作成功' % action if action else '操作成功',
-            'response': result['data']
+            'response': response_data
         }
 
         if 'already exists' in result['result']:
@@ -78,12 +69,7 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
         result_dict = {
             'changed': False,
             'msg': '%s操作失败' % action if action else '操作失败',
-            'error': {
-                'result': result['result'],
-                'errcode': result['errcode'],
-                'errmsg': result['errmsg']
-            },
-            'response': result['data']
+            'response': response_data
         }
         return False, result_dict
 
@@ -183,31 +169,12 @@ def adc_cache_add(module):
     """缓存模板添加"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
-
-    if not name:
-        module.fail_json(msg="缓存模板添加需要提供name参数")
+    api_params = module.params['api_params']
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.cache.add" % (
         ip, authkey)
 
-    cache_data = {
-        "name": name
-    }
-
-    # 添加可选参数
-    if module.params['enable'] is not None:
-        cache_data['enable'] = module.params['enable']
-    if module.params['cache_size'] is not None:
-        cache_data['cache_size'] = module.params['cache_size']
-    if module.params['cache_time'] is not None:
-        cache_data['cache_time'] = module.params['cache_time']
-    if module.params['cache_type'] is not None:
-        cache_data['cache_type'] = module.params['cache_type']
-    if module.params['desc_cache'] is not None:
-        cache_data['desc_cache'] = module.params['desc_cache']
-
-    post_data = json.dumps(cache_data)
+    post_data = json.dumps(api_params)
 
     try:
         response_data = send_request(url, post_data)
@@ -302,13 +269,15 @@ def main():
             'cache_list', 'cache_list_withcommon', 'cache_get',
             'cache_add', 'cache_edit', 'cache_del'
         ]),
+        # 动态参数 - 接收任意键值对
+        api_params=dict(type='dict', default={}),
         # 缓存模板参数
-        name=dict(type='str', required=False),
-        enable=dict(type='int', required=False, choices=[0, 1]),
-        cache_size=dict(type='int', required=False),
-        cache_time=dict(type='int', required=False),
-        cache_type=dict(type='str', required=False),
-        desc_cache=dict(type='str', required=False)
+        # name=dict(type='str', required=False),
+        # enable=dict(type='int', required=False, choices=[0, 1]),
+        # cache_size=dict(type='int', required=False),
+        # cache_time=dict(type='int', required=False),
+        # cache_type=dict(type='str', required=False),
+        # desc_cache=dict(type='str', required=False)
     )
 
     # 创建AnsibleModule实例

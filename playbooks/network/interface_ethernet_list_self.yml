@@ -1,0 +1,18 @@
+---
+- name: 获取以太网接口列表（自身接口）
+  hosts: localhost
+  gather_facts: no
+  vars:
+    ip: "{{ ip }}"
+    authkey: "{{ authkey }}"
+  tasks:
+    - name: 获取以太网接口列表（自身接口）
+      adc_interface_ethernet:
+        ip: "{{ ip }}"
+        authkey: "{{ authkey }}"
+        action: list_self
+      register: result
+
+    - name: 显示结果
+      debug:
+        var: result

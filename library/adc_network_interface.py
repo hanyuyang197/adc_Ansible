@@ -270,18 +270,80 @@ def adc_edit_ethernet_interface(module):
     }
 
     # 添加可选参数
-    if 'ip_addr' in module.params and module.params['ip_addr'] is not None:
-        interface_data['ip_addr'] = module.params['ip_addr']
-    if 'netmask' in module.params and module.params['netmask'] is not None:
-        interface_data['netmask'] = module.params['netmask']
+    if 'status' in module.params and module.params['status'] is not None:
+        interface_data['status'] = module.params['status']
+    if 'description' in module.params and module.params['description'] is not None:
+        interface_data['description'] = module.params['description']
+    if 'management_services' in module.params and module.params['management_services'] is not None:
+        interface_data['management_services'] = module.params['management_services']
+    if 'service_ipv4_acl' in module.params and module.params['service_ipv4_acl'] is not None:
+        interface_data['service_ipv4_acl'] = module.params['service_ipv4_acl']
+    if 'service_ipv6_acl' in module.params and module.params['service_ipv6_acl'] is not None:
+        interface_data['service_ipv6_acl'] = module.params['service_ipv6_acl']
+    if 'ipv6_nat_dir' in module.params and module.params['ipv6_nat_dir'] is not None:
+        interface_data['ipv6_nat_dir'] = module.params['ipv6_nat_dir']
+    if 'mac_addr' in module.params and module.params['mac_addr'] is not None:
+        interface_data['mac_addr'] = module.params['mac_addr']
+    if 'ipv4_addr' in module.params and module.params['ipv4_addr'] is not None:
+        interface_data['ipv4_addr'] = module.params['ipv4_addr']
+    if 'ipv4_mask' in module.params and module.params['ipv4_mask'] is not None:
+        interface_data['ipv4_mask'] = module.params['ipv4_mask']
+    if 'dhcp_client' in module.params and module.params['dhcp_client'] is not None:
+        interface_data['dhcp_client'] = module.params['dhcp_client']
+    if 'ipv4_acl' in module.params and module.params['ipv4_acl'] is not None:
+        interface_data['ipv4_acl'] = module.params['ipv4_acl']
+    if 'ipv4_list' in module.params and module.params['ipv4_list'] is not None:
+        interface_data['ipv4_list'] = module.params['ipv4_list']
+    if 'ipv6_list' in module.params and module.params['ipv6_list'] is not None:
+        interface_data['ipv6_list'] = module.params['ipv6_list']
+    if 'ipv6_addr' in module.params and module.params['ipv6_addr'] is not None:
+        interface_data['ipv6_addr'] = module.params['ipv6_addr']
+    if 'ipv6_prefix' in module.params and module.params['ipv6_prefix'] is not None:
+        interface_data['ipv6_prefix'] = module.params['ipv6_prefix']
+    if 'ipv6_anycast' in module.params and module.params['ipv6_anycast'] is not None:
+        interface_data['ipv6_anycast'] = module.params['ipv6_anycast']
+    if 'ipv6_local_auto' in module.params and module.params['ipv6_local_auto'] is not None:
+        interface_data['ipv6_local_auto'] = module.params['ipv6_local_auto']
+    if 'ipv6_local_addr' in module.params and module.params['ipv6_local_addr'] is not None:
+        interface_data['ipv6_local_addr'] = module.params['ipv6_local_addr']
+    if 'ipv6_local_prefix' in module.params and module.params['ipv6_local_prefix'] is not None:
+        interface_data['ipv6_local_prefix'] = module.params['ipv6_local_prefix']
+    if 'ipv6_local_anycast' in module.params and module.params['ipv6_local_anycast'] is not None:
+        interface_data['ipv6_local_anycast'] = module.params['ipv6_local_anycast']
+    if 'ipv6_acl' in module.params and module.params['ipv6_acl'] is not None:
+        interface_data['ipv6_acl'] = module.params['ipv6_acl']
     if 'speed' in module.params and module.params['speed'] is not None:
         interface_data['speed'] = module.params['speed']
     if 'duplex' in module.params and module.params['duplex'] is not None:
         interface_data['duplex'] = module.params['duplex']
+    if 'flow_control' in module.params and module.params['flow_control'] is not None:
+        interface_data['flow_control'] = module.params['flow_control']
+    if 'permit_wildcard' in module.params and module.params['permit_wildcard'] is not None:
+        interface_data['permit_wildcard'] = module.params['permit_wildcard']
+    if 'grat_arp' in module.params and module.params['grat_arp'] is not None:
+        interface_data['grat_arp'] = module.params['grat_arp']
+    if 'nat_dir' in module.params and module.params['nat_dir'] is not None:
+        interface_data['nat_dir'] = module.params['nat_dir']
+    if 'no_vlan_forward' in module.params and module.params['no_vlan_forward'] is not None:
+        interface_data['no_vlan_forward'] = module.params['no_vlan_forward']
+    if 'icmp_rate_limit' in module.params and module.params['icmp_rate_limit'] is not None:
+        interface_data['icmp_rate_limit'] = module.params['icmp_rate_limit']
+    if 'icmp_lock_up_rate' in module.params and module.params['icmp_lock_up_rate'] is not None:
+        interface_data['icmp_lock_up_rate'] = module.params['icmp_lock_up_rate']
+    if 'icmp_lock_up_time' in module.params and module.params['icmp_lock_up_time'] is not None:
+        interface_data['icmp_lock_up_time'] = module.params['icmp_lock_up_time']
+    if 'lldp_mode' in module.params and module.params['lldp_mode'] is not None:
+        interface_data['lldp_mode'] = module.params['lldp_mode']
+    if 'lldp_attr' in module.params and module.params['lldp_attr'] is not None:
+        interface_data['lldp_attr'] = module.params['lldp_attr']
+    if 'hardware' in module.params and module.params['hardware'] is not None:
+        interface_data['hardware'] = module.params['hardware']
     if 'mtu' in module.params and module.params['mtu'] is not None:
         interface_data['mtu'] = module.params['mtu']
-    if 'description' in module.params and module.params['description'] is not None:
-        interface_data['description'] = module.params['description']
+    if 'ip_addr' in module.params and module.params['ip_addr'] is not None:
+        interface_data['ip_addr'] = module.params['ip_addr']
+    if 'netmask' in module.params and module.params['netmask'] is not None:
+        interface_data['netmask'] = module.params['netmask']
 
     # 转换为JSON格式
     post_data = json.dumps(interface_data)
@@ -745,10 +807,43 @@ def main():
         gateway=dict(type='str', required=False),
         # 以太网接口参数
         interface_name=dict(type='str', required=False),
+        status=dict(type='int', required=False),
+        description=dict(type='str', required=False),
+        management_services=dict(type='list', required=False),
+        service_ipv4_acl=dict(type='int', required=False),
+        service_ipv6_acl=dict(type='str', required=False),
+        ipv6_nat_dir=dict(type='int', required=False),
+        mac_addr=dict(type='str', required=False),
+        ipv4_addr=dict(type='str', required=False),
+        ipv4_mask=dict(type='str', required=False),
+        dhcp_client=dict(type='int', required=False),
+        ipv4_acl=dict(type='int', required=False),
+        ipv4_list=dict(type='list', required=False),
+        ipv6_list=dict(type='list', required=False),
+        ipv6_addr=dict(type='str', required=False),
+        ipv6_prefix=dict(type='int', required=False),
+        ipv6_anycast=dict(type='int', required=False),
+        ipv6_local_auto=dict(type='int', required=False),
+        ipv6_local_addr=dict(type='str', required=False),
+        ipv6_local_prefix=dict(type='int', required=False),
+        ipv6_local_anycast=dict(type='int', required=False),
+        ipv6_acl=dict(type='str', required=False),
         speed=dict(type='str', required=False),
         duplex=dict(type='str', required=False),
+        flow_control=dict(type='int', required=False),
+        permit_wildcard=dict(type='int', required=False),
+        grat_arp=dict(type='int', required=False),
+        nat_dir=dict(type='int', required=False),
+        no_vlan_forward=dict(type='int', required=False),
+        icmp_rate_limit=dict(type='int', required=False),
+        icmp_lock_up_rate=dict(type='int', required=False),
+        icmp_lock_up_time=dict(type='int', required=False),
+        lldp_mode=dict(type='int', required=False),
+        lldp_attr=dict(type='int', required=False),
+        hardware=dict(type='str', required=False),
         mtu=dict(type='int', required=False),
-        description=dict(type='str', required=False),
+        ip_addr=dict(type='str', required=False),
+        netmask=dict(type='str', required=False),
         list_type=dict(type='str', required=False, choices=[
                        'normal', 'withcommon', 'withused', 'self']),
         # VE接口参数

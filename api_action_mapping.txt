@@ -1,0 +1,181 @@
+ADC API Action 映射对照表
+========================
+
+1. SLB 全局混杂配置
+   - 功能: 获取SLB全局混杂配置
+   - Action: slb.global.allow_promis_intf_vip.get
+   - 模块: adc_system_global_config
+   - action参数: slb_global_allow_promis_intf_vip_get
+
+2. SLB 全局混杂配置
+   - 功能: 设置SLB全局混杂配置
+   - Action: slb.global.allow_promis_intf_vip.set
+   - 模块: adc_system_global_config
+   - action参数: slb_global_allow_promis_intf_vip_set
+   - 参数: status (0/1)
+
+3. SLB 全局软关机
+   - 功能: 获取SLB全局软关机配置
+   - Action: slb.graceful-shutdown.get
+   - 模块: adc_system_global_config
+   - action参数: slb_graceful_shutdown_get
+
+4. SLB 全局软关机
+   - 功能: 设置SLB全局软关机配置
+   - Action: slb.graceful-shutdown.set
+   - 模块: adc_system_global_config
+   - action参数: slb_graceful_shutdown_set
+   - 参数: time, delete, disable, persist
+
+5. ICMP 速率限制
+   - 功能: 获取ICMP速率限制配置
+   - Action: system.rate_limit_icmp.get
+   - 模块: adc_system_global_config
+   - action参数: system_rate_limit_icmp_get
+
+6. ICMP 速率限制
+   - 功能: 设置ICMP速率限制配置
+   - Action: system.rate_limit_icmp.set
+   - 模块: adc_system_global_config
+   - action参数: system_rate_limit_icmp_set
+   - 参数: normal_rate_limit, max_rate_limit, lockup_period
+
+7. TCP SYN 保护
+   - 功能: 获取TCP SYN保护配置
+   - Action: system.tcp_syn_protect.get
+   - 模块: adc_system_global_config
+   - action参数: system_tcp_syn_protect_get
+
+8. TCP SYN 保护
+   - 功能: 设置TCP SYN保护配置
+   - Action: system.tcp_syn_protect.set
+   - 模块: adc_system_global_config
+   - action参数: system_tcp_syn_protect_set
+   - 参数: reset (0/1), rate_limit
+
+9. VLAN 一致性检查
+   - 功能: 获取SLB全局VLAN一致性检查
+   - Action: system.vlan_keyed_connection.get
+   - 模块: adc_system_global_config
+   - action参数: system_vlan_keyed_connection_get
+
+10. VLAN 一致性检查
+    - 功能: 设置SLB全局VLAN一致性检查
+    - Action: system.vlan_keyed_connection.set
+    - 模块: adc_system_global_config
+    - action参数: system_vlan_keyed_connection_set
+    - 参数: enable (0/1)
+
+11. 全局连接镜像
+    - 功能: 获取SLB全局连接镜像
+    - Action: global.connection_mirror.get
+    - 模块: adc_system_global_config
+    - action参数: global_connection_mirror_get
+
+12. 全局连接镜像
+    - 功能: 设置SLB全局连接镜像
+    - Action: global.connection_mirror.set
+    - 模块: adc_system_global_config
+    - action参数: global_connection_mirror_set
+    - 参数: global_connection_mirror (0/1)
+
+13. 全局路径保持
+    - 功能: 获取SLB全局路径保持
+    - Action: global.path_persist.get
+    - 模块: adc_system_global_config
+    - action参数: global_path_persist_get
+
+14. 全局路径保持
+    - 功能: 设置SLB全局路径保持
+    - Action: global.path_persist.set
+    - 模块: adc_system_global_config
+    - action参数: global_path_persist_set
+    - 参数: global_path_persist (0/1)
+
+15. 全局策略地址转换
+    - 功能: 获取SLB全局策略地址转换配置
+    - Action: global.slb_snat_on_vip.get
+    - 模块: adc_system_global_config
+    - action参数: global_slb_snat_on_vip_get
+
+16. 全局策略地址转换
+    - 功能: 设置SLB全局策略地址转换配置
+    - Action: global.slb_snat_on_vip.set
+    - 模块: adc_system_global_config
+    - action参数: global_slb_snat_on_vip_set
+    - 参数: global_policy_snat (0/1)
+
+17. 全局源NAT接口地址轮询
+    - 功能: 获取SLB全局源NAT接口地址轮询
+    - Action: global.slb_snat_interface_iprr.get
+    - 模块: adc_system_global_config
+    - action参数: global_slb_snat_interface_iprr_get
+
+18. 全局源NAT接口地址轮询
+    - 功能: 设置SLB全局源NAT接口地址轮询
+    - Action: global.slb_snat_interface_iprr.set
+    - 模块: adc_system_global_config
+    - action参数: global_slb_snat_interface_iprr_set
+    - 参数: global_snat_interface_iprr (0/1)
+
+19. SLB 全局虚拟 MAC
+    - 功能: 获取SLB全局虚拟MAC状态
+    - Action: slb.global.virtual_mac.get
+    - 模块: adc_system_global_config
+    - action参数: slb_global_virtual_mac_get
+
+20. SLB 全局虚拟 MAC
+    - 功能: 设置SLB全局虚拟MAC
+    - Action: slb.global.virtual_mac.set
+    - 模块: adc_system_global_config
+    - action参数: slb_global_virtual_mac_set
+    - 参数: gvm (0/1), mac (string)
+
+21. 以太网接口列表
+    - 功能: 获取以太网接口列表
+    - Action: interface.ethernet.list
+    - 模块: adc_interface_ethernet
+    - action参数: list
+
+22. 以太网接口列表（包含公共接口）
+    - 功能: 获取以太网接口列表（包含公共接口）
+    - Action: interface.ethernet.list_withcommon
+    - 模块: adc_interface_ethernet
+    - action参数: list_withcommon
+
+23. 以太网接口列表（包含已使用接口）
+    - 功能: 获取以太网接口列表（包含已使用接口）
+    - Action: interface.ethernet.list_withused
+    - 模块: adc_interface_ethernet
+    - action参数: list_withused
+
+24. 以太网接口列表（自身接口）
+    - 功能: 获取以太网接口列表（自身接口）
+    - Action: interface.ethernet.list_self
+    - 模块: adc_interface_ethernet
+    - action参数: list_self
+
+25. 以太网接口详情
+    - 功能: 获取以太网接口详情
+    - Action: interface.ethernet.get
+    - 模块: adc_interface_ethernet
+    - action参数: get
+    - 参数: slot, port
+
+26. 以太网接口编辑
+    - 功能: 编辑以太网接口配置
+    - Action: interface.ethernet.edit
+    - 模块: adc_interface_ethernet
+    - action参数: edit
+    - 参数: slot, port, status, description, service_ipv4_acl, service_ipv6_acl, ipv6_nat_dir, 
+          mac_addr, ipv4_addr, ipv4_mask, dhcp_client, ipv4_acl, ipv6_addr, ipv6_prefix, 
+          ipv6_anycast, ipv6_local_auto, ipv6_local_addr, ipv6_local_prefix, ipv6_local_anycast, 
+          ipv6_acl, speed, duplexity, flow_control, permit_wildcard, grat_arp, nat_dir, 
+          no_vlan_forward, icmp_rate_limit, icmp_lock_up_rate, icmp_lock_up_time, lldp_mode, 
+          lldp_attr, hardware
+
+27. 以太网接口统计
+    - 功能: 获取接口统计信息
+    - Action: interface.ethernet.statis
+    - 模块: adc_interface_ethernet
+    - action参数: statis

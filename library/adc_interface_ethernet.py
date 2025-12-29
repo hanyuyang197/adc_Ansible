@@ -351,6 +351,8 @@ def adc_interface_ethernet_edit(module):
         request_data['lldp_mode'] = module.params['lldp_mode']
     if module.params['lldp_attr'] is not None:
         request_data['lldp_attr'] = module.params['lldp_attr']
+    if module.params['hardware'] is not None:
+        request_data['hardware'] = module.params['hardware']
 
     # 转换为JSON格式
     post_data = json.dumps(request_data)
@@ -474,7 +476,8 @@ def main():
         icmp_lock_up_rate=dict(type='int', required=False),
         icmp_lock_up_time=dict(type='int', required=False),
         lldp_mode=dict(type='int', required=False),
-        lldp_attr=dict(type='int', required=False)
+        lldp_attr=dict(type='int', required=False),
+        hardware=dict(type='str', required=False)
     )
 
     # 创建AnsibleModule实例

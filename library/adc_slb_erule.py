@@ -20,6 +20,7 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
 )
 import json
 import sys
+import os
 
 
 def format_adc_response_for_ansible(response_data, action="", changed_default=True):
@@ -54,7 +55,7 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
                 result['success'] = True
                 result['result'] = 'success (already exists)'
 
-    except json.JSONDecodeError as e:
+    except ValueError as e:  # 使用ValueError兼容Python 2/3，因为Python 2.7没有JSONDecodeError
         # 直接返回原始响应内容，不尝试解析为JSON
         result['errmsg'] = response_data
         result['errcode'] = 'RAW_RESPONSE'
@@ -126,21 +127,94 @@ def adc_erule_upload(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
+    file_path = module.params.get('file_path')
 
+    # 检查必要参数
     if not name:
         module.fail_json(msg="erule上传需要提供name参数")
+    if not file_path or not os.path.exists(file_path):
+        module.fail_json(msg="erule上传需要提供有效的file_path参数")
 
+    # 读取文件内容
+    try:
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+    except Exception as e:
+        module.fail_json(msg="读取文件失败: %s" % str(e))
+
+    # 构造请求URL - 包含name参数
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.erule.upload&name=%s" % (
         ip, authkey, name)
 
     try:
-        response_data = send_request(url)
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "erule上传", True)
-        if success:
-            module.exit_json(**result_dict)
+        # 根据Python版本处理文件上传
+        if sys.version_info[0] >= 3:
+            # Python 3 - 使用urllib处理multipart/form-data上传
+            import urllib.request as urllib_request
+
+            # 构建multipart/form-data请求
+            boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+            # 准备表单数据
+            body_parts = []
+            body_parts.append('--%s' % boundary)
+            body_parts.append(
+                'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+            body_parts.append('Content-Type: application/octet-stream')  # 二进制文件类型
+            body_parts.append('')
+            # 将body_parts转换为bytes并加上文件内容
+            body_content = b''
+            for part in body_parts:
+                body_content += part.encode('utf-8') + b'\r\n'
+            body_content += file_content
+            body_content += b'\r\n--%s--\r\n' % boundary.encode('utf-8')
+
+            req = urllib_request.Request(url, data=body_content, headers={
+                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                'Content-Length': str(len(body_content))
+            })
+
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
         else:
-            module.fail_json(**result_dict)
+            # Python 2 - 使用urllib2处理multipart/form-data上传
+            import urllib2 as urllib_request
+
+            # 构建multipart/form-data请求
+            boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+            # 准备表单数据
+            body_parts = []
+            body_parts.append('--%s' % boundary)
+            body_parts.append(
+                'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+            body_parts.append('Content-Type: application/octet-stream')  # 二进制文件类型
+            body_parts.append('')
+            # 将body_parts转换为字符串并加上文件内容
+            body_content = ''
+            for part in body_parts:
+                body_content += part + '\r\n'
+            body_content += file_content
+            body_content += '\r\n--%s--\r\n' % boundary
+
+            req = urllib_request.Request(url, data=body_content, headers={
+                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                'Content-Length': str(len(body_content))
+            })
+
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 使用通用响应解析函数
+        if response_data:
+            success, result_dict = format_adc_response_for_ansible(
+                response_data, "erule上传", True)
+            if success:
+                module.exit_json(**result_dict)
+            else:
+                module.fail_json(**result_dict)
+        else:
+            module.fail_json(msg="未收到有效响应")
     except Exception as e:
         module.fail_json(msg="erule上传失败: %s" % str(e))
 
@@ -228,27 +302,104 @@ def adc_erulefiles_upload(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
+    file_path = module.params.get('file_path')
 
+    # 检查必要参数
     if not name:
         module.fail_json(msg="erule服务器文件上传需要提供name参数")
+    if not file_path or not os.path.exists(file_path):
+        module.fail_json(msg="erule服务器文件上传需要提供有效的file_path参数")
 
+    # 读取文件内容
+    try:
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+    except Exception as e:
+        module.fail_json(msg="读取文件失败: %s" % str(e))
+
+    # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.erulefiles.upload" % (
         ip, authkey)
 
-    erule_data = {
-        "name": name
-    }
-
-    post_data = json.dumps(erule_data)
-
     try:
-        response_data = send_request(url, post_data)
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "erule服务器文件上传", True)
-        if success:
-            module.exit_json(**result_dict)
+        # 根据Python版本处理文件上传
+        if sys.version_info[0] >= 3:
+            # Python 3 - 使用urllib处理multipart/form-data上传
+            import urllib.request as urllib_request
+
+            # 构建multipart/form-data请求
+            boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+            # 准备表单数据
+            body_parts = []
+            body_parts.append('--%s' % boundary)
+            body_parts.append(
+                'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+            body_parts.append('Content-Type: application/octet-stream')  # 二进制文件类型
+            body_parts.append('')
+            body_parts.append('--%s' % boundary)
+            body_parts.append('Content-Disposition: form-data; name="name"')
+            body_parts.append('')
+            body_parts.append(name)
+            body_parts.append('')
+            # 将body_parts转换为bytes并加上文件内容
+            body_content = b''
+            for part in body_parts:
+                body_content += part.encode('utf-8') + b'\r\n'
+            body_content += file_content
+            body_content += b'\r\n--%s--\r\n' % boundary.encode('utf-8')
+
+            req = urllib_request.Request(url, data=body_content, headers={
+                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                'Content-Length': str(len(body_content))
+            })
+
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
         else:
-            module.fail_json(**result_dict)
+            # Python 2 - 使用urllib2处理multipart/form-data上传
+            import urllib2 as urllib_request
+
+            # 构建multipart/form-data请求
+            boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+            # 准备表单数据
+            body_parts = []
+            body_parts.append('--%s' % boundary)
+            body_parts.append(
+                'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+            body_parts.append('Content-Type: application/octet-stream')  # 二进制文件类型
+            body_parts.append('')
+            body_parts.append('--%s' % boundary)
+            body_parts.append('Content-Disposition: form-data; name="name"')
+            body_parts.append('')
+            body_parts.append(name)
+            body_parts.append('')
+            # 将body_parts转换为字符串并加上文件内容
+            body_content = ''
+            for part in body_parts:
+                body_content += part + '\r\n'
+            body_content += file_content
+            body_content += '\r\n--%s--\r\n' % boundary
+
+            req = urllib_request.Request(url, data=body_content, headers={
+                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                'Content-Length': str(len(body_content))
+            })
+
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 使用通用响应解析函数
+        if response_data:
+            success, result_dict = format_adc_response_for_ansible(
+                response_data, "erule服务器文件上传", True)
+            if success:
+                module.exit_json(**result_dict)
+            else:
+                module.fail_json(**result_dict)
+        else:
+            module.fail_json(msg="未收到有效响应")
     except Exception as e:
         module.fail_json(msg="erule服务器文件上传失败: %s" % str(e))
 
@@ -327,13 +478,18 @@ def main():
         ]),
         # erule参数
         name=dict(type='str', required=False),
-        content=dict(type='str', required=False)
+        content=dict(type='str', required=False),
+        file_path=dict(type='str', required=False)  # 上传时的本地文件路径
     )
 
     # 创建AnsibleModule实例
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=False
+        supports_check_mode=False,
+        required_if=[
+            ['action', 'erule_upload', ['file_path']],
+            ['action', 'erulefiles_upload', ['file_path']]
+        ]
     )
 
     # 根据action执行相应操作

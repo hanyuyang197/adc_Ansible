@@ -1,45 +1,55 @@
 ---
-- name: 以太网接口编辑
-  collections:
-    - horizon.modules
-  hosts: adc_servers
+- name: 编辑以太网接口配置
+  hosts: localhost
   gather_facts: no
+  vars:
+    ip: "{{ ip }}"
+    authkey: "{{ authkey }}"
   tasks:
-    - name: 登录ADC设备
-      adc_login:
-        ip: "{{ inventory_hostname }}"
-        username: "{{ adc_username }}"
-        password: "{{ adc_password }}"
-      register: login_result
-
-    - name: 显示登录结果
-      debug:
-        var: login_result
-
-    - name: 执行 以太网接口编辑
-      adc_network_interface:
-        ip: "{{ inventory_hostname }}"
-        authkey: "{{ login_result.authkey }}"
-        action: edit_ethernet_interface
-        interface_name: "eth0"
-        description: "Updated description"
-        # 根据实际需求添加更多参数
+    - name: 编辑以太网接口配置
+      adc_interface_ethernet:
+        ip: "{{ ip }}"
+        authkey: "{{ authkey }}"
+        action: edit
+        slot: 1
+        port: 1
+        status: 1
+        description: "Test Interface"
+        # management_services:
+        #   - service_type: 2
+        service_ipv4_acl: 0
+        service_ipv6_acl: ""
+        ipv6_nat_dir: 0
+        mac_addr: "00:0D:48:6D:E4:7C"
+        ipv4_addr: "192.168.1.100"
+        ipv4_mask: "255.255.255.0"
+        dhcp_client: 0
+        ipv4_acl: 0
+        # ipv4_list:
+        # ipv6_list:
+        ipv6_addr: "2000:172::1"
+        ipv6_prefix: 64
+        ipv6_anycast: 0
+        ipv6_local_auto: 1
+        ipv6_local_addr: ""
+        ipv6_local_prefix: 0
+        ipv6_local_anycast: 0
+        ipv6_acl: ""
+        speed: 0
+        duplexity: 2
+        flow_control: 0
+        permit_wildcard: 1
+        grat_arp: 1
+        nat_dir: 3
+        no_vlan_forward: 0
+        icmp_rate_limit: 65535
+        icmp_lock_up_rate: 65535
+        icmp_lock_up_time: 16383
+        lldp_mode: 0
+        lldp_attr: "0,1,2,3,4,6,7,8,9,10,12"
+        hardware: "10G"
       register: result
-      when: login_result is succeeded
 
-    - name: 显示 以太网接口编辑 结果
+    - name: 显示结果
       debug:
         var: result
-      when: result is defined
-
-    - name: 登出ADC设备
-      adc_logout:
-        ip: "{{ inventory_hostname }}"
-        authkey: "{{ login_result.authkey }}"
-      register: logout_result
-      when: login_result is succeeded
-
-    - name: 显示登出结果
-      debug:
-        var: logout_result
-      when: logout_result is defined

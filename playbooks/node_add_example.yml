@@ -26,38 +26,39 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_node"
-        tc_name: ""
-        graceful_time: 0
-        graceful_delete: 0
-        graceful_disable: 0
-        graceful_persist: 0
-        name: "192.168.1.123"
-        host: "192.168.1.123"
-        domain_ip_version: 0
-        weight: 1
-        healthcheck: ""
-        upnum: 0
-        status: 1
-        conn_limit: 123
-        template: "192.168.1.123"
-        conn_rate_limit: 2011
-        cl_log: "1"
-        desc_rserver: ""
-        ports:
-          - port_number: 80
-            protocol: 0
-            status: 1
-            weight: 1
-            conn_limit: 0
-            conn_limit_log: 1
+        node:
+          - tc_name: ""
             graceful_time: 0
             graceful_delete: 0
             graceful_disable: 0
             graceful_persist: 0
-            phm_profile: ""
+            name: "192.168.1.123"
+            host: "192.168.1.123"
+            domain_ip_version: 0
+            weight: 1
             healthcheck: ""
             upnum: 0
-            nat_strategy: ""
+            status: 1
+            conn_limit: 123
+            template: "192.168.1.123"
+            conn_rate_limit: 2011
+            cl_log: "1"
+            desc_rserver: ""
+            ports:
+              - port_number: 80
+                protocol: 0
+                status: 1
+                weight: 1
+                conn_limit: 0
+                conn_limit_log: 1
+                graceful_time: 0
+                graceful_delete: 0
+                graceful_disable: 0
+                graceful_persist: 0
+                phm_profile: ""
+                healthcheck: ""
+                upnum: 0
+                nat_strategy: ""
       register: add_node_result_1
       when: login_result is succeeded
 
