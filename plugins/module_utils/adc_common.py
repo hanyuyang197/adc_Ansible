@@ -1,11 +1,11 @@
-import json
+from __future__ import absolute_import, division, print_function
 # -*- coding: utf-8 -*-
 """
 ADC 通用工具函数
 提供常用的 ADC 操作函数，供所有模块使用
 """
 
-from __future__ import absolute_import, division, print_function
+import json
 __metaclass__ = type
 
 
@@ -473,6 +473,7 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
     """
     # 初始化返回结果
     result = {
+        'success': False,  # 默认为失败
         'result': '',
         'errcode': '',
         'errmsg': '',
@@ -505,7 +506,7 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
                 result['success'] = True
                 result['result'] = 'success (already exists)'
 
-    except json.JSONDecodeError as e:
+    except ValueError as e:  # 使用ValueError兼容Python 2/3，因为Python 2.7没有JSONDecodeError
         result['errmsg'] = "JSON解析失败: %s" % str(e)
         result['errcode'] = 'JSON_PARSE_ERROR'
     except Exception as e:

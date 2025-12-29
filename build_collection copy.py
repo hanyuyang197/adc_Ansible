@@ -34,17 +34,8 @@ def create_collection_structure():
     module_utils_dest = plugins_dir / "module_utils"
     module_utils_dest.mkdir(parents=True, exist_ok=True)
 
-    # 复制实际的adc_common.py文件
-    actual_adc_common_path = Path("plugins") / "module_utils" / "adc_common.py"
-    if actual_adc_common_path.exists():
-        # 读取实际的adc_common.py文件内容
-        with open(actual_adc_common_path, 'r', encoding='utf-8') as src_file:
-            actual_content = src_file.read()
-        with open(module_utils_dest / "adc_common.py", 'w', encoding='utf-8') as dest_file:
-            dest_file.write(actual_content)
-    else:
-        # 如果实际文件不存在，则创建一个简化版本
-        adc_common_content = '''"""
+    # 创建adc_common.py文件，包含通用函数 - 使用兼容的字符串格式化
+    adc_common_content = '''"""
 ADC通用函数模块
 """
 import json
@@ -54,9 +45,95 @@ import sys
 def make_adc_request(url, data=None, method='GET'):
     """发送ADC请求"""
     pass
+
+
+def format_adc_response(response_data, operation_name, success_expected=True):
+    """格式化ADC响应"""
+    pass
+
+
+def check_adc_auth(authkey):
+    """检查ADC认证"""
+    pass
+
+
+def handle_adc_error(error):
+    """处理ADC错误"""
+    pass
+
+
+def build_adc_params(params):
+    """构建ADC参数"""
+    pass
+
+
+def validate_adc_params(params):
+    """验证ADC参数"""
+    pass
+
+
+def adc_result_check(result):
+    """检查ADC结果"""
+    pass
+
+
+def adc_format_output(output):
+    """格式化ADC输出"""
+    pass
+
+
+def build_params_with_optional(base_params, optional_params):
+    """构建带可选参数的参数"""
+    pass
+
+
+def make_http_request(url, data=None, method='GET'):
+    """发送HTTP请求"""
+    pass
+
+
+def get_param_if_exists(module, param_name):
+    """从模块中获取参数值"""
+    if hasattr(module, 'params') and param_name in module.params:
+        return module.params[param_name]
+    return None
+
+
+def create_adc_module_args():
+    """创建ADC模块参数"""
+    pass
+
+
+def adc_response_to_ansible_result(response_data, operation_name):
+    """将ADC响应转换为Ansible结果"""
+    pass
+
+
+def format_adc_response_for_ansible(response_data, operation_name, success_expected=True):
+    """格式化ADC响应以适应Ansible"""
+    try:
+        parsed_data = json.loads(response_data)
+        if 'errmsg' in parsed_data and parsed_data['errmsg']:
+            return False, {
+                'failed': True,
+                'msg': '%s失败: %s' % (operation_name, parsed_data['errmsg']),
+                'response': parsed_data
+            }
+        else:
+            return True, {
+                'changed': True,
+                'msg': '%s成功' % (operation_name,),
+                'response': parsed_data
+            }
+    except json.JSONDecodeError as e:
+        return False, {
+            'failed': True,
+            'msg': '解析响应失败: %s' % str(e),
+            'raw_response': response_data
+        }
 '''
-        with open(module_utils_dest / "adc_common.py", 'w', encoding='utf-8') as f:
-            f.write(adc_common_content)
+    with open(module_utils_dest / "adc_common.py", 'w', encoding='utf-8') as f:
+        f.write(adc_common_content)
 
     # 创建meta目录和runtime.yml
     meta_dir = build_dir / "meta"
