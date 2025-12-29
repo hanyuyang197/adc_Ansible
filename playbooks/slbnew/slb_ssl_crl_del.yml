@@ -20,7 +20,7 @@
       adc_slb_ssl_crl:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
+        action: del
         name: "example_value"
         # 根据实际需求添加更多参数
       register: result

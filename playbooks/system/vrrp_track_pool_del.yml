@@ -20,8 +20,9 @@
       adc_vrrp_track_pool:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        group: "example_value"
+        action: del
+        group_id: 1
+        pool_name: "test_pool"
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

@@ -20,8 +20,9 @@
       adc_vrrp_heart_eth:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        group: "example_value"
+        action: del
+        slot: 1
+        port: 1
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

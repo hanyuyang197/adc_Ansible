@@ -17,11 +17,13 @@
         var: login_result
 
     - name: 执行 ipv6静态管理路由配置删除
-      adc_route_static_mgmt_ipv6:
+      adc_network_route_static_mgmt_ipv6:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        destination: "example_value"
+        action: delete_route
+        destination: "2001:db8::"
+        prefix_len: 64
+        gateway: "2001:db8::1"
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

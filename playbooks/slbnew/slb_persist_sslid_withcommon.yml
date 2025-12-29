@@ -20,8 +20,7 @@
       adc_slb_persist_sslid:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
+        action: list_profiles_withcommon
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

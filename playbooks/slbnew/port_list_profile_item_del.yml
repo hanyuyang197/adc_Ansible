@@ -17,10 +17,10 @@
         var: login_result
 
     - name: 执行 端口列表模板明细删除
-      adc_port_list_profile_item:
+      adc_network_port_list_profile:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
+        action: delete_profile_item
         name: "example_value"
         # 根据实际需求添加更多参数
       register: result

@@ -20,8 +20,7 @@
       adc_slb_profile_http2:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        name: "example_value"
+        action: list_profiles
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

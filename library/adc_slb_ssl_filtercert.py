@@ -91,7 +91,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['execute']),
+        action=dict(type='str', required=True, choices=['list']),
         name=dict(type='str', required=False),
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
@@ -107,8 +107,11 @@ def main():
         supports_check_mode=False
     )
 
-    # 执行操作
-    adc_slb_ssl_filtercert_list(module)
+    # 根据action执行相应操作
+    action = module.params['action']
+    
+    if action == 'list':
+        adc_slb_ssl_filtercert_list(module)
 
 
 if __name__ == '__main__':

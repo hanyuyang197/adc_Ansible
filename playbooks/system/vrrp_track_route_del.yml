@@ -20,8 +20,10 @@
       adc_vrrp_track_route:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
-        destination: "example_value"
+        action: del
+        group_id: 1
+        ip_addr: "192.168.1.0"
+        netmask: "255.255.255.0"
         # 根据实际需求添加更多参数
       register: result
       when: login_result is succeeded

@@ -17,10 +17,10 @@
         var: login_result
 
     - name: 执行 端口列表模板列表
-      adc_port_list_profile:
+      adc_network_port_list_profile:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: execute
+        action: list_profiles
         name: "example_value"
         # 根据实际需求添加更多参数
       register: result
