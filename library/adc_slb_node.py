@@ -186,29 +186,27 @@ def adc_add_node(module):
         ip, authkey)
 
     # 构造节点数据 - 只包含在YAML中明确定义的参数
-    # node_data = {
-    #     "node": {}
-    # }
+    node_data = {
+        "node": {}
+    }
 
-    # # 定义可选参数列表
-    # optional_params = [
-    #     'tc_name', 'graceful_time', 'graceful_delete', 'graceful_disable', 'graceful_persist',
-    #     'name', 'host', 'domain_ip_version', 'weight', 'healthcheck', 'upnum', 'status',
-    #     'conn_limit', 'template', 'conn_rate_limit', 'cl_log', 'desc_rserver',
-    #     'slow_start_type', 'slow_start_recover', 'slow_start_rate', 'slow_start_from',
-    #     'slow_start_step', 'slow_start_interval', 'slow_start_interval_num', 'slow_start_tail',
-    #     'request_rate_limit', 'ports'
-    # ]
+    # 定义可选参数列表
+    optional_params = [
+        'tc_name', 'graceful_time', 'graceful_delete', 'graceful_disable', 'graceful_persist',
+        'name', 'host', 'domain_ip_version', 'weight', 'healthcheck', 'upnum', 'status',
+        'conn_limit', 'template', 'conn_rate_limit', 'cl_log', 'desc_rserver',
+        'slow_start_type', 'slow_start_recover', 'slow_start_rate', 'slow_start_from',
+        'slow_start_step', 'slow_start_interval', 'slow_start_interval_num', 'slow_start_tail',
+        'request_rate_limit', 'ports'
+    ]
 
-    # # 添加基本参数
-    # for param in optional_params:
-    #     if param in module.params and module.params[param] is not None:
-    #         node_data['node'][param] = module.params[param]
+    # 添加基本参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            node_data['node'][param] = module.params[param]
 
-    # # 转换为JSON格式
-    # post_data = json.dumps(node_data)
-    print(module.params)
-    post_data = json.dumps(module.params)
+    # 转换为JSON格式
+    post_data = json.dumps(node_data)
 
     # 初始化响应数据
     response_data = ""
