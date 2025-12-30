@@ -9,6 +9,39 @@ import json
 __metaclass__ = type
 
 
+def send_request(url, post_data=None):
+    """发送HTTP请求的通用函数"""
+    response_data = ""
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            if post_data:
+                post_data = post_data.encode('utf-8')
+                req = urllib_request.Request(url, data=post_data, method='POST', headers={
+                                             'Content-Type': 'application/json'})
+            else:
+                req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            if post_data:
+                post_data = post_data.encode('utf-8')
+                req = urllib_request.Request(url, data=post_data, headers={
+                                             'Content-Type': 'application/json'})
+                req.get_method = lambda: 'POST'
+            else:
+                req = urllib_request.Request(url)
+                req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        raise Exception(str(e))
+
+    # 直接返回响应内容，不尝试解析JSON
+    return response_data
+
+
 def make_adc_request(module, url, data=None, method='GET', headers=None):
     """
     发送 ADC 请求的通用函数

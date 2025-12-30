@@ -28,7 +28,8 @@ def adc_interface_ethernet_list(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.list" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.list" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -73,7 +74,8 @@ def adc_interface_ethernet_list_withcommon(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.list.withcommon" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.list.withcommon" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -103,7 +105,8 @@ def adc_interface_ethernet_list_withcommon(module):
             parsed_data = json.loads(response_data)
             # 检查是否有错误信息
             if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取以太网接口列表（包含公共接口）失败", response=parsed_data)
+                module.fail_json(msg="获取以太网接口列表（包含公共接口）失败",
+                                 response=parsed_data)
             else:
                 module.exit_json(changed=False, interfaces=parsed_data)
         except Exception as e:
@@ -118,7 +121,8 @@ def adc_interface_ethernet_list_withused(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.list.withused" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.list.withused" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -148,7 +152,8 @@ def adc_interface_ethernet_list_withused(module):
             parsed_data = json.loads(response_data)
             # 检查是否有错误信息
             if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取以太网接口列表（包含已使用接口）失败", response=parsed_data)
+                module.fail_json(msg="获取以太网接口列表（包含已使用接口）失败",
+                                 response=parsed_data)
             else:
                 module.exit_json(changed=False, interfaces=parsed_data)
         except Exception as e:
@@ -163,7 +168,8 @@ def adc_interface_ethernet_list_self(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.list.self" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.list.self" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -214,7 +220,8 @@ def adc_interface_ethernet_get(module):
         module.fail_json(msg="获取以太网接口详情需要提供slot和port参数")
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.get" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.get" % (
+        ip, authkey)
 
     # 构造请求数据
     request_data = {
@@ -276,7 +283,8 @@ def adc_interface_ethernet_edit(module):
         module.fail_json(msg="编辑以太网接口配置需要提供slot和port参数")
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.edit" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.edit" % (
+        ip, authkey)
 
     # 构造请求数据
     request_data = {
@@ -399,7 +407,8 @@ def adc_interface_ethernet_statis(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.statis" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.statis" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -440,7 +449,8 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['list', 'list_withcommon', 'list_withused', 'list_self', 'get', 'edit', 'statis']),
+        action=dict(type='str', required=True, choices=[
+                    'list', 'list_withcommon', 'list_withused', 'list_self', 'get', 'edit', 'statis']),
         # 以太网接口参数
         slot=dict(type='int', required=False),
         port=dict(type='int', required=False),

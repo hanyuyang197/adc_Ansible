@@ -280,7 +280,8 @@ def adc_upload_domain_file(module):
             body_parts.append('--%s' % boundary)
             body_parts.append(
                 'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
-            body_parts.append('Content-Type: application/octet-stream')  # 二进制文件类型
+            body_parts.append(
+                'Content-Type: application/octet-stream')  # 二进制文件类型
             body_parts.append('')
             # 将body_parts转换为bytes并加上文件内容
             body_content = b''
@@ -308,7 +309,8 @@ def adc_upload_domain_file(module):
             body_parts.append('--%s' % boundary)
             body_parts.append(
                 'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
-            body_parts.append('Content-Type: application/octet-stream')  # 二进制文件类型
+            body_parts.append(
+                'Content-Type: application/octet-stream')  # 二进制文件类型
             body_parts.append('')
             # 将body_parts转换为字符串并加上文件内容
             body_content = ''

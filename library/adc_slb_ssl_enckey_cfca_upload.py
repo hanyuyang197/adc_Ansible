@@ -22,6 +22,7 @@ import json
 import sys
 import os
 
+
 def adc_slb_ssl_enckey_cfca_upload(module):
     """上传CFCA私钥"""
     ip = module.params['ip']
@@ -56,11 +57,13 @@ def adc_slb_ssl_enckey_cfca_upload(module):
         boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
         body = []
         body.append('--' + boundary)
-        body.append('Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+        body.append('Content-Disposition: form-data; name="file"; filename="%s"' %
+                    os.path.basename(file_path))
         body.append('Content-Type: application/octet-stream')
         body.append('')
         if sys.version_info[0] >= 3:
-            body.append(file_content.decode('latin-1') if isinstance(file_content, bytes) else file_content)
+            body.append(file_content.decode('latin-1')
+                        if isinstance(file_content, bytes) else file_content)
         else:
             body.append(file_content)
         body.append('--' + boundary + '--')
@@ -75,7 +78,8 @@ def adc_slb_ssl_enckey_cfca_upload(module):
             body_bytes = body_str
 
         # 构建URL参数
-        url_params = "authkey=%s&action=slb.ssl.enckey.cfca.upload&sign_file_name=%s" % (authkey, sign_file_name)
+        url_params = "authkey=%s&action=slb.ssl.enckey.cfca.upload&sign_file_name=%s" % (
+            authkey, sign_file_name)
         if sign_file_password:
             url_params += "&sign_file_password=%s" % sign_file_password
 
@@ -84,7 +88,8 @@ def adc_slb_ssl_enckey_cfca_upload(module):
 
         # 创建请求
         req = Request(url, data=body_bytes)
-        req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+        req.add_header(
+            'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
 
         # 发送请求
         response = urllib_request.urlopen(req)
@@ -101,6 +106,7 @@ def adc_slb_ssl_enckey_cfca_upload(module):
             module.fail_json(**result_dict)
     except Exception as e:
         module.fail_json(msg="上传CFCA私钥失败: %s" % str(e))
+
 
 def main():
     # 定义模块参数
@@ -124,6 +130,7 @@ def main():
 
     if action == 'upload':
         adc_slb_ssl_enckey_cfca_upload(module)
+
 
 if __name__ == '__main__':
     main()

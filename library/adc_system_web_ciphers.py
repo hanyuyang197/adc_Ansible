@@ -22,69 +22,6 @@ import json
 import sys
 
 
-def format_adc_response_for_ansible(response_data, action="", is_modify_action=False):
-    """
-    格式化ADC API响应数据为Ansible模块所需的格式
-
-    Args:
-        response_data (str): ADC API返回的响应数据
-        action (str): 执行的操作名称
-        is_modify_action (bool): 是否为修改类操作
-
-    Returns:
-        tuple: (success_bool, result_dict)
-    """
-    try:
-        # 解析JSON响应
-        result = json.loads(response_data)
-
-        # 检查是否包含错误信息
-        if 'errcode' in result and result['errcode'] != 0:
-            # 操作失败
-            result_dict = {
-                'changed': False,
-                'msg': '%s操作失败' % action if action else '操作失败',
-                'error': {
-                    'result': result.get('result', ''),
-                    'errcode': result.get('errcode', ''),
-                    'errmsg': result.get('errmsg', '')
-                },
-                'response': result.get('data', {})
-            }
-            return False, result_dict
-        elif 'errcode' in result and result['errcode'] == 0:
-            # 操作成功
-            result_dict = {
-                'changed': is_modify_action,  # 修改类操作标记为changed
-                'msg': '%s操作成功' % action if action else '操作成功',
-                'response': result.get('data', {})
-            }
-
-            # 如果是幂等性成功（已存在），调整消息
-            if 'result' in result and 'already exists' in result['result']:
-                result_dict['changed'] = False
-                result_dict['msg'] = '%s操作成功（资源已存在，无需更改）' % action if action else '操作成功（资源已存在，无需更改）'
-
-            return True, result_dict
-        else:
-            # 未知格式的响应
-            result_dict = {
-                'changed': is_modify_action,
-                'msg': '%s操作完成' % action if action else '操作完成',
-                'response': result
-            }
-            return True, result_dict
-
-    except Exception as e:
-        # 解析失败
-        result_dict = {
-            'changed': False,
-            'msg': '解析响应失败: %s' % str(e),
-            'raw_response': response_data if isinstance(response_data, str) else str(response_data)
-        }
-        return False, result_dict
-
-
 def adc_get_web_ciphers(module):
     """获取web网页加密算法和版本"""
     ip = module.params['ip']

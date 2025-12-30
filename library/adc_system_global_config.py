@@ -22,105 +22,6 @@ import json
 import sys
 
 
-def format_adc_response_for_ansible(response_data, action="", changed_default=True):
-    """
-    格式化ADC响应为Ansible模块返回格式
-    """
-    result = {
-        'success': False,
-        'result': '',
-        'errcode': '',
-        'errmsg': '',
-        'data': {}
-    }
-
-    try:
-        if isinstance(response_data, str):
-            parsed_data = json.loads(response_data)
-        else:
-            parsed_data = response_data
-
-        result['data'] = parsed_data
-        result['result'] = parsed_data.get('result', '')
-        result['errcode'] = parsed_data.get('errcode', '')
-        result['errmsg'] = parsed_data.get('errmsg', '')
-
-        if result['result'].lower() == 'success':
-            result['success'] = True
-        else:
-            errmsg = result['errmsg'].lower() if isinstance(
-                result['errmsg'], str) else str(result['errmsg']).lower()
-            if any(keyword in errmsg for keyword in ['已存在', 'already exists', 'already exist', 'exists']):
-                result['success'] = True
-                result['result'] = 'success (already exists)'
-
-    except json.JSONDecodeError as e:
-        # 直接返回原始响应内容，不尝试解析为JSON
-        result['errmsg'] = response_data
-        result['errcode'] = 'RAW_RESPONSE'
-    except Exception as e:
-        result['errmsg'] = "响应解析异常: %s" % str(e)
-        result['errcode'] = 'PARSE_EXCEPTION'
-
-    if result['success']:
-        result_dict = {
-            'changed': changed_default,
-            'msg': '%s操作成功' % action if action else '操作成功',
-            'response': result['data']
-        }
-
-        if 'already exists' in result['result']:
-            result_dict['changed'] = False
-            result_dict['msg'] = '%s操作成功（资源已存在，无需更改）' % action if action else '操作成功（资源已存在，无需更改）'
-
-        return True, result_dict
-    else:
-        result_dict = {
-            'changed': False,
-            'msg': '%s操作失败' % action if action else '操作失败',
-            'error': {
-                'result': result['result'],
-                'errcode': result['errcode'],
-                'errmsg': result['errmsg']
-            },
-            'response': result['data']
-        }
-        return False, result_dict
-
-
-def send_request(url, post_data=None):
-    """发送HTTP请求的通用函数"""
-    response_data = ""
-    try:
-        if sys.version_info[0] >= 3:
-            import urllib.request as urllib_request
-            if post_data:
-                post_data = post_data.encode('utf-8')
-                req = urllib_request.Request(url, data=post_data, method='POST', headers={
-                                             'Content-Type': 'application/json'})
-            else:
-                req = urllib_request.Request(url, method='GET')
-            response = urllib_request.urlopen(req)
-            response_data = response.read().decode('utf-8')
-        else:
-            import urllib2 as urllib_request
-            if post_data:
-                post_data = post_data.encode('utf-8')
-                req = urllib_request.Request(url, data=post_data, headers={
-                                             'Content-Type': 'application/json'})
-                req.get_method = lambda: 'POST'
-            else:
-                req = urllib_request.Request(url)
-                req.get_method = lambda: 'GET'
-            response = urllib_request.urlopen(req)
-            response_data = response.read()
-    except Exception as e:
-        raise Exception(str(e))
-
-    # 直接返回响应内容，不尝试解析JSON
-    return response_data
-
-
 def adc_slb_global_allow_promis_intf_vip_get(module):
     """获取 slb 全局混杂配置"""
     ip = module.params['ip']
@@ -195,7 +96,7 @@ def adc_slb_graceful_shutdown_set(module):
     config_data = {
         "graceful_shutdown_node": {}
     }
-    
+
     if time is not None:
         config_data["graceful_shutdown_node"]["time"] = time
     if delete is not None:
@@ -249,7 +150,7 @@ def adc_system_rate_limit_icmp_set(module):
     config_data = {
         "rate_limit_icmp": {}
     }
-    
+
     if normal_rate_limit is not None:
         config_data["rate_limit_icmp"]["normal_rate_limit"] = normal_rate_limit
     if max_rate_limit is not None:
@@ -603,13 +504,15 @@ def main():
         ]),
         # 配置参数
         # 用于 global.connection_mirror.set
-        global_connection_mirror=dict(type='int', required=False, choices=[0, 1]),
+        global_connection_mirror=dict(
+            type='int', required=False, choices=[0, 1]),
         # 用于 global.path_persist.set
         global_path_persist=dict(type='int', required=False, choices=[0, 1]),
         # 用于 global.slb_snat_on_vip.set
         global_policy_snat=dict(type='int', required=False, choices=[0, 1]),
         # 用于 global.slb_snat_interface_iprr.set
-        global_snat_interface_iprr=dict(type='int', required=False, choices=[0, 1]),
+        global_snat_interface_iprr=dict(
+            type='int', required=False, choices=[0, 1]),
         # 用于 slb.global.virtual_mac.set
         gvm=dict(type='int', required=False, choices=[0, 1]),
         # 用于其他需要enable参数的set操作

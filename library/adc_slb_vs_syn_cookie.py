@@ -28,20 +28,21 @@ def adc_slb_vs_syn_cookie_get(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.vs.syn_cookie.get" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.vs.syn_cookie.get" % (
+        ip, authkey)
 
     # 构造请求数据
     request_data = {
         "ip": ip,
         "authkey": authkey
     }
-    
+
     # 定义可选参数列表（根据API具体需求调整）
     optional_params = [
         'name', 'description', 'status', 'config', 'setting', 'value', 'enable', 'name', 'ip', 'port'
         # 根据具体API需求添加更多参数
     ]
-    
+
     # 添加可选参数
     for param in optional_params:
         if get_param_if_exists(module, param) is not None:
@@ -92,20 +93,21 @@ def adc_slb_vs_syn_cookie_set(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.vs.syn_cookie.set" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.vs.syn_cookie.set" % (
+        ip, authkey)
 
     # 构造请求数据
     request_data = {
         "ip": ip,
         "authkey": authkey
     }
-    
+
     # 定义可选参数列表（根据API具体需求调整）
     optional_params = [
         'name', 'description', 'status', 'config', 'setting', 'value', 'enable', 'name', 'ip', 'port'
         # 根据具体API需求添加更多参数
     ]
-    
+
     # 添加可选参数
     for param in optional_params:
         if get_param_if_exists(module, param) is not None:
@@ -173,7 +175,7 @@ def main():
 
     # 根据action执行相应操作
     action = module.params['action']
-    
+
     if action == 'get':
         adc_slb_vs_syn_cookie_get(module)
     elif action == 'set':

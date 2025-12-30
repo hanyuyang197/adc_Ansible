@@ -28,7 +28,8 @@ def adc_arp_ipv6_list(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.list" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.list" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -78,7 +79,8 @@ def adc_arp_ipv6_get(module):
         module.fail_json(msg="获取IPv6 ARP条目详情需要提供ip_addr参数")
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.get" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.get" % (
+        ip, authkey)
 
     # 构造请求数据
     request_data = {
@@ -139,7 +141,8 @@ def adc_arp_ipv6_add(module):
         module.fail_json(msg="添加IPv6 ARP条目需要提供ip_addr和mac_addr参数")
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.add" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.add" % (
+        ip, authkey)
 
     # 构造请求数据
     request_data = {
@@ -205,7 +208,8 @@ def adc_arp_ipv6_edit(module):
         module.fail_json(msg="编辑IPv6 ARP条目需要提供ip_addr参数")
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.edit" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.edit" % (
+        ip, authkey)
 
     # 构造请求数据
     request_data = {
@@ -272,7 +276,8 @@ def adc_arp_ipv6_delete(module):
         module.fail_json(msg="删除IPv6 ARP条目需要提供ip_addr参数")
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.del" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.del" % (
+        ip, authkey)
 
     # 构造请求数据
     request_data = {
@@ -324,7 +329,8 @@ def adc_arp_ipv6_statis(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.statis" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.statis" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -354,7 +360,8 @@ def adc_arp_ipv6_statis(module):
             parsed_data = json.loads(response_data)
             # 检查是否有错误信息
             if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取IPv6 ARP状态信息列表失败", response=parsed_data)
+                module.fail_json(msg="获取IPv6 ARP状态信息列表失败",
+                                 response=parsed_data)
             else:
                 module.exit_json(changed=False, arp_stats=parsed_data)
         except Exception as e:
@@ -369,7 +376,8 @@ def adc_arp_ipv6_clear(module):
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.clear" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=arp.ipv6.clear" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -410,7 +418,8 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['list', 'get', 'add', 'edit', 'delete', 'statis', 'clear']),
+        action=dict(type='str', required=True, choices=[
+                    'list', 'get', 'add', 'edit', 'delete', 'statis', 'clear']),
         # ARP相关参数
         ip_addr=dict(type='str', required=False),
         mac_addr=dict(type='str', required=False),

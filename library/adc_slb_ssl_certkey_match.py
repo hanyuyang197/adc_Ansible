@@ -21,6 +21,7 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
 import json
 import sys
 
+
 def adc_slb_ssl_certkey_match(module):
     """校验证书和私钥配对"""
     ip = module.params['ip']
@@ -30,7 +31,8 @@ def adc_slb_ssl_certkey_match(module):
     password = module.params.get('password')
 
     # 构建URL参数
-    url_params = "authkey=%s&action=slb.ssl.certkey.match&cert_name=%s&key_name=%s" % (authkey, cert_name, key_name)
+    url_params = "authkey=%s&action=slb.ssl.certkey.match&cert_name=%s&key_name=%s" % (
+        authkey, cert_name, key_name)
     if password:
         url_params += "&password=%s" % password
 
@@ -61,6 +63,7 @@ def adc_slb_ssl_certkey_match(module):
     except Exception as e:
         module.fail_json(msg="校验证书和私钥配对失败: %s" % str(e))
 
+
 def main():
     # 定义模块参数
     module_args = dict(
@@ -83,6 +86,7 @@ def main():
 
     if action == 'match':
         adc_slb_ssl_certkey_match(module)
+
 
 if __name__ == '__main__':
     main()

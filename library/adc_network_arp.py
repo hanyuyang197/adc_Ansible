@@ -151,12 +151,12 @@ def adc_add_ipv4_entry(module):
         "ip_addr": ip_addr,
         "mac_addr": mac_addr
     }
-    
+
     # 添加可选参数
     port_type = module.params.get('port_type')
     slot_num = module.params.get('slot_num')
     port_num = module.params.get('port_num')
-    
+
     if port_type is not None:
         entry_data["port_type"] = port_type
     if slot_num is not None:
@@ -223,12 +223,12 @@ def adc_edit_ipv4_entry(module):
         "ip_addr": ip_addr,
         "mac_addr": mac_addr
     }
-    
+
     # 添加可选参数
     port_type = module.params.get('port_type')
     slot_num = module.params.get('slot_num')
     port_num = module.params.get('port_num')
-    
+
     if port_type is not None:
         entry_data["port_type"] = port_type
     if slot_num is not None:
@@ -549,12 +549,12 @@ def adc_add_ipv6_entry(module):
         "ip_addr": ip_addr,
         "mac_addr": mac_addr
     }
-    
+
     # 添加可选参数
     port_type = module.params.get('port_type')
     slot_num = module.params.get('slot_num')
     port_num = module.params.get('port_num')
-    
+
     if port_type is not None:
         entry_data["port_type"] = port_type
     if slot_num is not None:
@@ -621,12 +621,12 @@ def adc_edit_ipv6_entry(module):
         "ip_addr": ip_addr,
         "mac_addr": mac_addr
     }
-    
+
     # 添加可选参数
     port_type = module.params.get('port_type')
     slot_num = module.params.get('slot_num')
     port_num = module.params.get('port_num')
-    
+
     if port_type is not None:
         entry_data["port_type"] = port_type
     if slot_num is not None:
