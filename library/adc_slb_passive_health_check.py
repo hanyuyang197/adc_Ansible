@@ -21,222 +21,294 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
 import json
 import sys
 
+# ADC API响应解析函数
+
 
 def adc_passive_health_check_add(module):
-    """被动健康检查添加"""
+    """添加被动健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
 
-    if not name:
-        module.fail_json(msg="被动健康检查添加需要提供name参数")
+    # 获取参数
+    name = module.params.get('name')
+    type = module.params.get('type')
+    interval = module.params.get('interval')
+    timeout = module.params.get('timeout')
+    retry = module.params.get('retry')
+    port = module.params.get('port')
+    send = module.params.get('send')
+    receive = module.params.get('receive')
 
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.add" % (
-        ip, authkey)
+    # 检查必需参数
+    if not name or not type:
+        module.fail_json(msg="添加被动健康检查需要提供name和type参数")
 
-    health_check_data = {
-        "name": name
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.add" % (ip, authkey)
+
+    # 构造请求数据
+    healthcheck_data = {
+        "name": name,
+        "type": type
     }
 
     # 添加可选参数
-    if module.params['type'] is not None:
-        health_check_data['type'] = module.params['type']
-    if module.params['enable'] is not None:
-        health_check_data['enable'] = module.params['enable']
-    if module.params['phc_action'] is not None:
-        health_check_data['action'] = module.params['phc_action']
-    if module.params['timeout'] is not None:
-        health_check_data['timeout'] = module.params['timeout']
-    if module.params['interval'] is not None:
-        health_check_data['interval'] = module.params['interval']
-    if module.params['rise'] is not None:
-        health_check_data['rise'] = module.params['rise']
-    if module.params['fall'] is not None:
-        health_check_data['fall'] = module.params['fall']
-    if module.params['desc_phc'] is not None:
-        health_check_data['desc_phc'] = module.params['desc_phc']
+    if interval:
+        healthcheck_data["interval"] = interval
+    if timeout:
+        healthcheck_data["timeout"] = timeout
+    if retry:
+        healthcheck_data["retry"] = retry
+    if port:
+        healthcheck_data["port"] = port
+    if send:
+        healthcheck_data["send"] = send
+    if receive:
+        healthcheck_data["receive"] = receive
 
-    post_data = json.dumps(health_check_data)
+    # 转换为JSON格式
+    post_data = json.dumps(healthcheck_data)
+
+    # 初始化响应数据
+    response_data = ""
 
     try:
-        response_data = send_request(url, post_data)
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "被动健康检查添加", True)
-        if success:
-            module.exit_json(**result_dict)
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, data=post_data.encode('utf-8'), method='POST')
+            req.add_header('Content-Type', 'application/json')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
         else:
-            module.fail_json(**result_dict)
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data)
+            req.add_header('Content-Type', 'application/json')
+            req.get_method = lambda: 'POST'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 解析响应
+        result = json.loads(response_data)
+        
+        # 检查响应状态
+        if result.get('status') == 'success':
+            module.exit_json(changed=True, msg="被动健康检查添加成功", result=result)
+        else:
+            module.fail_json(msg="被动健康检查添加失败: " + result.get('message', '未知错误'))
+
     except Exception as e:
-        module.fail_json(msg="被动健康检查添加失败: %s" % str(e))
+        module.fail_json(msg="添加被动健康检查请求失败: %s" % str(e))
 
 
 def adc_passive_health_check_list(module):
-    """被动健康检查列表"""
+    """获取被动健康检查列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.list" % (
-        ip, authkey)
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.list" % (ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
 
     try:
-        response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(changed=False, passive_health_checks=response_data)
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 对于获取列表操作，直接返回响应数据，不判断success
+        if response_data:
+            try:
+                parsed_data = json.loads(response_data)
+                # 检查是否有错误信息
+                if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                    module.fail_json(msg="获取被动健康检查列表失败", response=parsed_data)
+                else:
+                    module.exit_json(changed=False, passive_health_checks=parsed_data)
+            except Exception as e:
+                module.fail_json(msg="解析响应失败: %s" % str(e))
+        else:
+            module.fail_json(msg="未收到有效响应")
+
     except Exception as e:
-        module.fail_json(msg="被动健康检查列表获取失败: %s" % str(e))
+        module.fail_json(msg="获取被动健康检查列表失败: %s" % str(e))
 
 
 def adc_passive_health_check_get(module):
-    """被动健康检查获取"""
+    """获取被动健康检查详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    name = module.params.get('name')
 
+    # 检查必需参数
     if not name:
-        module.fail_json(msg="被动健康检查获取需要提供name参数")
+        module.fail_json(msg="获取被动健康检查详情需要提供name参数")
 
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.get" % (
-        ip, authkey)
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.get" % (ip, authkey)
 
-    health_check_data = {
+    # 构造请求数据
+    healthcheck_data = {
         "name": name
     }
 
-    post_data = json.dumps(health_check_data)
+    # 转换为JSON格式
+    post_data = json.dumps(healthcheck_data)
+
+    # 初始化响应数据
+    response_data = ""
 
     try:
-        response_data = send_request(url, post_data)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(changed=False, passive_health_check=response_data)
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, data=post_data.encode('utf-8'), method='POST')
+            req.add_header('Content-Type', 'application/json')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data)
+            req.add_header('Content-Type', 'application/json')
+            req.get_method = lambda: 'POST'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 解析响应
+        result = json.loads(response_data)
+        
+        # 检查响应状态
+        if result.get('status') == 'success' or 'name' in result:
+            module.exit_json(changed=False, passive_health_check=result)
+        else:
+            module.fail_json(msg="获取被动健康检查详情失败: " + result.get('message', '未知错误'))
+
     except Exception as e:
-        module.fail_json(msg="被动健康检查获取失败: %s" % str(e))
+        module.fail_json(msg="获取被动健康检查详情请求失败: %s" % str(e))
 
 
 def adc_passive_health_check_edit(module):
-    """被动健康检查编辑"""
+    """编辑被动健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
 
+    # 获取参数
+    name = module.params.get('name')
+    type = module.params.get('type')
+    interval = module.params.get('interval')
+    timeout = module.params.get('timeout')
+    retry = module.params.get('retry')
+    port = module.params.get('port')
+    send = module.params.get('send')
+    receive = module.params.get('receive')
+
+    # 检查必需参数
     if not name:
-        module.fail_json(msg="被动健康检查编辑需要提供name参数")
+        module.fail_json(msg="编辑被动健康检查需要提供name参数")
 
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.edit" % (
-        ip, authkey)
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.edit" % (ip, authkey)
 
-    health_check_data = {
+    # 构造请求数据
+    healthcheck_data = {
         "name": name
     }
 
     # 添加可选参数
-    if module.params['type'] is not None:
-        health_check_data['type'] = module.params['type']
-    if module.params['enable'] is not None:
-        health_check_data['enable'] = module.params['enable']
-    if module.params['phc_action'] is not None:
-        health_check_data['action'] = module.params['phc_action']
-    if module.params['timeout'] is not None:
-        health_check_data['timeout'] = module.params['timeout']
-    if module.params['interval'] is not None:
-        health_check_data['interval'] = module.params['interval']
-    if module.params['rise'] is not None:
-        health_check_data['rise'] = module.params['rise']
-    if module.params['fall'] is not None:
-        health_check_data['fall'] = module.params['fall']
-    if module.params['desc_phc'] is not None:
-        health_check_data['desc_phc'] = module.params['desc_phc']
+    if type:
+        healthcheck_data["type"] = type
+    if interval:
+        healthcheck_data["interval"] = interval
+    if timeout:
+        healthcheck_data["timeout"] = timeout
+    if retry:
+        healthcheck_data["retry"] = retry
+    if port:
+        healthcheck_data["port"] = port
+    if send:
+        healthcheck_data["send"] = send
+    if receive:
+        healthcheck_data["receive"] = receive
 
-    post_data = json.dumps(health_check_data)
+    # 转换为JSON格式
+    post_data = json.dumps(healthcheck_data)
+
+    # 初始化响应数据
+    response_data = ""
 
     try:
-        response_data = send_request(url, post_data)
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "被动健康检查编辑", True)
-        if success:
-            module.exit_json(**result_dict)
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, data=post_data.encode('utf-8'), method='POST')
+            req.add_header('Content-Type', 'application/json')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
         else:
-            module.fail_json(**result_dict)
-    except Exception as e:
-        module.fail_json(msg="被动健康检查编辑失败: %s" % str(e))
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data)
+            req.add_header('Content-Type', 'application/json')
+            req.get_method = lambda: 'POST'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
 
-
-def adc_passive_health_check_del(module):
-    """被动健康检查删除"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name']
-
-    if not name:
-        module.fail_json(msg="被动健康检查删除需要提供name参数")
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.del" % (
-        ip, authkey)
-
-    health_check_data = {
-        "name": name
-    }
-
-    post_data = json.dumps(health_check_data)
-
-    try:
-        response_data = send_request(url, post_data)
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "被动健康检查删除", True)
-        if success:
-            module.exit_json(**result_dict)
+        # 解析响应
+        result = json.loads(response_data)
+        
+        # 检查响应状态
+        if result.get('status') == 'success':
+            module.exit_json(changed=True, msg="被动健康检查编辑成功", result=result)
         else:
-            module.fail_json(**result_dict)
+            module.fail_json(msg="被动健康检查编辑失败: " + result.get('message', '未知错误'))
+
     except Exception as e:
-        module.fail_json(msg="被动健康检查删除失败: %s" % str(e))
-
-
-def adc_passive_health_check_list_withcommon(module):
-    """被动健康检查获取 common 和本分区"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.list.withcommon" % (
-        ip, authkey)
-
-    try:
-        response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(
-            changed=False, passive_health_checks_withcommon=response_data)
-    except Exception as e:
-        module.fail_json(msg="被动健康检查获取 common 和本分区失败: %s" % str(e))
+        module.fail_json(msg="编辑被动健康检查请求失败: %s" % str(e))
 
 
 def main():
+    """主函数"""
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=[
-            'passive_health_check_add', 'passive_health_check_list', 'passive_health_check_get',
-            'passive_health_check_edit', 'passive_health_check_del', 'passive_health_check_list_withcommon'
-        ]),
-        # 被动健康检查参数
+        action=dict(type='str', required=True),
         name=dict(type='str', required=False),
         type=dict(type='str', required=False),
-        enable=dict(type='int', required=False, choices=[0, 1]),
-        phc_action=dict(type='str', required=False),
-        timeout=dict(type='int', required=False),
         interval=dict(type='int', required=False),
-        rise=dict(type='int', required=False),
-        fall=dict(type='int', required=False),
-        desc_phc=dict(type='str', required=False)
+        timeout=dict(type='int', required=False),
+        retry=dict(type='int', required=False),
+        port=dict(type='int', required=False),
+        send=dict(type='str', required=False),
+        receive=dict(type='str', required=False)
     )
 
-    # 创建AnsibleModule实例
+    # 创建模块
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=False
+        supports_check_mode=True
     )
 
-    # 根据action执行相应操作
-    action = module.params['action']
-
+    # 根据action参数调用相应的函数
+    action = module.params.get('action')
+    
     if action == 'passive_health_check_add':
         adc_passive_health_check_add(module)
     elif action == 'passive_health_check_list':
@@ -245,10 +317,8 @@ def main():
         adc_passive_health_check_get(module)
     elif action == 'passive_health_check_edit':
         adc_passive_health_check_edit(module)
-    elif action == 'passive_health_check_del':
-        adc_passive_health_check_del(module)
-    elif action == 'passive_health_check_list_withcommon':
-        adc_passive_health_check_list_withcommon(module)
+    else:
+        module.fail_json(msg="不支持的action: " + str(action))
 
 
 if __name__ == '__main__':

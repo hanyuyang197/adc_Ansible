@@ -321,13 +321,108 @@ def adc_delete_static(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def adc_get_nat_static_statistics(module):
+    """获取NAT静态映射统计信息"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.static.statis" % (
+        ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取NAT静态映射统计信息失败: %s" % str(e))
+
+    # 对于获取统计信息操作，直接返回响应数据
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            # 检查是否有错误信息
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取NAT静态映射统计信息失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, statistics=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_clear_nat_static_statistics(module):
+    """清除NAT静态映射统计信息"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.static.clear" % (
+        ip, authkey)
+
+    # 构造空数据
+    post_data = json.dumps({})
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="清除NAT静态映射统计信息失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "清除NAT静态映射统计信息", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
 def main():
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_statics', 'get_static', 'add_static', 'edit_static', 'delete_static']),
+            'list_statics', 'get_static', 'add_static', 'edit_static', 'delete_static',
+            'get_statistics', 'clear_statistics']),
         # 静态NAT参数
         id=dict(type='int', required=False),
         ip_addr=dict(type='str', required=False),
@@ -354,6 +449,10 @@ def main():
         adc_edit_static(module)
     elif action == 'delete_static':
         adc_delete_static(module)
+    elif action == 'get_statistics':
+        adc_get_nat_static_statistics(module)
+    elif action == 'clear_statistics':
+        adc_clear_nat_static_statistics(module)
 
 
 if __name__ == '__main__':

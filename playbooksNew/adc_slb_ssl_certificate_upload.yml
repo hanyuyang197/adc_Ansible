@@ -1,5 +1,5 @@
 ---
-- name: 上传SSL证书文件
+- name: certificate upload
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -7,34 +7,34 @@
   tasks:
     - name: 登录ADC设备
       adc_login:
-        ip: "{{ inventory_hostname }}"
-        username: "{{ adc_username }}"
-        password: "{{ adc_password }}"
+        ip: "{ inventory_hostname }"
+        username: "{ adc_username }"
+        password: "{ adc_password }"
       register: login_result
 
     - name: 显示登录结果
       debug:
         var: login_result
 
-    - name: 执行 上传SSL证书文件
-      adc_slb_ssl_certificate:
-        ip: "{{ inventory_hostname }}"
-        authkey: "{{ login_result.authkey }}"
-        action: "upload"
-        # API action: N/A
-        # 以下为可选参数
+    - name: 执行 certificate upload
+      adc_slb_ssl:
+        ip: "{ inventory_hostname }"
+        authkey: "{ login_result.authkey }"
+        action: "certificate_upload"
+        # API action: slb.ssl.certificate.upload
+        # TODO: 添加必要的参数
       register: result
       when: login_result is succeeded
 
-    - name: 显示 上传SSL证书文件 结果
+    - name: 显示 certificate upload 结果
       debug:
         var: result
       when: result is defined
 
     - name: 登出ADC设备
       adc_logout:
-        ip: "{{ inventory_hostname }}"
-        authkey: "{{ login_result.authkey }}"
+        ip: "{ inventory_hostname }"
+        authkey: "{ login_result.authkey }"
       register: logout_result
       when: login_result is succeeded
 

@@ -1,0 +1,17 @@
+---
+- name: 获取节点统计列表
+  hosts: localhost
+  gather_facts: false
+  
+  tasks:
+    - name: 调用节点统计列表API
+      adc_slb_node_stat:
+        ip: "{{ ip }}"
+        authkey: "{{ authkey }}"
+        action: node_stat_list
+      register: result
+      
+    - name: 显示结果
+      debug:
+        msg: "节点统计列表获取成功，共 {{ result.node_stats | length }} 个统计项"
+      when: result.changed == false

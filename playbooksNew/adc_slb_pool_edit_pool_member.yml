@@ -1,0 +1,51 @@
+---
+- name: 编辑服务池成员
+  collections:
+    - horizon.modules
+  hosts: adc_servers
+  gather_facts: no
+  tasks:
+    - name: 登录ADC设备
+      adc_login:
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
+      register: login_result
+
+    - name: 显示登录结果
+      debug:
+        var: login_result
+
+    - name: 执行 编辑服务池成员
+      adc_slb_pool:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "edit_pool_member"
+        # API action: slb.pool.member.edit
+# pool_name: 服务池名称
+# node: 节点IP
+# port: 端口
+# protocol: 协议
+# priority: 优先级
+# weight: 权重
+# status: 状态
+# conn_limit: 连接限制
+      register: result
+      when: login_result is succeeded
+
+    - name: 显示 编辑服务池成员 结果
+      debug:
+        var: result
+      when: result is defined
+
+    - name: 登出ADC设备
+      adc_logout:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+      register: logout_result
+      when: login_result is succeeded
+
+    - name: 显示登出结果
+      debug:
+        var: logout_result
+      when: logout_result is defined

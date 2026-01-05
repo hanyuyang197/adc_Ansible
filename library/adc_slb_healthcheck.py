@@ -425,13 +425,274 @@ def adc_delete_healthcheck(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def script_list(module):
+    """获取健康检查脚本列表"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthcheck.script.list" % (ip, authkey)
+
+    response_data = ""
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="获取健康检查脚本列表失败: %s" % str(e))
+
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取健康检查脚本列表失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, scripts=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def script_upload(module):
+    """上传健康检查脚本"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    script_name = module.params['script_name'] if 'script_name' in module.params else ""
+    script_content = module.params['script_content'] if 'script_content' in module.params else ""
+
+    if not script_name:
+        module.fail_json(msg="上传脚本需要提供script_name参数")
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthcheck.script.upload" % (ip, authkey)
+
+    script_data = {
+        "name": script_name,
+        "content": script_content
+    }
+
+    post_data = json.dumps(script_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="上传健康检查脚本失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "上传健康检查脚本", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def script_del(module):
+    """删除健康检查脚本"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    script_name = module.params['script_name'] if 'script_name' in module.params else ""
+
+    if not script_name:
+        module.fail_json(msg="删除脚本需要提供script_name参数")
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthcheck.script.del" % (ip, authkey)
+
+    script_data = {
+        "name": script_name
+    }
+
+    post_data = json.dumps(script_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="删除健康检查脚本失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "删除健康检查脚本", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def postfile_list(module):
+    """获取健康检查后置文件列表"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthcheck.postfile.list" % (ip, authkey)
+
+    response_data = ""
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="获取健康检查后置文件列表失败: %s" % str(e))
+
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取健康检查后置文件列表失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, postfiles=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def postfile_upload(module):
+    """上传健康检查后置文件"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    file_name = module.params['file_name'] if 'file_name' in module.params else ""
+    file_content = module.params['file_content'] if 'file_content' in module.params else ""
+
+    if not file_name:
+        module.fail_json(msg="上传后置文件需要提供file_name参数")
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthcheck.postfile.upload" % (ip, authkey)
+
+    file_data = {
+        "name": file_name,
+        "content": file_content
+    }
+
+    post_data = json.dumps(file_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="上传健康检查后置文件失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "上传健康检查后置文件", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg("未收到有效响应"))
+
+
+def postfile_del(module):
+    """删除健康检查后置文件"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    file_name = module.params['file_name'] if 'file_name' in module.params else ""
+
+    if not file_name:
+        module.fail_json(msg="删除后置文件需要提供file_name参数")
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthcheck.postfile.del" % (ip, authkey)
+
+    file_data = {
+        "name": file_name
+    }
+
+    post_data = json.dumps(file_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg("删除健康检查后置文件失败: %s" % str(e)))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "删除健康检查后置文件", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg("未收到有效响应")
+
+
 def main():
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'list_healthchecks', 'get_healthcheck', 'add_healthcheck', 'edit_healthcheck', 'delete_healthcheck']),
+                    'list_healthchecks', 'get_healthcheck', 'add_healthcheck', 'edit_healthcheck', 'delete_healthcheck',
+                    'script_list', 'script_upload', 'script_del', 'postfile_list', 'postfile_upload', 'postfile_del']),
         # 健康检查通用参数
         name=dict(type='str', required=False),
         hc_type=dict(type='str', required=False, choices=[
@@ -469,7 +730,13 @@ def main():
         trans_mode=dict(type='int', required=False),
         sslver=dict(type='str', required=False),
         # Combo类型参数
-        combo=dict(type='str', required=False)
+        combo=dict(type='str', required=False),
+        # 脚本上传参数
+        script_name=dict(type='str', required=False),
+        script_content=dict(type='str', required=False),
+        # 后置文件参数
+        file_name=dict(type='str', required=False),
+        file_content=dict(type='str', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -494,6 +761,18 @@ def main():
         adc_edit_healthcheck(module)
     elif action == 'delete_healthcheck':
         adc_delete_healthcheck(module)
+    elif action == 'script_list':
+        script_list(module)
+    elif action == 'script_upload':
+        script_upload(module)
+    elif action == 'script_del':
+        script_del(module)
+    elif action == 'postfile_list':
+        postfile_list(module)
+    elif action == 'postfile_upload':
+        postfile_upload(module)
+    elif action == 'postfile_del':
+        postfile_del(module)
 
 
 if __name__ == '__main__':

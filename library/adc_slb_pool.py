@@ -495,13 +495,297 @@ def adc_delete_pool_node(module):
         module.fail_json(msg="未收到有效响应")
 
 
+
+def get_pools_withcommon(module):
+    """获取服务池列表(带公共参数)"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.list.withcommon" % (ip, authkey)
+
+    response_data = ""
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="获取服务池列表(带公共参数)失败: %s" % str(e))
+
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取服务池列表(带公共参数)失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, pools=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def edit_pool_member(module):
+    """编辑服务池成员"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    pool_name = module.params['pool_name'] if 'pool_name' in module.params else ""
+    node = module.params['node'] if 'node' in module.params else ""
+    port = module.params['port'] if 'port' in module.params else 0
+    protocol = module.params['protocol'] if 'protocol' in module.params else 0
+    priority = module.params['priority'] if 'priority' in module.params else 1
+    weight = module.params['weight'] if 'weight' in module.params else 1
+    status = module.params['status'] if 'status' in module.params else 1
+    conn_limit = module.params['conn_limit'] if 'conn_limit' in module.params else 0
+
+    if not pool_name:
+        module.fail_json(msg="编辑服务池成员需要提供pool_name参数")
+    if not node:
+        module.fail_json(msg="编辑服务池成员需要提供node参数")
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.edit" % (ip, authkey)
+
+    pool_data = {
+        "name": pool_name,
+        "member": {
+            "nodename": node,
+            "server": node,
+            "port": port,
+            "protocol": protocol,
+            "priority": priority,
+            "weight": weight,
+            "status": status,
+            "conn_limit": conn_limit
+        }
+    }
+
+    post_data = json.dumps(pool_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="编辑服务池成员失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "编辑服务池成员", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def onoff_pool_member(module):
+    """启用/禁用服务池成员"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    pool_name = module.params['pool_name'] if 'pool_name' in module.params else ""
+    node = module.params['node'] if 'node' in module.params else ""
+    port = module.params['port'] if 'port' in module.params else 0
+    protocol = module.params['protocol'] if 'protocol' in module.params else 0
+    enable = module.params['enable'] if 'enable' in module.params else True
+
+    if not pool_name:
+        module.fail_json(msg="启用/禁用服务池成员需要提供pool_name参数")
+    if not node:
+        module.fail_json(msg="启用/禁用服务池成员需要提供node参数")
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.onoff" % (ip, authkey)
+
+    pool_data = {
+        "name": pool_name,
+        "member": {
+            "nodename": node,
+            "server": node,
+            "port": port,
+            "protocol": protocol
+        },
+        "enable": 1 if enable else 0
+    }
+
+    post_data = json.dumps(pool_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="启用/禁用服务池成员失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "启用/禁用服务池成员", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def list_pool_stats(module):
+    """获取服务池统计列表"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.stat.list" % (ip, authkey)
+
+    response_data = ""
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="获取服务池统计列表失败: %s" % str(e))
+
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取服务池统计列表失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, stats=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def get_pool_stat(module):
+    """获取服务池统计详情"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+
+    if not name:
+        module.fail_json(msg="获取服务池统计详情需要提供name参数")
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.stat.get" % (ip, authkey)
+
+    request_data = {"name": name}
+    post_data = json.dumps(request_data)
+
+    response_data = ""
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="获取服务池统计详情失败: %s" % str(e))
+
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取服务池统计详情失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, stat=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def clear_pool_stats(module):
+    """清除服务池统计"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.stat.clear" % (ip, authkey)
+
+    request_data = {}
+    if name:
+        request_data["name"] = name
+
+    post_data = json.dumps(request_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg("清除服务池统计失败: %s" % str(e)))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "清除服务池统计", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
 def main():
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'get_pools', 'get_pool', 'add_pool', 'edit_pool', 'delete_pool', 'add_pool_node', 'delete_pool_node']),
+                    'get_pools', 'get_pools_withcommon', 'get_pool', 'add_pool', 'edit_pool', 'delete_pool', 'add_pool_node', 'delete_pool_node', 'edit_pool_member', 'onoff_pool_member', 'list_pool_stats', 'get_pool_stat', 'clear_pool_stats']),
         # 服务池参数
         name=dict(type='str', required=False),
         protocol=dict(type='int', required=False),
@@ -539,6 +823,8 @@ def main():
 
     if action == 'get_pools':
         adc_get_pools(module)
+    elif action == 'get_pools_withcommon':
+        get_pools_withcommon(module)
     elif action == 'get_pool':
         adc_get_pool(module)
     elif action == 'add_pool':
@@ -551,6 +837,16 @@ def main():
         adc_add_pool_node(module)
     elif action == 'delete_pool_node':
         adc_delete_pool_node(module)
+    elif action == 'edit_pool_member':
+        edit_pool_member(module)
+    elif action == 'onoff_pool_member':
+        onoff_pool_member(module)
+    elif action == 'list_pool_stats':
+        list_pool_stats(module)
+    elif action == 'get_pool_stat':
+        get_pool_stat(module)
+    elif action == 'clear_pool_stats':
+        clear_pool_stats(module)
 
 
 if __name__ == '__main__':

@@ -599,13 +599,235 @@ def adc_delete_node_port(module):
         module.fail_json(msg="未收到有效响应")
 
 
+
+def adc_node_onoff(module):
+    """节点启用/禁用"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+    enable = module.params['enable'] if 'enable' in module.params else True
+
+    if not name:
+        module.fail_json(msg="节点启用/禁用需要提供name参数")
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.onoff" % (ip, authkey)
+
+    request_data = {
+        "name": name,
+        "enable": 1 if enable else 0
+    }
+
+    post_data = json.dumps(request_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="节点启用/禁用失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "节点启用/禁用", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_node_port_onoff(module):
+    """节点端口启用/禁用"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+    port = module.params['port'] if 'port' in module.params else 0
+    enable = module.params['enable'] if 'enable' in module.params else True
+
+    if not name:
+        module.fail_json(msg="节点端口启用/禁用需要提供name参数")
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.onoff" % (ip, authkey)
+
+    request_data = {
+        "name": name,
+        "port": port,
+        "enable": 1 if enable else 0
+    }
+
+    post_data = json.dumps(request_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="节点端口启用/禁用失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "节点端口启用/禁用", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_node_stat_list(module):
+    """节点统计列表"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.stat.list" % (ip, authkey)
+
+    response_data = ""
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="节点统计列表获取失败: %s" % str(e))
+
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="节点统计列表获取失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, stats=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_node_stat_get(module):
+    """节点统计详情"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+
+    if not name:
+        module.fail_json(msg="获取节点统计详情需要提供name参数")
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.stat.get" % (ip, authkey)
+
+    request_data = {"name": name}
+    post_data = json.dumps(request_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="节点统计详情获取失败: %s" % str(e))
+
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="节点统计详情获取失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, stat=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_node_stat_clear(module):
+    """节点统计清除"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name'] if 'name' in module.params else ""
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.stat.clear" % (ip, authkey)
+
+    request_data = {}
+    if name:
+        request_data["name"] = name
+
+    post_data = json.dumps(request_data)
+    response_data = ""
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+    except Exception as e:
+        module.fail_json(msg="节点统计清除失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "节点统计清除", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
 def main():
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'get_nodes', 'list_nodes', 'get_node', 'add_node', 'edit_node', 'delete_node', 'add_node_port', 'edit_node_port', 'delete_node_port']),
+                    'get_nodes', 'list_nodes', 'get_node', 'add_node', 'edit_node', 'delete_node', 'add_node_port', 'edit_node_port', 'delete_node_port', 'node_onoff', 'node_port_onoff', 'node_stat_list', 'node_stat_get', 'node_stat_clear']),
         # add_node/edit_node参数
         tc_name=dict(type='str', required=False),
         graceful_time=dict(type='int', required=False),
@@ -680,6 +902,18 @@ def main():
         adc_edit_node_port(module)
     elif action == 'delete_node_port':
         adc_delete_node_port(module)
+    elif action == 'node_onoff':
+        adc_node_onoff(module)
+    elif action == 'node_port_onoff':
+        adc_node_port_onoff(module)
+    elif action == 'node_stat_list':
+        adc_node_stat_list(module)
+    elif action == 'node_stat_get':
+        adc_node_stat_get(module)
+    elif action == 'node_stat_clear':
+        adc_node_stat_clear(module)
+
+
 
 
 if __name__ == '__main__':

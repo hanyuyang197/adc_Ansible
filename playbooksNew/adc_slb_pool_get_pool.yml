@@ -1,5 +1,5 @@
 ---
-- name: 获取服务池详情
+- name: get pool
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,17 @@
       debug:
         var: login_result
 
-    - name: 执行 获取服务池详情
+    - name: 执行 get pool
       adc_slb_pool:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "get_pool"
-        # API action: slb.pool.list
-        # 以下为可选参数
+        # API action: slb.pool.get
+        name: "{{ name }}"  # TODO: 添加必要的参数
       register: result
       when: login_result is succeeded
 
-    - name: 显示 获取服务池详情 结果
+    - name: 显示 get pool 结果
       debug:
         var: result
       when: result is defined
