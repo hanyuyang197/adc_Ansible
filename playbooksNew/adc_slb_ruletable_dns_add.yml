@@ -17,12 +17,16 @@
         var: login_result
 
     - name: 执行 dns add
-      adc_slb_ruletable:
+      adc_slb_ruletable_dns:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "dns_add"
+        action: "add_dns"
         # API action: slb.ruletable.dns.add
-        # TODO: 添加必要的参数
+        name: "dns_rule_table"
+        dnss:
+          - domain: "www.example.com"
+            lid: 1
+            match_type: 0
       register: result
       when: login_result is succeeded
 

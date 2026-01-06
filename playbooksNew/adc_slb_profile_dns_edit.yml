@@ -1,5 +1,5 @@
 ---
-- name: dns edit
+- name: dns模板编辑
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,22 @@
       debug:
         var: login_result
 
-    - name: 执行 dns edit
-      adc_slb_profile:
+    - name: 执行 dns模板编辑
+      adc_slb_profile_dns:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "dns_edit"
+        action: "edit_profile"
         # API action: slb.profile.dns.edit
-        # TODO: 添加必要的参数
+        name: "dns_profile_1"
+        description: "更新后的DNS模板描述"
+        enabled: 1
+        drop_bad_req: 0
+        default_to_cache: 0
+        cache_size: 500
       register: result
       when: login_result is succeeded
 
-    - name: 显示 dns edit 结果
+    - name: 显示 dns模板编辑 结果
       debug:
         var: result
       when: result is defined

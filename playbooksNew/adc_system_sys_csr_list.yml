@@ -17,12 +17,11 @@
         var: login_result
 
     - name: 执行 csr list
-      adc_system_sys:
+      adc_system_sys_cert:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
         action: "csr_list"
         # API action: system.sys.csr.list
-        # TODO: 添加必要的参数
       register: result
       when: login_result is succeeded
 

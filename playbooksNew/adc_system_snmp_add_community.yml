@@ -1,9 +1,14 @@
 ---
-- name: add community
+- name: 添加SNMP团体字
   collections:
     - horizon.modules
   hosts: adc_servers
   gather_facts: no
+  
+  vars:
+    community: "public"
+    host: "192.168.1.100"
+  
   tasks:
     - name: 登录ADC设备
       adc_login:
@@ -16,17 +21,18 @@
       debug:
         var: login_result
 
-    - name: 执行 add community
+    - name: 执行 添加SNMP团体字
       adc_system_snmp:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_community"
-        # API action: N/A
-        # 以下为可选参数
+        # API action: snmp.comm.item.add
+        community: "{{ community }}"
+        host: "{{ host }}"
       register: result
       when: login_result is succeeded
 
-    - name: 显示 add community 结果
+    - name: 显示 添加SNMP团体字 结果
       debug:
         var: result
       when: result is defined

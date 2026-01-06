@@ -20,9 +20,11 @@
       adc_slb_ruletable:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "entry_del"
+        action: "delete_ruletable_entry"
         # API action: slb.ruletable.entry.del
-        # TODO: 添加必要的参数
+        name: "rule_table_name"
+        entrys:
+          - ip: "1.2.3.4/32"
       register: result
       when: login_result is succeeded
 

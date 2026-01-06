@@ -1,9 +1,10 @@
 ---
-- name: list communities
+- name: 获取SNMP团体字列表
   collections:
     - horizon.modules
   hosts: adc_servers
   gather_facts: no
+  
   tasks:
     - name: 登录ADC设备
       adc_login:
@@ -16,17 +17,16 @@
       debug:
         var: login_result
 
-    - name: 执行 list communities
+    - name: 执行 获取SNMP团体字列表
       adc_system_snmp:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "list_communities"
-        # API action: N/A
-        # 以下为可选参数
+        # API action: snmp.comm.item.list
       register: result
       when: login_result is succeeded
 
-    - name: 显示 list communities 结果
+    - name: 显示 获取SNMP团体字列表 结果
       debug:
         var: result
       when: result is defined

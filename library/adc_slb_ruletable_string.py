@@ -30,10 +30,10 @@ except ImportError:
 
 DOCUMENTATION = '''
 ---
-module: adc_slb_ruletable
-short_description: Manage ADC SLB Rule Tables
+module: adc_slb_ruletable_string
+short_description: Manage ADC SLB String Rule Tables
 description:
-    - Manage ADC SLB Rule Tables including add, list and get operations
+    - Manage ADC SLB String Rule Tables including add and delete operations
 version_added: "2.4"
 options:
     ip:
@@ -46,69 +46,42 @@ options:
         required: true
     action:
         description:
-            - The action to perform (list_ruletables, list_ruletables_withcommon, get_ruletable, add_ruletable, delete_ruletable, add_ruletable_entry, delete_ruletable_entry)
+            - The action to perform (add_string, delete_string)
         required: true
-        choices: ['list_ruletables', 'list_ruletables_withcommon', 'get_ruletable', 'add_ruletable', 'delete_ruletable', 'add_ruletable_entry', 'delete_ruletable_entry']
+        choices: ['add_string', 'delete_string']
     name:
         description:
             - The name of the rule table
-        required: false
-    entrys:
+        required: true
+    strings:
         description:
-            - Rule entries array
-        required: false
+            - String entries array
+        required: true
         type: list
 author:
     - Your Name
 '''
 
 EXAMPLES = '''
-# List all rule tables
-- adc_slb_ruletable:
+# Add string entries to rule table
+- adc_slb_ruletable_string:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
-    action: "list_ruletables"
+    action: "add_string"
+    name: "my_string_table"
+    strings:
+      - key: "test_key"
+        value: "test_value"
 
-# Get a specific rule table
-- adc_slb_ruletable:
+# Delete string entries from rule table
+- adc_slb_ruletable_string:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
-    action: "get_ruletable"
-    name: "my_ruletable"
-
-# Add a rule table
-- adc_slb_ruletable:
-    ip: "192.168.1.1"
-    authkey: "your_auth_key"
-    action: "add_ruletable"
-    name: "my_ruletable"
-
-# Delete a rule table
-- adc_slb_ruletable:
-    ip: "192.168.1.1"
-    authkey: "your_auth_key"
-    action: "delete_ruletable"
-    name: "my_ruletable"
-
-# Add rule table entries
-- adc_slb_ruletable:
-    ip: "192.168.1.1"
-    authkey: "your_auth_key"
-    action: "add_ruletable_entry"
-    name: "my_ruletable"
-    entrys:
-      - ip: "1.2.3.4/32"
-        id: 1
-        age: 0
-
-# Delete rule table entries
-- adc_slb_ruletable:
-    ip: "192.168.1.1"
-    authkey: "your_auth_key"
-    action: "delete_ruletable_entry"
-    name: "my_ruletable"
-    entrys:
-      - ip: "1.2.3.4/32"
+    action: "delete_string"
+    name: "my_string_table"
+    strings:
+      - key: "test_key"
+        value: "test_value"
 '''
 
 RETURN = '''
@@ -119,7 +92,7 @@ result:
 '''
 
 
-def send_request(url, data=None, method='GET'):
+def send_request(url, data=None, method='POST'):
     """Send HTTP request to ADC device"""
     response_data = None
     try:
@@ -180,117 +153,27 @@ def send_request(url, data=None, method='GET'):
         }
 
 
-def adc_list_ruletables(module):
-    """List all rule tables"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.list" % (
-        ip, authkey)
-    result = send_request(url)
-    return result
-
-
-def adc_list_ruletables_withcommon(module):
-    """List all rule tables including common partition"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.list.withcommon" % (
-        ip, authkey)
-    result = send_request(url)
-    return result
-
-
-def adc_get_ruletable(module):
-    """Get a specific rule table"""
+def adc_add_string_entries(module):
+    """Add string entries to a rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-
-    if not name:
-        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "获取规则表需要提供name参数"}
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.get" % (
-        ip, authkey)
-
-    data = {
-        "name": name
-    }
-
-    result = send_request(url, data, method='POST')
-    return result
-
-
-def adc_add_ruletable(module):
-    """Add a new rule table"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name']
+    strings = module.params['strings']
 
     # Check required parameters
     if not name:
-        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "添加规则表需要提供name参数"}
+        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "添加字符串规则表条目需要提供name参数"}
 
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.add" % (
+    if not strings:
+        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "添加字符串规则表条目需要提供strings参数"}
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.string.add" % (
         ip, authkey)
 
-    # Construct rule table data
-    ruletable_data = {
-        "ruletable": {
-            "name": name
-        }
-    }
-
-    # Send POST request
-    result = send_request(url, ruletable_data, method='POST')
-    return result
-
-
-def adc_delete_ruletable(module):
-    """Delete a rule table"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name']
-
-    # Check required parameters
-    if not name:
-        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "删除规则表需要提供name参数"}
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.del" % (
-        ip, authkey)
-
-    # Construct rule table data
-    ruletable_data = {
-        "name": name
-    }
-
-    # Send POST request
-    result = send_request(url, ruletable_data, method='POST')
-    return result
-
-
-def adc_add_ruletable_entry(module):
-    """Add entries to a rule table"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name']
-    entrys = module.params['entrys']
-
-    # Check required parameters
-    if not name:
-        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "添加规则表条目需要提供name参数"}
-
-    if not entrys:
-        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "添加规则表条目需要提供entrys参数"}
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.entry.add" % (
-        ip, authkey)
-
-    # Construct rule table entry data
+    # Construct rule table string data
     ruletable_data = {
         "name": name,
-        "entrys": entrys
+        "strings": strings
     }
 
     # Send POST request
@@ -298,27 +181,27 @@ def adc_add_ruletable_entry(module):
     return result
 
 
-def adc_delete_ruletable_entry(module):
-    """Delete entries from a rule table"""
+def adc_delete_string_entries(module):
+    """Delete string entries from a rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
-    entrys = module.params['entrys']
+    strings = module.params['strings']
 
     # Check required parameters
     if not name:
-        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "删除规则表条目需要提供name参数"}
+        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "删除字符串规则表条目需要提供name参数"}
 
-    if not entrys:
-        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "删除规则表条目需要提供entrys参数"}
+    if not strings:
+        return {'result': 'error', 'errcode': 'MISSING_PARAM', 'errmsg': "删除字符串规则表条目需要提供strings参数"}
 
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.entry.del" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ruletable.string.del" % (
         ip, authkey)
 
-    # Construct rule table entry data
+    # Construct rule table string data
     ruletable_data = {
         "name": name,
-        "entrys": entrys
+        "strings": strings
     }
 
     # Send POST request
@@ -331,32 +214,21 @@ def main():
         argument_spec=dict(
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True, no_log=True),
-    action=dict(type='str', required=True, choices=[
-        'list_ruletables', 'list_ruletables_withcommon', 'get_ruletable',
-        'add_ruletable', 'delete_ruletable', 'add_ruletable_entry', 'delete_ruletable_entry'
-    ]),
-            name=dict(type='str', required=False),
-            entrys=dict(type='list', required=False),
+            action=dict(type='str', required=True, choices=[
+                'add_string', 'delete_string'
+            ]),
+            name=dict(type='str', required=True),
+            strings=dict(type='list', required=True),
         ),
         supports_check_mode=False
     )
 
     action = module.params['action']
 
-    if action == 'list_ruletables':
-        result = adc_list_ruletables(module)
-    elif action == 'list_ruletables_withcommon':
-        result = adc_list_ruletables_withcommon(module)
-    elif action == 'get_ruletable':
-        result = adc_get_ruletable(module)
-    elif action == 'add_ruletable':
-        result = adc_add_ruletable(module)
-    elif action == 'delete_ruletable':
-        result = adc_delete_ruletable(module)
-    elif action == 'add_ruletable_entry':
-        result = adc_add_ruletable_entry(module)
-    elif action == 'delete_ruletable_entry':
-        result = adc_delete_ruletable_entry(module)
+    if action == 'add_string':
+        result = adc_add_string_entries(module)
+    elif action == 'delete_string':
+        result = adc_delete_string_entries(module)
     else:
         module.fail_json(msg="Unknown action: %s" % action)
 

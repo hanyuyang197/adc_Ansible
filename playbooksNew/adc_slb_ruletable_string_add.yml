@@ -17,12 +17,15 @@
         var: login_result
 
     - name: 执行 string add
-      adc_slb_ruletable:
+      adc_slb_ruletable_string:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "string_add"
+        action: "add_string"
         # API action: slb.ruletable.string.add
-        # TODO: 添加必要的参数
+        name: "string_rule_table"
+        strings:
+          - key: "test_key"
+            value: "test_value"
       register: result
       when: login_result is succeeded
 

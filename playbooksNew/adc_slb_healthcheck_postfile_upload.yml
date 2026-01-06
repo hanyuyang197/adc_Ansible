@@ -17,12 +17,13 @@
         var: login_result
 
     - name: 执行 postfile upload
-      adc_slb_healthcheck:
+      adc_slb_healthcheck_postfile:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "postfile_upload"
+        action: "healthcheck_postfile_upload"
         # API action: slb.healthcheck.postfile.upload
-        # TODO: 添加必要的参数
+        name: "postfile_name"  # 上传后的文件名
+        file_path: "/path/to/local/file.txt"  # 本地文件路径
       register: result
       when: login_result is succeeded
 

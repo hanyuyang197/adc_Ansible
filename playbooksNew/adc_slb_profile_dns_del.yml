@@ -1,5 +1,5 @@
 ---
-- name: dns del
+- name: dns模板删除
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,17 @@
       debug:
         var: login_result
 
-    - name: 执行 dns del
-      adc_slb_profile:
+    - name: 执行 dns模板删除
+      adc_slb_profile_dns:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "dns_del"
+        action: "delete_profile"
         # API action: slb.profile.dns.del
-        # TODO: 添加必要的参数
+        name: "dns_profile_1"
       register: result
       when: login_result is succeeded
 
-    - name: 显示 dns del 结果
+    - name: 显示 dns模板删除 结果
       debug:
         var: result
       when: result is defined

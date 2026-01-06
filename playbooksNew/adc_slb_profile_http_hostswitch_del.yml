@@ -1,5 +1,5 @@
 ---
-- name: dns get
+- name: http hostswitch del
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,34 @@
       debug:
         var: login_result
 
-    - name: 执行 dns get
-      adc_slb_profile_dns:
+    - name: 执行 http hostswitch del
+      adc_slb_profile_http_hostswitch:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "get_profile"
-        # API action: slb.profile.dns.get
-        name: "dns_profile_1"
+        action: "http_hostswitch_del"
+        # API action: slb.profile.http.hostswitch.del
+        name: "profile_http_1"
+        # host_class: [
+        #   {
+        #     "host": "adc",
+        #     "pool": "pool_tcp",
+        #     "type": 0
+        #   },
+        #   {
+        #     "host": "adc_1",
+        #     "pool": "pool_tcp",
+        #     "type": 1
+        #   },
+        #   {
+        #     "host": "adc_2",
+        #     "pool": "pool_tcp",
+        #     "type": 2
+        #   }
+        # ]
       register: result
       when: login_result is succeeded
 
-    - name: 显示 dns get 结果
+    - name: 显示 http hostswitch del 结果
       debug:
         var: result
       when: result is defined

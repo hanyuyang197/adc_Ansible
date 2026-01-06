@@ -1,5 +1,5 @@
 ---
-- name: dns get
+- name: 获取snmp V3视图列表
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -7,34 +7,34 @@
   tasks:
     - name: 登录ADC设备
       adc_login:
-        ip: "{ inventory_hostname }"
-        username: "{ adc_username }"
-        password: "{ adc_password }"
+        ip: "{{ inventory_hostname }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
       register: login_result
 
     - name: 显示登录结果
       debug:
         var: login_result
 
-    - name: 执行 dns get
-      adc_slb_profile_dns:
-        ip: "{ inventory_hostname }"
-        authkey: "{ login_result.authkey }"
-        action: "get_profile"
-        # API action: slb.profile.dns.get
-        name: "dns_profile_1"
+    - name: 执行 获取snmp V3视图列表
+      adc_system_snmp_v3:
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
+        action: "list_views"
+        # API action: snmp.server.v3.view.list
+        # 以下为可选参数
       register: result
       when: login_result is succeeded
 
-    - name: 显示 dns get 结果
+    - name: 显示 获取snmp V3视图列表 结果
       debug:
         var: result
       when: result is defined
 
     - name: 登出ADC设备
       adc_logout:
-        ip: "{ inventory_hostname }"
-        authkey: "{ login_result.authkey }"
+        ip: "{{ inventory_hostname }}"
+        authkey: "{{ login_result.authkey }}"
       register: logout_result
       when: login_result is succeeded
 

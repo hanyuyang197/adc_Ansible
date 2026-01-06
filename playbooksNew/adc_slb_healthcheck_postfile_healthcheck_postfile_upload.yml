@@ -22,7 +22,8 @@
         authkey: "{{ login_result.authkey }}"
         action: "healthcheck_postfile_upload"
         # API action: slb.healthcheck.postfile.upload
-        # 以下为可选参数
+        name: "{{ postfile_name }}"  # 上传后的文件名
+        file_path: "{{ local_file_path }}"  # 本地文件路径
       register: result
       when: login_result is succeeded
 

@@ -1,13 +1,12 @@
 ---
-- name: 删除SNMP团体字
+- name: 上传WAF规则文件
   collections:
     - horizon.modules
   hosts: adc_servers
   gather_facts: no
   
   vars:
-    community: "public"
-    host: "192.168.1.100"
+    file_path: "/path/to/waf_rule.rules"
   
   tasks:
     - name: 登录ADC设备
@@ -21,18 +20,17 @@
       debug:
         var: login_result
 
-    - name: 执行 删除SNMP团体字
-      adc_system_snmp:
+    - name: 执行 上传WAF规则文件
+      adc_waf_rule:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: "delete_community"
-        # API action: snmp.comm.item.del
-        community: "{{ community }}"
-        host: "{{ host }}"
+        action: "waf_rule_upload"
+        # API action: waf.rule.upload
+        file_path: "{{ file_path }}"
       register: result
       when: login_result is succeeded
 
-    - name: 显示 删除SNMP团体字 结果
+    - name: 显示 上传WAF规则文件 结果
       debug:
         var: result
       when: result is defined

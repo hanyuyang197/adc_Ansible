@@ -1,5 +1,5 @@
 ---
-- name: dns add
+- name: dns模板增加
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,24 @@
       debug:
         var: login_result
 
-    - name: 执行 dns add
-      adc_slb_profile:
+    - name: 执行 dns模板增加
+      adc_slb_profile_dns:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "dns_add"
+        action: "add_profile"
         # API action: slb.profile.dns.add
-        # TODO: 添加必要的参数
+        name: "dns_profile_1"
+        description: "DNS模板示例"
+        enabled: 1
+        drop_bad_req: 0
+        default_to_cache: 0
+        cache_size: 0
+        insert_client_ip: 0
+        netmask: 128
       register: result
       when: login_result is succeeded
 
-    - name: 显示 dns add 结果
+    - name: 显示 dns模板增加 结果
       debug:
         var: result
       when: result is defined
