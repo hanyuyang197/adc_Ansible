@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "set_hostname_ipv6"
-        # API action: N/A
+        # API action: system.host.ipv6.set
         # 以下为可选参数
       register: result
       when: login_result is succeeded

@@ -1,5 +1,5 @@
 ---
-- name: rtsp list
+- name: session clear
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,19 @@
       debug:
         var: login_result
 
-    - name: 执行 rtsp list
-      adc_slb_profile:
+    - name: 执行 session clear
+      adc_slb_stat:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "rtsp_list"
-        # API action: slb.profile.rtsp.list.withcomon
-        # TODO: 添加必要的参数
+        action: "session_clear"
+        # 可选参数
+        # session_type: "{ session_type }"
+        # va_name: "{ va_name }"
+        # API action: slb.session.clear
       register: result
       when: login_result is succeeded
 
-    - name: 显示 rtsp list 结果
+    - name: 显示 session clear 结果
       debug:
         var: result
       when: result is defined

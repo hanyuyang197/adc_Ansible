@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "list_profiles_withcommon"
-        # API action: N/A
+        # API action: slb.profile.rtsp.list.withcommon
         # 以下为可选参数
       register: result
       when: login_result is succeeded

@@ -1,5 +1,5 @@
 ---
-- name: smtp list
+- name: rtsp list with common
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,16 @@
       debug:
         var: login_result
 
-    - name: 执行 smtp list
-      adc_slb_profile:
+    - name: 执行 rtsp list with common
+      adc_slb_profile_rtsp:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "smtp_list"
-        # API action: slb.profile.smtp.list.withcomon
-        # TODO: 添加必要的参数
+        action: "list_profiles_withcommon"
+        # API action: slb.profile.rtsp.list.withcomon
       register: result
       when: login_result is succeeded
 
-    - name: 显示 smtp list 结果
+    - name: 显示 rtsp list with common 结果
       debug:
         var: result
       when: result is defined

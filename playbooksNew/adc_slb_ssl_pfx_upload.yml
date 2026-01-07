@@ -1,5 +1,5 @@
 ---
-- name: pfx upload
+- name: ssl pfx upload
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,19 @@
       debug:
         var: login_result
 
-    - name: 执行 pfx upload
-      adc_slb_ssl:
+    - name: 执行 ssl pfx upload
+      adc_slb_ssl_certificate:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
         action: "pfx_upload"
+        file_path: "{ ssl_pfx_file_path }"
+        pfx_name: "{ ssl_pfx_name }"
+        password: "{ ssl_pfx_password }"
         # API action: slb.ssl.pfx.upload
-        # TODO: 添加必要的参数
       register: result
       when: login_result is succeeded
 
-    - name: 显示 pfx upload 结果
+    - name: 显示 ssl pfx upload 结果
       debug:
         var: result
       when: result is defined

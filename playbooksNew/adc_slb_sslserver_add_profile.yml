@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_profile"
-        # API action: N/A
+        # API action: slb.sslserver.add
         # 以下为可选参数
       register: result
       when: login_result is succeeded

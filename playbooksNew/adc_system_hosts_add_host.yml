@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "add_host"
-        # API action: N/A
+        # API action: system.hosts.add
         # 以下为可选参数
       register: result
       when: login_result is succeeded

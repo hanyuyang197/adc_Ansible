@@ -485,9 +485,21 @@ def script_upload(module):
     authkey = module.params['authkey']
     script_name = module.params['script_name'] if 'script_name' in module.params else ""
     script_content = module.params['script_content'] if 'script_content' in module.params else ""
+    script_path = module.params.get('file_path')
 
+    # 检查必要参数
     if not script_name:
         module.fail_json(msg="上传脚本需要提供script_name参数")
+
+    # 优先使用文件路径读取脚本内容
+    if script_path and os.path.exists(script_path):
+        try:
+            with open(script_path, 'r', encoding='utf-8') as f:
+                script_content = f.read()
+        except Exception as e:
+            module.fail_json(msg="读取脚本文件失败: %s" % str(e))
+    elif not script_content:
+        module.fail_json(msg="上传脚本需要提供script_content参数或file_path参数")
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthcheck.script.upload" % (ip, authkey)
 

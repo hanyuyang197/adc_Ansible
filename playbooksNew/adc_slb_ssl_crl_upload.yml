@@ -1,5 +1,5 @@
 ---
-- name: crl upload
+- name: ssl crl upload
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,18 @@
       debug:
         var: login_result
 
-    - name: 执行 crl upload
-      adc_slb_ssl:
+    - name: 执行 ssl crl upload
+      adc_slb_ssl_certificate:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
         action: "crl_upload"
+        file_path: "{ ssl_crl_file_path }"
+        crl_name: "{ ssl_crl_name }"
         # API action: slb.ssl.crl.upload
-        # TODO: 添加必要的参数
       register: result
       when: login_result is succeeded
 
-    - name: 显示 crl upload 结果
+    - name: 显示 ssl crl upload 结果
       debug:
         var: result
       when: result is defined

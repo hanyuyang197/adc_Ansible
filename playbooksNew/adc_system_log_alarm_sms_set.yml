@@ -1,9 +1,16 @@
 ---
-- name: 清除SLB会话
+- name: 设置短信告警配置
   collections:
     - horizon.modules
   hosts: adc_servers
   gather_facts: no
+  
+  vars:
+    # 短信告警配置参数
+    url: "http://sms.example.com/api"
+    send_event: [1, 2, 3]
+    send_level: 1
+  
   tasks:
     - name: 登录ADC设备
       adc_login:
@@ -16,17 +23,20 @@
       debug:
         var: login_result
 
-    - name: 执行 清除SLB会话
-      adc_slb_stat:
+    - name: 执行 设置短信告警配置
+      adc_system_log_alarm:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: "clear_slb_session"
-        # API action: slb.session.clear
-        # 以下为可选参数
+        alarm_type: "sms"
+        action: "set"
+        # API action: log.alarm.sms.set
+        url: "{{ url }}"
+        send_event: "{{ send_event }}"
+        send_level: "{{ send_level }}"
       register: result
       when: login_result is succeeded
 
-    - name: 显示 清除SLB会话 结果
+    - name: 显示 设置短信告警配置 结果
       debug:
         var: result
       when: result is defined

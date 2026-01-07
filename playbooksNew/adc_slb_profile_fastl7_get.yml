@@ -21,8 +21,8 @@
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
         action: "fastl7_get"
+        name: "{ fastl7_profile_name }"
         # API action: slb.profile.fastl7.get
-        # TODO: 添加必要的参数
       register: result
       when: login_result is succeeded
 

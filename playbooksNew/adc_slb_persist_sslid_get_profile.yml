@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "get_profile"
-        # API action: N/A
+        # API action: slb.persist.sslid.get
         # 以下为可选参数
       register: result
       when: login_result is succeeded

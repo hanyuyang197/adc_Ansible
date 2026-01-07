@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "route_track"
-        # API action: N/A
+        # API action: vrrp.track.route.list
         # 以下为可选参数
       register: result
       when: login_result is succeeded

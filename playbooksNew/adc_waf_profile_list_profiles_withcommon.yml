@@ -1,5 +1,5 @@
 ---
-- name: execute
+- name: list profiles withcommon
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,17 @@
       debug:
         var: login_result
 
-    - name: 执行 execute
-      adc_log_service:
+    - name: 执行 list profiles withcommon
+      adc_waf_profile:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: "execute"
-        # API action: log.service.clear
+        action: "list_profiles_withcommon"
+        # API action: waf.profile.list.withcommon
         # 以下为可选参数
       register: result
       when: login_result is succeeded
 
-    - name: 显示 execute 结果
+    - name: 显示 list profiles withcommon 结果
       debug:
         var: result
       when: result is defined

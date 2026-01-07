@@ -1,44 +1,46 @@
 ---
-- name: certificate upload
+- name: 上传SSL证书文件
+  hosts: localhost
+  gather_facts: false
   collections:
     - horizon.modules
-  hosts: adc_servers
-  gather_facts: no
+  
   tasks:
-    - name: 登录ADC设备
-      adc_login:
-        ip: "{ inventory_hostname }"
-        username: "{ adc_username }"
-        password: "{ adc_password }"
+    - name: 登录ADC设备获取认证密钥
+      hadc_slb_login:
+        ip: "{{ adc_ip }}"
+        username: "{{ adc_username }}"
+        password: "{{ adc_password }}"
       register: login_result
-
-    - name: 显示登录结果
-      debug:
-        var: login_result
-
-    - name: 执行 certificate upload
-      adc_slb_ssl:
-        ip: "{ inventory_hostname }"
-        authkey: "{ login_result.authkey }"
-        action: "certificate_upload"
+      
+    - name: 上传SSL证书文件
+      hadc_slb_ssl_certificate:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ login_result.authkey }}"
+        action: upload
+        file_path: "{{ certificate_file_path }}"
+        cert_name: "{{ certificate_name | default(omit) }}"
         # API action: slb.ssl.certificate.upload
-        # TODO: 添加必要的参数
-      register: result
-      when: login_result is succeeded
-
-    - name: 显示 certificate upload 结果
+      register: upload_result
+      
+    - name: 显示上传结果
       debug:
-        var: result
-      when: result is defined
-
+        msg: "SSL证书上传结果: {{ upload_result }}"
+      
     - name: 登出ADC设备
-      adc_logout:
-        ip: "{ inventory_hostname }"
-        authkey: "{ login_result.authkey }"
-      register: logout_result
-      when: login_result is succeeded
+      hadc_slb_logout:
+        ip: "{{ adc_ip }}"
+        authkey: "{{ login_result.authkey }}"
+        
+  vars:
+    adc_ip: "192.168.70.73"
+    adc_username: "admin"
+    adc_password: "admin"
+    certificate_file_path: "/path/to/your/certificate.crt"
+    certificate_name: "my_certificate"
 
-    - name: 显示登出结果
-      debug:
-        var: logout_result
-      when: logout_result is defined
+# 使用说明:
+# 1. 修改adc_ip、adc_username、adc_password为实际的ADC设备信息
+# 2. 设置certificate_file_path为要上传的证书文件路径
+# 3. certificate_name为可选参数，用于指定证书在ADC中的名称
+# 4. 运行命令: ansible-playbook playbooksNew/adc_slb_ssl_certificate_upload.yml

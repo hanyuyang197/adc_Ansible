@@ -17,11 +17,11 @@
         var: login_result
 
     - name: 执行 enckey cfca
-      adc_slb_ssl:
+      adc_slb_ssl_enckey_cfca_upload:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "enckey_cfca"
-        # API action: slb.ssl.enckey.cfca.upload&sign_file_name=SM_test_sign.key&sign_file_password=
+        action: "upload"
+        # API action: slb.ssl.enckey.cfca.upload
         # TODO: 添加必要的参数
       register: result
       when: login_result is succeeded

@@ -1,9 +1,17 @@
 ---
-- name: get profile
+- name: 设置邮件告警配置
   collections:
     - horizon.modules
   hosts: adc_servers
   gather_facts: no
+  
+  vars:
+    # 邮件告警配置参数
+    delay_send_buff: 100
+    delay_send_time: 60
+    send_event: [1, 2, 3]
+    send_level: 1
+  
   tasks:
     - name: 登录ADC设备
       adc_login:
@@ -16,17 +24,21 @@
       debug:
         var: login_result
 
-    - name: 执行 get profile
-      adc_slb_profile_rtsp:
+    - name: 执行 设置邮件告警配置
+      adc_system_log_alarm:
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
-        action: "get_profile"
-        # API action: slb.profile.rtsp.get
-        # 以下为可选参数
+        alarm_type: "email"
+        action: "set"
+        # API action: log.alarm.email.set
+        delay_send_buff: "{{ delay_send_buff }}"
+        delay_send_time: "{{ delay_send_time }}"
+        send_event: "{{ send_event }}"
+        send_level: "{{ send_level }}"
       register: result
       when: login_result is succeeded
 
-    - name: 显示 get profile 结果
+    - name: 显示 设置邮件告警配置 结果
       debug:
         var: result
       when: result is defined

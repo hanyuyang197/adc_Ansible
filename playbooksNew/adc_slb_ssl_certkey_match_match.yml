@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "match"
-        # API action: N/A
+        # API action: slb.ssl.certkey.match
         # 以下为可选参数
       register: result
       when: login_result is succeeded

@@ -324,14 +324,83 @@ def adc_va_stat_list(module):
         module.fail_json(msg="获取虚拟应用统计列表失败: %s" % str(e))
 
 
+def adc_session_clear(module):
+    """清除SLB会话"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    
+    # 可选参数：可以指定特定的会话类型或范围
+    session_type = module.params.get('session_type')
+    va_name = module.params.get('va_name')
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.session.clear" % (ip, authkey)
+
+    # 构造请求数据
+    session_data = {
+        "ip": ip,
+        "authkey": authkey
+    }
+
+    # 添加可选参数
+    if session_type:
+        session_data['session_type'] = session_type
+    if va_name:
+        session_data['va_name'] = va_name
+
+    # 转换为JSON格式
+    post_data = json.dumps(session_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, data=post_data.encode('utf-8'), method='POST')
+            req.add_header('Content-Type', 'application/json')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data)
+            req.add_header('Content-Type', 'application/json')
+            req.get_method = lambda: 'POST'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 使用通用响应解析函数
+        if response_data:
+            success, result_dict = format_adc_response_for_ansible(
+                response_data, "清除SLB会话", True)
+            if success:
+                module.exit_json(**result_dict)
+            else:
+                module.fail_json(**result_dict)
+        else:
+            module.fail_json(msg="未收到有效响应")
+
+    except Exception as e:
+        module.fail_json(msg="清除SLB会话请求失败: %s" % str(e))
+
+
 def main():
     """主函数"""
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True),
-        name=dict(type='str', required=False)
+        action=dict(type='str', required=True, choices=[
+            'node_stat_list', 'node_stat_get', 'node_stat_clear',
+            'pool_stat_list', 'pool_stat_clear', 'va_stat_list',
+            'session_clear'
+        ]),
+        name=dict(type='str', required=False),
+        session_type=dict(type='str', required=False),
+        va_name=dict(type='str', required=False)
     )
 
     # 创建模块
@@ -355,6 +424,8 @@ def main():
         adc_pool_stat_clear(module)
     elif action == 'va_stat_list':
         adc_va_stat_list(module)
+    elif action == 'session_clear':
+        adc_session_clear(module)
     else:
         module.fail_json(msg="不支持的action: " + str(action))
 

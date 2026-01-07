@@ -21,8 +21,9 @@
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
         action: "fastl6_edit"
+        name: "{ fastl6_profile_name }"
+        # 添加其他编辑参数
         # API action: slb.profile.fastl6.edit
-        # TODO: 添加必要的参数
       register: result
       when: login_result is succeeded
 

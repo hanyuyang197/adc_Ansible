@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "heartbeat_trunk"
-        # API action: N/A
+        # API action: vrrp.heart_trunk.list
         # 以下为可选参数
       register: result
       when: login_result is succeeded

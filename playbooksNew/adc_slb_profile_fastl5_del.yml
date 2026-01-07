@@ -1,5 +1,5 @@
 ---
-- name: fastl5 del
+- name: fastl5 delete
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,17 +16,17 @@
       debug:
         var: login_result
 
-    - name: 执行 fastl5 del
+    - name: 执行 fastl5 delete
       adc_slb_profile:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
         action: "fastl5_del"
+        name: "{ fastl5_profile_name }"
         # API action: slb.profile.fastl5.del
-        # TODO: 添加必要的参数
       register: result
       when: login_result is succeeded
 
-    - name: 显示 fastl5 del 结果
+    - name: 显示 fastl5 delete 结果
       debug:
         var: result
       when: result is defined

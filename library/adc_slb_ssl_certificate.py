@@ -73,7 +73,7 @@ def adc_slb_ssl_certificate_upload(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     file_path = module.params['file_path']
-    cert_name = module.params['cert_name']
+    cert_name = module.params.get('cert_name')
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
@@ -98,8 +98,8 @@ def adc_slb_ssl_certificate_upload(module):
 
     body, boundary = create_form_data(fields, files)
 
-    # 构造请求URL
-    url = "http://%s/adcapi/v2.0/" % ip
+    # 构造请求URL - 添加正确的action参数
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.certificate.upload" % (ip, authkey)
 
     try:
         # 根据Python版本处理请求
@@ -325,15 +325,213 @@ def adc_slb_ssl_certificate_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def adc_slb_ssl_key_upload(module):
+    """上传SSL私钥文件"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    file_path = module.params['file_path']
+    key_name = module.params.get('key_name')
+
+    # 检查文件是否存在
+    if not os.path.exists(file_path):
+        module.fail_json(msg="私钥文件不存在: %s" % file_path)
+
+    # 读取文件内容
+    with open(file_path, 'rb') as f:
+        file_content = f.read().decode('utf-8')
+
+    # 构造表单数据
+    fields = {
+        'authkey': authkey
+    }
+
+    files = {
+        'file': {
+            'filename': os.path.basename(file_path) if not key_name else key_name,
+            'content': file_content,
+            'content_type': 'application/x-pem-key'
+        }
+    }
+
+    body, boundary = create_form_data(fields, files)
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?action=slb.ssl.key.upload" % ip
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            req = urllib_request.Request(url, data=body.encode('utf-8'))
+            req.add_header(
+                'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            req = urllib_request.Request(url, data=body)
+            req.add_header(
+                'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="上传SSL私钥失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "上传SSL私钥", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_slb_ssl_crl_upload(module):
+    """上传SSL CRL文件"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    file_path = module.params['file_path']
+    crl_name = module.params.get('crl_name')
+
+    # 检查文件是否存在
+    if not os.path.exists(file_path):
+        module.fail_json(msg="CRL文件不存在: %s" % file_path)
+
+    # 读取文件内容
+    with open(file_path, 'rb') as f:
+        file_content = f.read().decode('utf-8')
+
+    # 构造表单数据
+    fields = {
+        'authkey': authkey
+    }
+
+    files = {
+        'file': {
+            'filename': os.path.basename(file_path) if not crl_name else crl_name,
+            'content': file_content,
+            'content_type': 'application/x-pkcs7-crl'
+        }
+    }
+
+    body, boundary = create_form_data(fields, files)
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?action=slb.ssl.crl.upload" % ip
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            req = urllib_request.Request(url, data=body.encode('utf-8'))
+            req.add_header(
+                'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            req = urllib_request.Request(url, data=body)
+            req.add_header(
+                'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="上传SSL CRL失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "上传SSL CRL", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_slb_ssl_pfx_upload(module):
+    """上传SSL PFX文件"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    file_path = module.params['file_path']
+    pfx_name = module.params.get('pfx_name')
+    password = module.params.get('password')
+
+    # 检查文件是否存在
+    if not os.path.exists(file_path):
+        module.fail_json(msg="PFX文件不存在: %s" % file_path)
+
+    # 读取文件内容
+    with open(file_path, 'rb') as f:
+        file_content = f.read().decode('utf-8')
+
+    # 构造表单数据
+    fields = {
+        'authkey': authkey
+    }
+    
+    # 如果有密码，添加到字段中
+    if password:
+        fields['password'] = password
+
+    files = {
+        'file': {
+            'filename': os.path.basename(file_path) if not pfx_name else pfx_name,
+            'content': file_content,
+            'content_type': 'application/x-pkcs12'
+        }
+    }
+
+    body, boundary = create_form_data(fields, files)
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?action=slb.ssl.pfx.upload" % ip
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            req = urllib_request.Request(url, data=body.encode('utf-8'))
+            req.add_header(
+                'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            req = urllib_request.Request(url, data=body)
+            req.add_header(
+                'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="上传SSL PFX失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "上传SSL PFX", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
 def main():
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'upload', 'add', 'list', 'list_withcommon', 'del']),
+                    'upload', 'add', 'list', 'list_withcommon', 'del',
+                    'key_upload', 'crl_upload', 'pfx_upload']),
         name=dict(type='str', required=False),
         cert_name=dict(type='str', required=False),
+        key_name=dict(type='str', required=False),
+        crl_name=dict(type='str', required=False),
+        pfx_name=dict(type='str', required=False),
         file_path=dict(type='str', required=False),
         common_name=dict(type='str', required=False),
         type=dict(type='int', required=False),
@@ -375,6 +573,12 @@ def main():
         adc_slb_ssl_certificate_list_withcommon(module)
     elif module.params['action'] == 'del':
         adc_slb_ssl_certificate_del(module)
+    elif module.params['action'] == 'key_upload':
+        adc_slb_ssl_key_upload(module)
+    elif module.params['action'] == 'crl_upload':
+        adc_slb_ssl_crl_upload(module)
+    elif module.params['action'] == 'pfx_upload':
+        adc_slb_ssl_pfx_upload(module)
 
 
 if __name__ == '__main__':

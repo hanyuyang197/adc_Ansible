@@ -21,6 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "download"
+        log_type: "service"
         # 以下为可选参数
       register: result
       when: login_result is succeeded

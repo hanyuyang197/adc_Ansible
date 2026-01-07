@@ -1,5 +1,5 @@
 ---
-- name: 分区中获取common分区和自己分区的dns模板列表
+- name: dns list with common
   collections:
     - horizon.modules
   hosts: adc_servers
@@ -16,16 +16,16 @@
       debug:
         var: login_result
 
-    - name: 执行 分区中获取common分区和自己分区的dns模板列表
-      adc_slb_profile_dns:
+    - name: 执行 dns list with common
+      adc_slb_profile:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
-        action: "list_profiles_withcommon"
+        action: "dns_list_withcomon"
         # API action: slb.profile.dns.list.withcomon
       register: result
       when: login_result is succeeded
 
-    - name: 显示 分区中获取common分区和自己分区的dns模板列表 结果
+    - name: 显示 dns list with common 结果
       debug:
         var: result
       when: result is defined

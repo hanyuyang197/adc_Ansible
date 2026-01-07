@@ -243,6 +243,17 @@ def adc_list_waf_profiles(module):
     return result
 
 
+def adc_list_waf_profiles_withcommon(module):
+    """List all WAF profiles with common partitions"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=waf.profile.list.withcommon" % (
+        ip, authkey)
+    result = send_request(url)
+    return result
+
+
 def adc_get_waf_profile(module):
     """Get a specific WAF profile"""
     ip = module.params['ip']
@@ -391,7 +402,7 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
-                'add_profile', 'list_profiles', 'get_profile', 'edit_profile', 'delete_profile'
+                'add_profile', 'list_profiles', 'list_profiles_withcommon', 'get_profile', 'edit_profile', 'delete_profile'
             ]),
             name=dict(type='str', required=False),
             rule_name=dict(type='str', required=False),
@@ -416,6 +427,8 @@ def main():
 
     if action == 'list_profiles':
         result = adc_list_waf_profiles(module)
+    elif action == 'list_profiles_withcommon':
+        result = adc_list_waf_profiles_withcommon(module)
     elif action == 'get_profile':
         result = adc_get_waf_profile(module)
     elif action == 'add_profile':

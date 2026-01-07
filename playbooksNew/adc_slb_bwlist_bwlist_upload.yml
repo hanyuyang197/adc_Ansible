@@ -21,7 +21,7 @@
         ip: "{{ inventory_hostname }}"
         authkey: "{{ login_result.authkey }}"
         action: "bwlist_upload"
-        # API action: slb.bwlist.upload&name=%s
+        # API action: slb.bwlist.upload
         # 以下为可选参数
       register: result
       when: login_result is succeeded
