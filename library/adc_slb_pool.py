@@ -656,128 +656,7 @@ def onoff_pool_member(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def list_pool_stats(module):
-    """获取服务池统计列表"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
 
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.stat.list" % (ip, authkey)
-
-    response_data = ""
-    try:
-        if sys.version_info[0] >= 3:
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
-            response = urllib_request.urlopen(req)
-            response_data = response.read().decode('utf-8')
-        else:
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
-            req.get_method = lambda: 'GET'
-            response = urllib_request.urlopen(req)
-            response_data = response.read()
-    except Exception as e:
-        module.fail_json(msg="获取服务池统计列表失败: %s" % str(e))
-
-    if response_data:
-        try:
-            parsed_data = json.loads(response_data)
-            if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取服务池统计列表失败", response=parsed_data)
-            else:
-                module.exit_json(changed=False, stats=parsed_data)
-        except Exception as e:
-            module.fail_json(msg="解析响应失败: %s" % str(e))
-    else:
-        module.fail_json(msg="未收到有效响应")
-
-
-def get_pool_stat(module):
-    """获取服务池统计详情"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
-
-    if not name:
-        module.fail_json(msg="获取服务池统计详情需要提供name参数")
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.stat.get" % (ip, authkey)
-
-    request_data = {"name": name}
-    post_data = json.dumps(request_data)
-
-    response_data = ""
-    try:
-        if sys.version_info[0] >= 3:
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read().decode('utf-8')
-        else:
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read()
-    except Exception as e:
-        module.fail_json(msg="获取服务池统计详情失败: %s" % str(e))
-
-    if response_data:
-        try:
-            parsed_data = json.loads(response_data)
-            if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取服务池统计详情失败", response=parsed_data)
-            else:
-                module.exit_json(changed=False, stat=parsed_data)
-        except Exception as e:
-            module.fail_json(msg="解析响应失败: %s" % str(e))
-    else:
-        module.fail_json(msg="未收到有效响应")
-
-
-def clear_pool_stats(module):
-    """清除服务池统计"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.stat.clear" % (ip, authkey)
-
-    request_data = {}
-    if name:
-        request_data["name"] = name
-
-    post_data = json.dumps(request_data)
-    response_data = ""
-
-    try:
-        if sys.version_info[0] >= 3:
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read().decode('utf-8')
-        else:
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read()
-    except Exception as e:
-        module.fail_json(msg("清除服务池统计失败: %s" % str(e)))
-
-    if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "清除服务池统计", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
-    else:
-        module.fail_json(msg="未收到有效响应")
 
 def main():
     # 定义模块参数
@@ -785,7 +664,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'get_pools', 'get_pools_withcommon', 'get_pool', 'add_pool', 'edit_pool', 'delete_pool', 'add_pool_node', 'delete_pool_node', 'edit_pool_member', 'onoff_pool_member', 'list_pool_stats', 'get_pool_stat', 'clear_pool_stats']),
+                    'get_pools', 'get_pools_withcommon', 'get_pool', 'add_pool', 'edit_pool', 'delete_pool', 'add_pool_node', 'delete_pool_node', 'edit_pool_member', 'onoff_pool_member']),
         # 服务池参数
         name=dict(type='str', required=False),
         protocol=dict(type='int', required=False),
@@ -841,12 +720,7 @@ def main():
         edit_pool_member(module)
     elif action == 'onoff_pool_member':
         onoff_pool_member(module)
-    elif action == 'list_pool_stats':
-        list_pool_stats(module)
-    elif action == 'get_pool_stat':
-        get_pool_stat(module)
-    elif action == 'clear_pool_stats':
-        clear_pool_stats(module)
+
 
 
 if __name__ == '__main__':
