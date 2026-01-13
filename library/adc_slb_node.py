@@ -23,52 +23,6 @@ import sys
 
 # ADC API响应解析函数
 
-
-def adc_get_nodes(module):
-    """获取节点列表"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=get_nodes" % (ip, authkey)
-
-    # 初始化响应数据
-    response_data = ""
-
-    try:
-        # 根据Python版本处理请求
-        if sys.version_info[0] >= 3:
-            # Python 3
-            import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
-            response = urllib_request.urlopen(req)
-            response_data = response.read().decode('utf-8')
-        else:
-            # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url)
-            req.get_method = lambda: 'GET'
-            response = urllib_request.urlopen(req)
-            response_data = response.read()
-
-    except Exception as e:
-        module.fail_json(msg="获取节点列表失败: %s" % str(e))
-
-    # 对于获取列表操作，直接返回响应数据，不判断success
-    if response_data:
-        try:
-            parsed_data = json.loads(response_data)
-            # 检查是否有错误信息
-            if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取节点列表失败", response=parsed_data)
-            else:
-                module.exit_json(changed=False, nodes=parsed_data)
-        except Exception as e:
-            module.fail_json(msg="解析响应失败: %s" % str(e))
-    else:
-        module.fail_json(msg="未收到有效响应")
-
-
 def adc_list_nodes(module):
     """获取节点列表 (slb.node.list)"""
     ip = module.params['ip']
@@ -258,37 +212,28 @@ def adc_edit_node(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.edit" % (
         ip, authkey)
 
-    # 构造节点数据
+    # 构造节点数据 - 使用与add_node相同的参数处理方式
     node_data = {
-        "node": {
-            "name": name,
-            "tc_name": module.params['tc_name'] if 'tc_name' in module.params else "",
-            "graceful_time": module.params['graceful_time'] if 'graceful_time' in module.params else 0,
-            "graceful_delete": module.params['graceful_delete'] if 'graceful_delete' in module.params else 0,
-            "graceful_disable": module.params['graceful_disable'] if 'graceful_disable' in module.params else 0,
-            "graceful_persist": module.params['graceful_persist'] if 'graceful_persist' in module.params else 0,
-            "host": module.params['host'] if 'host' in module.params else "",
-            "domain_ip_version": module.params['domain_ip_version'] if 'domain_ip_version' in module.params else 0,
-            "weight": module.params['weight'] if 'weight' in module.params else 1,
-            "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
-            "upnum": module.params['upnum'] if 'upnum' in module.params else 0,
-            "status": module.params['status'] if 'status' in module.params else 1,
-            "conn_limit": module.params['conn_limit'] if 'conn_limit' in module.params else 0,
-            "template": module.params['template'] if 'template' in module.params else "",
-            "conn_rate_limit": module.params['conn_rate_limit'] if 'conn_rate_limit' in module.params else 0,
-            "cl_log": module.params['cl_log'] if 'cl_log' in module.params else "0",
-            "desc_rserver": module.params['desc_rserver'] if 'desc_rserver' in module.params else "",
-            "slow_start_type": module.params['slow_start_type'] if 'slow_start_type' in module.params else 0,
-            "slow_start_recover": module.params['slow_start_recover'] if 'slow_start_recover' in module.params else 15,
-            "slow_start_rate": module.params['slow_start_rate'] if 'slow_start_rate' in module.params else 0,
-            "slow_start_from": module.params['slow_start_from'] if 'slow_start_from' in module.params else 128,
-            "slow_start_step": module.params['slow_start_step'] if 'slow_start_step' in module.params else 2,
-            "slow_start_interval": module.params['slow_start_interval'] if 'slow_start_interval' in module.params else 10,
-            "slow_start_interval_num": module.params['slow_start_interval_num'] if 'slow_start_interval_num' in module.params else 6,
-            "slow_start_tail": module.params['slow_start_tail'] if 'slow_start_tail' in module.params else 4096,
-            "request_rate_limit": module.params['request_rate_limit'] if 'request_rate_limit' in module.params else 0
-        }
+        "node": {}
     }
+
+    # 定义可选参数列表（与add_node保持一致）
+    optional_params = [
+        'tc_name', 'graceful_time', 'graceful_delete', 'graceful_disable', 'graceful_persist',
+        'host', 'domain_ip_version', 'weight', 'healthcheck', 'upnum', 'status',
+        'conn_limit', 'template', 'conn_rate_limit', 'cl_log', 'desc_rserver',
+        'slow_start_type', 'slow_start_recover', 'slow_start_rate', 'slow_start_from',
+        'slow_start_step', 'slow_start_interval', 'slow_start_interval_num', 'slow_start_tail',
+        'request_rate_limit', 'ports'
+    ]
+
+    # 添加name参数（必需）
+    node_data['node']['name'] = name
+
+    # 添加可选参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            node_data['node'][param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(node_data)
@@ -605,16 +550,21 @@ def adc_node_onoff(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
-    enable = module.params['enable'] if 'enable' in module.params else True
+    host = module.params['host'] if 'host' in module.params else ""
+    status = module.params['status'] if 'status' in module.params else 1
 
     if not name:
         module.fail_json(msg="节点启用/禁用需要提供name参数")
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.onoff" % (ip, authkey)
 
+    # 按照API文档格式构造请求数据
     request_data = {
-        "name": name,
-        "enable": 1 if enable else 0
+        "node": {
+            "name": name,
+            "host": host,
+            "status": status
+        }
     }
 
     post_data = json.dumps(request_data)
@@ -653,18 +603,23 @@ def adc_node_port_onoff(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
-    port = module.params['port'] if 'port' in module.params else 0
-    enable = module.params['enable'] if 'enable' in module.params else True
+    port_number = module.params['port'] if 'port' in module.params else 0
+    protocol = module.params['port_protocol'] if 'port_protocol' in module.params else 0
+    status = module.params['port_status'] if 'port_status' in module.params else 1
 
     if not name:
         module.fail_json(msg="节点端口启用/禁用需要提供name参数")
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.onoff" % (ip, authkey)
 
+    # 按照API文档格式构造请求数据
     request_data = {
         "name": name,
-        "port": port,
-        "enable": 1 if enable else 0
+        "port": {
+            "port_number": port_number,
+            "protocol": protocol,
+            "status": status
+        }
     }
 
     post_data = json.dumps(request_data)
@@ -705,8 +660,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=[
-                    'get_nodes', 'list_nodes', 'get_node', 'add_node', 'edit_node', 'delete_node', 'add_node_port', 'edit_node_port', 'delete_node_port', 'node_onoff', 'node_port_onoff']),
+        action=dict(type='str', required=True, choices=['list_nodes', 'get_node', 'add_node', 'edit_node', 'delete_node', 'add_node_port', 'edit_node_port', 'delete_node_port', 'node_onoff', 'node_port_onoff']),
         # add_node/edit_node参数
         tc_name=dict(type='str', required=False),
         graceful_time=dict(type='int', required=False),
@@ -748,7 +702,11 @@ def main():
         port_phm_profile=dict(type='str', required=False),
         port_healthcheck=dict(type='str', required=False),
         port_upnum=dict(type='int', required=False),
-        port_nat_strategy=dict(type='str', required=False)
+        port_nat_strategy=dict(type='str', required=False),
+        # node_onoff参数
+        enable=dict(type='bool', required=False),
+        # node_port_onoff参数
+        port=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -763,8 +721,6 @@ def main():
     if hasattr(action, '__str__'):
         action = str(action)
 
-    if action == 'get_nodes':
-        adc_get_nodes(module)
     elif action == 'list_nodes':
         adc_list_nodes(module)
     elif action == 'get_node':

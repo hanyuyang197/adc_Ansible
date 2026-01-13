@@ -431,7 +431,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        module_action=dict(type='str', required=True, choices=[
+        action=dict(type='str', required=True, choices=[
             'list_acls', 'get_acl', 'add_acl_item', 'edit_acl_item', 'delete_acl_item', 'set_acl_description']),
         # ACL参数
         name=dict(type='str', required=False),
@@ -463,20 +463,20 @@ def main():
         supports_check_mode=False
     )
 
-    # 根据module_action执行相应操作
-    module_action = module.params['module_action']
+    # 根据action执行相应操作
+    action = module.params['action']
 
-    if module_action == 'list_acls':
+    if action == 'list_acls':
         adc_list_acls(module)
-    elif module_action == 'get_acl':
+    elif action == 'get_acl':
         adc_get_acl(module)
-    elif module_action == 'add_acl_item':
+    elif action == 'add_acl_item':
         adc_add_acl_item(module)
-    elif module_action == 'edit_acl_item':
+    elif action == 'edit_acl_item':
         adc_edit_acl_item(module)
-    elif module_action == 'delete_acl_item':
+    elif action == 'delete_acl_item':
         adc_delete_acl_item(module)
-    elif module_action == 'set_acl_description':
+    elif action == 'set_acl_description':
         adc_set_acl_description(module)
 
 

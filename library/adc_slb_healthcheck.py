@@ -137,86 +137,28 @@ def adc_add_healthcheck(module):
     """添加健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    hc_type = module.params['hc_type'] if 'hc_type' in module.params else "icmp"
-
-    # 检查必需参数
-    if 'name' not in module.params or not module.params['name']:
-        module.fail_json(msg="添加健康检查需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthcheck.add" % (
         ip, authkey)
 
-    # 构造健康检查数据 - 包含所有通用参数
-    hc_data = {
-        "name": module.params['name'],
-        "type": hc_type,
-        "retry": module.params['retry'] if 'retry' in module.params and module.params['retry'] is not None else 3,
-        "interval": module.params['interval'] if 'interval' in module.params and module.params['interval'] is not None else 5,
-        "timeout": module.params['timeout'] if 'timeout' in module.params and module.params['timeout'] is not None else 5,
-        "up_check_cnt": module.params['up_check_cnt'] if 'up_check_cnt' in module.params and module.params['up_check_cnt'] is not None else 1,
-        "wait_all_retry": module.params['wait_all_retry'] if 'wait_all_retry' in module.params and module.params['wait_all_retry'] is not None else 0
-    }
+    # 构造健康检查数据 - 只包含在YAML中明确定义的参数
+    hc_data = {}
 
-    # 只有当参数在YAML中明确定义时才添加到请求中
-    if 'description' in module.params and module.params['description']:
-        hc_data['description'] = module.params['description']
-    if 'auto_disable' in module.params and module.params['auto_disable'] is not None:
-        hc_data['auto_disable'] = module.params['auto_disable']
-    if 'alias_ipv4_src' in module.params and module.params['alias_ipv4_src']:
-        hc_data['alias_ipv4_src'] = module.params['alias_ipv4_src']
-    if 'alias_ipv6_src' in module.params and module.params['alias_ipv6_src']:
-        hc_data['alias_ipv6_src'] = module.params['alias_ipv6_src']
-    if 'interface' in module.params and module.params['interface']:
-        hc_data['interface'] = module.params['interface']
-    if 'alias_ipv4' in module.params and module.params['alias_ipv4']:
-        hc_data['alias_ipv4'] = module.params['alias_ipv4']
-    if 'alias_ipv6' in module.params and module.params['alias_ipv6']:
-        hc_data['alias_ipv6'] = module.params['alias_ipv6']
-    if 'alias_port' in module.params and module.params['alias_port'] is not None:
-        hc_data['alias_port'] = module.params['alias_port']
-    if 'port' in module.params and module.params['port'] is not None:
-        hc_data['port'] = module.params['port']
-    if 'http_version' in module.params and module.params['http_version']:
-        hc_data['http_version'] = module.params['http_version']
+    # 定义可选参数列表
+    optional_params = [
+        'name', 'type', 'retry', 'interval', 'timeout', 'up_check_cnt', 'wait_all_retry',
+        'description', 'auto_disable', 'alias_ipv4_src', 'alias_ipv6_src', 'interface',
+        'alias_ipv4', 'alias_ipv6', 'alias_port', 'port', 'http_version',
+        'mode', 'icmp_alias_addr', 'host', 'url', 'post_data', 'post_file',
+        'username', 'password', 'code', 'pattern', 'pattern_disable_str',
+        'server_fail_code', 'trans_mode', 'sslver', 'combo'
+    ]
 
-    # 根据健康检查类型添加特定参数
-    if hc_type == "icmp":
-        if 'mode' in module.params and module.params['mode']:
-            hc_data['mode'] = module.params['mode']
-        if 'icmp_alias_addr' in module.params and module.params['icmp_alias_addr']:
-            hc_data['icmp_alias_addr'] = module.params['icmp_alias_addr']
-    elif hc_type == "http" or hc_type == "https":
-        if 'host' in module.params and module.params['host']:
-            hc_data['host'] = module.params['host']
-        if 'url' in module.params and module.params['url']:
-            hc_data['url'] = module.params['url']
-        if 'post_data' in module.params and module.params['post_data']:
-            hc_data['post_data'] = module.params['post_data']
-        if 'post_file' in module.params and module.params['post_file']:
-            hc_data['post_file'] = module.params['post_file']
-        if 'username' in module.params and module.params['username']:
-            hc_data['username'] = module.params['username']
-        if 'password' in module.params and module.params['password']:
-            hc_data['password'] = module.params['password']
-        if 'code' in module.params and module.params['code']:
-            hc_data['code'] = module.params['code']
-        if 'pattern' in module.params and module.params['pattern']:
-            hc_data['pattern'] = module.params['pattern']
-        if 'pattern_disable_str' in module.params and module.params['pattern_disable_str']:
-            hc_data['pattern_disable_str'] = module.params['pattern_disable_str']
-        if 'server_fail_code' in module.params and module.params['server_fail_code']:
-            hc_data['server_fail_code'] = module.params['server_fail_code']
-        if 'trans_mode' in module.params and module.params['trans_mode'] is not None:
-            hc_data['trans_mode'] = module.params['trans_mode']
-        if hc_type == "https" and 'sslver' in module.params and module.params['sslver']:
-            hc_data['sslver'] = module.params['sslver']
-    elif hc_type == "tcp" or hc_type == "udp":
-        # TCP/UDP类型参数
-        pass
-    elif hc_type == "combo":
-        if 'combo' in module.params and module.params['combo']:
-            hc_data['combo'] = module.params['combo']
+    # 添加基本参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            hc_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(hc_data)
@@ -261,90 +203,28 @@ def adc_edit_healthcheck(module):
     """编辑健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
-
-    # 检查必需参数
-    if not name:
-        module.fail_json(msg="编辑健康检查需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthcheck.edit" % (
         ip, authkey)
 
-    # 构造健康检查数据 - 包含所有通用参数
-    hc_data = {
-        "name": name
-    }
+    # 构造健康检查数据 - 只包含在YAML中明确定义的参数
+    hc_data = {}
 
-    # 只有当参数在YAML中明确定义时才添加到请求中
-    if 'retry' in module.params and module.params['retry'] is not None:
-        hc_data['retry'] = module.params['retry']
-    if 'interval' in module.params and module.params['interval'] is not None:
-        hc_data['interval'] = module.params['interval']
-    if 'timeout' in module.params and module.params['timeout'] is not None:
-        hc_data['timeout'] = module.params['timeout']
-    if 'up_check_cnt' in module.params and module.params['up_check_cnt'] is not None:
-        hc_data['up_check_cnt'] = module.params['up_check_cnt']
-    if 'wait_all_retry' in module.params and module.params['wait_all_retry'] is not None:
-        hc_data['wait_all_retry'] = module.params['wait_all_retry']
-    if 'description' in module.params and module.params['description']:
-        hc_data['description'] = module.params['description']
-    if 'auto_disable' in module.params and module.params['auto_disable'] is not None:
-        hc_data['auto_disable'] = module.params['auto_disable']
-    if 'alias_ipv4_src' in module.params and module.params['alias_ipv4_src']:
-        hc_data['alias_ipv4_src'] = module.params['alias_ipv4_src']
-    if 'alias_ipv6_src' in module.params and module.params['alias_ipv6_src']:
-        hc_data['alias_ipv6_src'] = module.params['alias_ipv6_src']
-    if 'interface' in module.params and module.params['interface']:
-        hc_data['interface'] = module.params['interface']
-    if 'alias_ipv4' in module.params and module.params['alias_ipv4']:
-        hc_data['alias_ipv4'] = module.params['alias_ipv4']
-    if 'alias_ipv6' in module.params and module.params['alias_ipv6']:
-        hc_data['alias_ipv6'] = module.params['alias_ipv6']
-    if 'alias_port' in module.params and module.params['alias_port'] is not None:
-        hc_data['alias_port'] = module.params['alias_port']
-    if 'port' in module.params and module.params['port'] is not None:
-        hc_data['port'] = module.params['port']
-    if 'http_version' in module.params and module.params['http_version']:
-        hc_data['http_version'] = module.params['http_version']
-    if 'hc_type' in module.params and module.params['hc_type']:
-        hc_data['type'] = module.params['hc_type']
+    # 定义可选参数列表
+    optional_params = [
+        'name', 'type', 'retry', 'interval', 'timeout', 'up_check_cnt', 'wait_all_retry',
+        'description', 'auto_disable', 'alias_ipv4_src', 'alias_ipv6_src', 'interface',
+        'alias_ipv4', 'alias_ipv6', 'alias_port', 'port', 'http_version',
+        'mode', 'icmp_alias_addr', 'host', 'url', 'post_data', 'post_file',
+        'username', 'password', 'code', 'pattern', 'pattern_disable_str',
+        'server_fail_code', 'trans_mode', 'sslver', 'combo'
+    ]
 
-    # 根据健康检查类型添加特定参数
-    hc_type = module.params['hc_type'] if 'hc_type' in module.params else ""
-    if hc_type == "icmp":
-        if 'mode' in module.params and module.params['mode']:
-            hc_data['mode'] = module.params['mode']
-        if 'icmp_alias_addr' in module.params and module.params['icmp_alias_addr']:
-            hc_data['icmp_alias_addr'] = module.params['icmp_alias_addr']
-    elif hc_type == "http" or hc_type == "https":
-        if 'host' in module.params and module.params['host']:
-            hc_data['host'] = module.params['host']
-        if 'url' in module.params and module.params['url']:
-            hc_data['url'] = module.params['url']
-        if 'post_data' in module.params and module.params['post_data']:
-            hc_data['post_data'] = module.params['post_data']
-        if 'post_file' in module.params and module.params['post_file']:
-            hc_data['post_file'] = module.params['post_file']
-        if 'username' in module.params and module.params['username']:
-            hc_data['username'] = module.params['username']
-        if 'password' in module.params and module.params['password']:
-            hc_data['password'] = module.params['password']
-        if 'code' in module.params and module.params['code']:
-            hc_data['code'] = module.params['code']
-        if 'pattern' in module.params and module.params['pattern']:
-            hc_data['pattern'] = module.params['pattern']
-        if 'pattern_disable_str' in module.params and module.params['pattern_disable_str']:
-            hc_data['pattern_disable_str'] = module.params['pattern_disable_str']
-        if 'server_fail_code' in module.params and module.params['server_fail_code']:
-            hc_data['server_fail_code'] = module.params['server_fail_code']
-        if 'trans_mode' in module.params and module.params['trans_mode'] is not None:
-            hc_data['trans_mode'] = module.params['trans_mode']
-        if hc_type == "https" and 'sslver' in module.params and module.params['sslver']:
-            hc_data['sslver'] = module.params['sslver']
-    elif hc_type == "combo":
-        if 'combo' in module.params and module.params['combo']:
-            hc_data['combo'] = module.params['combo']
+    # 添加基本参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            hc_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(hc_data)
@@ -762,7 +642,7 @@ def postfile_del(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
     except Exception as e:
-        module.fail_json(msg("删除健康检查后置文件失败: %s" % str(e)))
+        module.fail_json(msg="删除健康检查后置文件失败: %s" % str(e))
 
     if response_data:
         success, result_dict = format_adc_response_for_ansible(
@@ -772,7 +652,7 @@ def postfile_del(module):
         else:
             module.fail_json(**result_dict)
     else:
-        module.fail_json(msg("未收到有效响应")
+        module.fail_json(msg="未收到有效响应")
 
 
 def main():

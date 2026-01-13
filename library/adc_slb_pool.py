@@ -140,19 +140,21 @@ def adc_add_pool(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.add" % (
         ip, authkey)
 
-    # 构造服务池数据
+    # 构造服务池数据 - 使用与add_node相同的参数处理方式
     pool_data = {
-        "pool": {
-            "name": module.params['name'] if 'name' in module.params else "",
-            "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
-            "lb_method": module.params['lb_method'] if 'lb_method' in module.params else 0,
-            "upnum": module.params['upnum'] if 'upnum' in module.params else 0,
-            "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
-            "desc_pool": module.params['desc_pool'] if 'desc_pool' in module.params else "",
-            "action_on_service_down": module.params['action_on_service_down'] if 'action_on_service_down' in module.params else 0,
-            "aux_node_log": module.params['aux_node_log'] if 'aux_node_log' in module.params else 0
-        }
+        "pool": {}
     }
+
+    # 定义可选参数列表
+    optional_params = [
+        'name', 'protocol', 'lb_method', 'upnum', 'healthcheck',
+        'desc_pool', 'action_on_service_down', 'aux_node_log'
+    ]
+
+    # 添加基本参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            pool_data['pool'][param] = module.params[param]
 
     # 处理up_members_at_least参数
     up_members_at_least = {}
@@ -219,38 +221,36 @@ def adc_edit_pool(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.edit" % (
         ip, authkey)
 
-    # 构造服务池数据
+    # 构造服务池数据 - 使用与add_pool相同的参数处理方式
     pool_data = {
-        "pool": {
-            "name": name,
-            "protocol": module.params['protocol'] if 'protocol' in module.params else 0,
-            "lb_method": module.params['lb_method'] if 'lb_method' in module.params else 0,
-            "healthcheck": module.params['healthcheck'] if 'healthcheck' in module.params else "",
-            "desc_pool": module.params['desc_pool'] if 'desc_pool' in module.params else "",
-            "action_on_service_down": module.params['action_on_service_down'] if 'action_on_service_down' in module.params else 0,
-            "aux_node_log": module.params['aux_node_log'] if 'aux_node_log' in module.params else 0
-        }
+        "pool": {}
     }
 
+    # 添加name参数（必需）
+    pool_data['pool']['name'] = name
+
+    # 定义可选参数列表
+    optional_params = [
+        'protocol', 'lb_method', 'upnum', 'healthcheck',
+        'desc_pool', 'action_on_service_down', 'aux_node_log'
+    ]
+
+    # 添加可选参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            pool_data['pool'][param] = module.params[param]
+
     # 处理up_members_at_least参数
+    up_members_at_least = {}
     if 'up_members_at_least_status' in module.params and module.params['up_members_at_least_status'] is not None:
-        if 'up-members-at-least' not in pool_data['pool']:
-            pool_data['pool']['up-members-at-least'] = {}
-        pool_data['pool']['up-members-at-least']['status'] = module.params['up_members_at_least_status']
-
+        up_members_at_least['status'] = module.params['up_members_at_least_status']
     if 'up_members_at_least_num' in module.params and module.params['up_members_at_least_num'] is not None:
-        if 'up-members-at-least' not in pool_data['pool']:
-            pool_data['pool']['up-members-at-least'] = {}
-        pool_data['pool']['up-members-at-least']['num'] = module.params['up_members_at_least_num']
-
+        up_members_at_least['num'] = module.params['up_members_at_least_num']
     if 'up_members_at_least_type' in module.params and module.params['up_members_at_least_type'] is not None:
-        if 'up-members-at-least' not in pool_data['pool']:
-            pool_data['pool']['up-members-at-least'] = {}
-        pool_data['pool']['up-members-at-least']['type'] = module.params['up_members_at_least_type']
+        up_members_at_least['type'] = module.params['up_members_at_least_type']
 
-    # 处理upnum参数
-    if 'upnum' in module.params and module.params['upnum'] is not None:
-        pool_data['pool']['upnum'] = module.params['upnum']
+    if up_members_at_least:
+        pool_data['pool']['up-members-at-least'] = up_members_at_least
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)
@@ -355,12 +355,6 @@ def adc_add_pool_node(module):
     authkey = module.params['authkey']
     pool_name = module.params['pool_name'] if 'pool_name' in module.params else ""
     node = module.params['node'] if 'node' in module.params else ""
-    port = module.params['port'] if 'port' in module.params else 0
-    protocol = module.params['protocol'] if 'protocol' in module.params else 0
-    priority = module.params['priority'] if 'priority' in module.params else 1
-    weight = module.params['weight'] if 'weight' in module.params else 1
-    status = module.params['status'] if 'status' in module.params else 1
-    conn_limit = module.params['conn_limit'] if 'conn_limit' in module.params else 0
 
     # 检查必需参数
     if not pool_name:
@@ -372,20 +366,25 @@ def adc_add_pool_node(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.add" % (
         ip, authkey)
 
-    # 构造请求数据
+    # 构造请求数据 - 使用与add_node相同的参数处理方式
     pool_data = {
         "name": pool_name,
-        "member": {
-            "nodename": node,
-            "server": node,
-            "port": port,
-            "protocol": protocol,
-            "priority": priority,
-            "weight": weight,
-            "status": status,
-            "conn_limit": conn_limit
-        }
+        "member": {}
     }
+
+    # 定义可选参数列表
+    optional_params = [
+        'port', 'protocol', 'priority', 'weight', 'status', 'conn_limit'
+    ]
+
+    # 添加nodename和server（必需）
+    pool_data['member']['nodename'] = node
+    pool_data['member']['server'] = node
+
+    # 添加可选参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            pool_data['member'][param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)
@@ -538,12 +537,6 @@ def edit_pool_member(module):
     authkey = module.params['authkey']
     pool_name = module.params['pool_name'] if 'pool_name' in module.params else ""
     node = module.params['node'] if 'node' in module.params else ""
-    port = module.params['port'] if 'port' in module.params else 0
-    protocol = module.params['protocol'] if 'protocol' in module.params else 0
-    priority = module.params['priority'] if 'priority' in module.params else 1
-    weight = module.params['weight'] if 'weight' in module.params else 1
-    status = module.params['status'] if 'status' in module.params else 1
-    conn_limit = module.params['conn_limit'] if 'conn_limit' in module.params else 0
 
     if not pool_name:
         module.fail_json(msg="编辑服务池成员需要提供pool_name参数")
@@ -552,19 +545,25 @@ def edit_pool_member(module):
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.edit" % (ip, authkey)
 
+    # 构造请求数据 - 使用与add_pool_node相同的参数处理方式
     pool_data = {
         "name": pool_name,
-        "member": {
-            "nodename": node,
-            "server": node,
-            "port": port,
-            "protocol": protocol,
-            "priority": priority,
-            "weight": weight,
-            "status": status,
-            "conn_limit": conn_limit
-        }
+        "member": {}
     }
+
+    # 定义可选参数列表
+    optional_params = [
+        'port', 'protocol', 'priority', 'weight', 'status', 'conn_limit'
+    ]
+
+    # 添加nodename和server（必需）
+    pool_data['member']['nodename'] = node
+    pool_data['member']['server'] = node
+
+    # 添加可选参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            pool_data['member'][param] = module.params[param]
 
     post_data = json.dumps(pool_data)
     response_data = ""
@@ -700,9 +699,9 @@ def main():
     if hasattr(action, '__str__'):
         action = str(action)
 
-    if action == 'get_pools':
+    if action == 'list_pool':
         adc_get_pools(module)
-    elif action == 'get_pools_withcommon':
+    elif action == 'list_pool_withcommon':
         get_pools_withcommon(module)
     elif action == 'get_pool':
         adc_get_pool(module)
@@ -712,13 +711,13 @@ def main():
         adc_edit_pool(module)
     elif action == 'delete_pool':
         adc_delete_pool(module)
-    elif action == 'add_pool_node':
+    elif action == 'pool_member_add':
         adc_add_pool_node(module)
-    elif action == 'delete_pool_node':
+    elif action == 'pool_member_delete':
         adc_delete_pool_node(module)
-    elif action == 'edit_pool_member':
+    elif action == 'pool_member_edit':
         edit_pool_member(module)
-    elif action == 'onoff_pool_member':
+    elif action == 'pool_member_onoff':
         onoff_pool_member(module)
 
 
