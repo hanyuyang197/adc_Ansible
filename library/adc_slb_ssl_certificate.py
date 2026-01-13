@@ -525,8 +525,9 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'upload', 'add', 'list', 'list_withcommon', 'del',
-                    'key_upload', 'crl_upload', 'pfx_upload']),
+                    'slb_ssl_certificate_upload', 'slb_ssl_certificate_add',
+                    'slb_ssl_certificate_list', 'slb_ssl_certificate_list_withcommon',
+                    'slb_ssl_certificate_del', 'slb_ssl_certificate_pfx_upload']),
         name=dict(type='str', required=False),
         cert_name=dict(type='str', required=False),
         key_name=dict(type='str', required=False),
@@ -563,21 +564,17 @@ def main():
     )
 
     # 根据action执行相应操作
-    if module.params['action'] == 'upload':
+    if module.params['action'] == 'slb_ssl_certificate_upload':
         adc_slb_ssl_certificate_upload(module)
-    elif module.params['action'] == 'add':
+    elif module.params['action'] == 'slb_ssl_certificate_add':
         adc_slb_ssl_certificate_add(module)
-    elif module.params['action'] == 'list':
+    elif module.params['action'] == 'slb_ssl_certificate_list':
         adc_slb_ssl_certificate_list(module)
-    elif module.params['action'] == 'list_withcommon':
+    elif module.params['action'] == 'slb_ssl_certificate_list_withcommon':
         adc_slb_ssl_certificate_list_withcommon(module)
-    elif module.params['action'] == 'del':
+    elif module.params['action'] == 'slb_ssl_certificate_del':
         adc_slb_ssl_certificate_del(module)
-    elif module.params['action'] == 'key_upload':
-        adc_slb_ssl_key_upload(module)
-    elif module.params['action'] == 'crl_upload':
-        adc_slb_ssl_crl_upload(module)
-    elif module.params['action'] == 'pfx_upload':
+    elif module.params['action'] == 'slb_ssl_certificate_pfx_upload':
         adc_slb_ssl_pfx_upload(module)
 
 

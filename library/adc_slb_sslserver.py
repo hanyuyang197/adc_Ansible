@@ -145,7 +145,7 @@ def send_request(url, data=None, method='GET'):
         }
 
 
-def adc_list_sslserver_profiles(module):
+def adc_slb_ssl_server_list(module):
     """List all server SSL profiles"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -156,7 +156,7 @@ def adc_list_sslserver_profiles(module):
     return result
 
 
-def adc_list_sslserver_profiles_withcommon(module):
+def adc_slb_ssl_server_list_withcommon(module):
     """List all server SSL profiles including common partition"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -167,7 +167,7 @@ def adc_list_sslserver_profiles_withcommon(module):
     return result
 
 
-def adc_get_sslserver_profile(module):
+def adc_slb_ssl_server_get(module):
     """Get a specific server SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -187,7 +187,7 @@ def adc_get_sslserver_profile(module):
     return result
 
 
-def adc_add_sslserver_profile(module):
+def adc_slb_ssl_server_add(module):
     """Add a new server SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -217,7 +217,7 @@ def adc_add_sslserver_profile(module):
     return result
 
 
-def adc_edit_sslserver_profile(module):
+def adc_slb_ssl_server_edit(module):
     """Edit an existing server SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -247,7 +247,7 @@ def adc_edit_sslserver_profile(module):
     return result
 
 
-def adc_delete_sslserver_profile(module):
+def adc_slb_ssl_server_del(module):
     """Delete a server SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -276,8 +276,8 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
-                'list_profiles', 'list_profiles_withcommon', 'get_profile',
-                'add_profile', 'edit_profile', 'delete_profile'
+                'slb_ssl_server_list', 'slb_ssl_server_list_withcommon', 'slb_ssl_server_get',
+                'slb_ssl_server_add', 'slb_ssl_server_edit', 'slb_ssl_server_del'
             ]),
             name=dict(type='str', required=False),
             cert=dict(type='str', required=False),
@@ -288,18 +288,18 @@ def main():
 
     action = module.params['action']
 
-    if action == 'list_profiles':
-        result = adc_list_sslserver_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        result = adc_list_sslserver_profiles_withcommon(module)
-    elif action == 'get_profile':
-        result = adc_get_sslserver_profile(module)
-    elif action == 'add_profile':
-        result = adc_add_sslserver_profile(module)
-    elif action == 'edit_profile':
-        result = adc_edit_sslserver_profile(module)
-    elif action == 'delete_profile':
-        result = adc_delete_sslserver_profile(module)
+    if action == 'slb_ssl_server_list':
+        result = adc_slb_ssl_server_list(module)
+    elif action == 'slb_ssl_server_list_withcommon':
+        result = adc_slb_ssl_server_list_withcommon(module)
+    elif action == 'slb_ssl_server_get':
+        result = adc_slb_ssl_server_get(module)
+    elif action == 'slb_ssl_server_add':
+        result = adc_slb_ssl_server_add(module)
+    elif action == 'slb_ssl_server_edit':
+        result = adc_slb_ssl_server_edit(module)
+    elif action == 'slb_ssl_server_del':
+        result = adc_slb_ssl_server_del(module)
     else:
         module.fail_json(msg="Unknown action: %s" % action)
 

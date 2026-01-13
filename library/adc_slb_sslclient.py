@@ -240,7 +240,7 @@ def send_request(url, data=None, method='GET'):
         }
 
 
-def adc_list_sslclient_profiles(module):
+def adc_slb_ssl_client_list(module):
     """List all client SSL profiles"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -251,7 +251,7 @@ def adc_list_sslclient_profiles(module):
     return result
 
 
-def adc_list_sslclient_profiles_withcommon(module):
+def adc_slb_ssl_client_list_withcommon(module):
     """List all client SSL profiles including common partition"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -262,7 +262,7 @@ def adc_list_sslclient_profiles_withcommon(module):
     return result
 
 
-def adc_get_sslclient_profile(module):
+def adc_slb_ssl_client_get(module):
     """Get a specific client SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -282,7 +282,7 @@ def adc_get_sslclient_profile(module):
     return result
 
 
-def adc_add_sslclient_profile(module):
+def adc_slb_ssl_client_add(module):
     """Add a new client SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -317,7 +317,7 @@ def adc_add_sslclient_profile(module):
     return result
 
 
-def adc_edit_sslclient_profile(module):
+def adc_slb_ssl_client_edit(module):
     """Edit an existing client SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -352,7 +352,7 @@ def adc_edit_sslclient_profile(module):
     return result
 
 
-def adc_delete_sslclient_profile(module):
+def adc_slb_ssl_client_del(module):
     """Delete a client SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']

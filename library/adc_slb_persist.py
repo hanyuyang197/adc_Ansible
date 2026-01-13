@@ -23,7 +23,7 @@ import json
 import sys
 
 
-def adc_persist_cookie_list(module):
+def adc_slb_persist_cookie_list(module):
     """cookie连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -39,7 +39,7 @@ def adc_persist_cookie_list(module):
         module.fail_json(msg="cookie连接保持列表获取失败: %s" % str(e))
 
 
-def adc_persist_cookie_get(module):
+def adc_slb_persist_cookie_get(module):
     """cookie连接保持获取"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -65,7 +65,7 @@ def adc_persist_cookie_get(module):
         module.fail_json(msg="cookie连接保持获取失败: %s" % str(e))
 
 
-def adc_persist_cookie_add(module):
+def adc_slb_persist_cookie_add(module):
     """cookie连接保持增加"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -105,7 +105,7 @@ def adc_persist_cookie_add(module):
         module.fail_json(msg="cookie连接保持增加失败: %s" % str(e))
 
 
-def adc_persist_cookie_edit(module):
+def adc_slb_persist_cookie_edit(module):
     """cookie连接保持编辑"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -145,7 +145,7 @@ def adc_persist_cookie_edit(module):
         module.fail_json(msg="cookie连接保持编辑失败: %s" % str(e))
 
 
-def adc_persist_cookie_del(module):
+def adc_slb_persist_cookie_del(module):
     """cookie连接保持删除"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -175,7 +175,7 @@ def adc_persist_cookie_del(module):
         module.fail_json(msg="cookie连接保持删除失败: %s" % str(e))
 
 
-def adc_persist_cookie_list_withcommon(module):
+def adc_slb_persist_cookie_list_withcommon(module):
     """获取 common 和本分区 cookie 连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -192,7 +192,7 @@ def adc_persist_cookie_list_withcommon(module):
         module.fail_json(msg="获取 common 和本分区 cookie 连接保持列表失败: %s" % str(e))
 
 
-def adc_persist_srcip_list(module):
+def adc_slb_persist_srcip_list(module):
     """源地址连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -208,7 +208,7 @@ def adc_persist_srcip_list(module):
         module.fail_json(msg="源地址连接保持列表获取失败: %s" % str(e))
 
 
-def adc_persist_srcip_get(module):
+def adc_slb_persist_srcip_get(module):
     """源地址连接保持获取"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -234,7 +234,7 @@ def adc_persist_srcip_get(module):
         module.fail_json(msg="源地址连接保持获取失败: %s" % str(e))
 
 
-def adc_persist_srcip_add(module):
+def adc_slb_persist_srcip_add(module):
     """源地址连接保持增加"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -274,7 +274,7 @@ def adc_persist_srcip_add(module):
         module.fail_json(msg="源地址连接保持增加失败: %s" % str(e))
 
 
-def adc_persist_srcip_edit(module):
+def adc_slb_persist_srcip_edit(module):
     """源地址连接保持编辑"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -314,7 +314,7 @@ def adc_persist_srcip_edit(module):
         module.fail_json(msg="源地址连接保持编辑失败: %s" % str(e))
 
 
-def adc_persist_srcip_del(module):
+def adc_slb_persist_srcip_del(module):
     """源地址连接保持删除"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -344,7 +344,7 @@ def adc_persist_srcip_del(module):
         module.fail_json(msg="源地址连接保持删除失败: %s" % str(e))
 
 
-def adc_persist_srcip_list_withcommon(module):
+def adc_slb_persist_srcip_list_withcommon(module):
     """获取 common 和本分区源地址连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -361,7 +361,7 @@ def adc_persist_srcip_list_withcommon(module):
         module.fail_json(msg="获取 common 和本分区源地址连接保持列表失败: %s" % str(e))
 
 
-def adc_persist_dstip_list(module):
+def adc_slb_persist_dstip_list(module):
     """目的地址连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -377,7 +377,7 @@ def adc_persist_dstip_list(module):
         module.fail_json(msg="目的地址连接保持列表获取失败: %s" % str(e))
 
 
-def adc_persist_dstip_get(module):
+def adc_slb_persist_dstip_get(module):
     """目的地址连接保持获取"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -403,7 +403,7 @@ def adc_persist_dstip_get(module):
         module.fail_json(msg="目的地址连接保持获取失败: %s" % str(e))
 
 
-def adc_persist_dstip_add(module):
+def adc_slb_persist_dstip_add(module):
     """目的地址连接保持增加"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -443,7 +443,7 @@ def adc_persist_dstip_add(module):
         module.fail_json(msg="目的地址连接保持增加失败: %s" % str(e))
 
 
-def adc_persist_dstip_edit(module):
+def adc_slb_persist_dstip_edit(module):
     """目的地址连接保持编辑"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -483,7 +483,7 @@ def adc_persist_dstip_edit(module):
         module.fail_json(msg="目的地址连接保持编辑失败: %s" % str(e))
 
 
-def adc_persist_dstip_del(module):
+def adc_slb_persist_dstip_del(module):
     """目的地址连接保持删除"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -513,7 +513,7 @@ def adc_persist_dstip_del(module):
         module.fail_json(msg="目的地址连接保持删除失败: %s" % str(e))
 
 
-def adc_persist_dstip_list_withcommon(module):
+def adc_slb_persist_dstip_list_withcommon(module):
     """获取 common 和本分区目的地址连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -530,7 +530,7 @@ def adc_persist_dstip_list_withcommon(module):
         module.fail_json(msg="获取 common 和本分区目的地址连接保持列表失败: %s" % str(e))
 
 
-def adc_persist_sslid_list(module):
+def adc_slb_persist_sslid_list(module):
     """ssl地址连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -546,7 +546,7 @@ def adc_persist_sslid_list(module):
         module.fail_json(msg="ssl地址连接保持列表获取失败: %s" % str(e))
 
 
-def adc_persist_sslid_get(module):
+def adc_slb_persist_sslid_get(module):
     """ssl地址连接保持获取"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -572,7 +572,7 @@ def adc_persist_sslid_get(module):
         module.fail_json(msg="ssl地址连接保持获取失败: %s" % str(e))
 
 
-def adc_persist_sslid_add(module):
+def adc_slb_persist_sslid_add(module):
     """ssl地址连接保持增加"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -610,7 +610,7 @@ def adc_persist_sslid_add(module):
         module.fail_json(msg="ssl地址连接保持增加失败: %s" % str(e))
 
 
-def adc_persist_sslid_edit(module):
+def adc_slb_persist_sslid_edit(module):
     """ssl地址连接保持编辑"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -648,7 +648,7 @@ def adc_persist_sslid_edit(module):
         module.fail_json(msg="ssl地址连接保持编辑失败: %s" % str(e))
 
 
-def adc_persist_sslid_del(module):
+def adc_slb_persist_sslid_del(module):
     """ssl地址连接保持删除"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -678,7 +678,7 @@ def adc_persist_sslid_del(module):
         module.fail_json(msg="ssl地址连接保持删除失败: %s" % str(e))
 
 
-def adc_persist_sslid_list_withcommon(module):
+def adc_slb_persist_sslid_list_withcommon(module):
     """获取 common 和本分区 ssl 地址连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -701,14 +701,14 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'persist_cookie_list', 'persist_cookie_get', 'persist_cookie_add',
-            'persist_cookie_edit', 'persist_cookie_del', 'persist_cookie_list_withcommon',
-            'persist_srcip_list', 'persist_srcip_get', 'persist_srcip_add',
-            'persist_srcip_edit', 'persist_srcip_del', 'persist_srcip_list_withcommon',
-            'persist_dstip_list', 'persist_dstip_get', 'persist_dstip_add',
-            'persist_dstip_edit', 'persist_dstip_del', 'persist_dstip_list_withcommon',
-            'persist_sslid_list', 'persist_sslid_get', 'persist_sslid_add',
-            'persist_sslid_edit', 'persist_sslid_del', 'persist_sslid_list_withcommon'
+            'slb_persist_cookie_list', 'slb_persist_cookie_get', 'slb_persist_cookie_add',
+            'slb_persist_cookie_edit', 'slb_persist_cookie_del', 'slb_persist_cookie_list_withcommon',
+            'slb_persist_srcip_list', 'slb_persist_srcip_get', 'slb_persist_srcip_add',
+            'slb_persist_srcip_edit', 'slb_persist_srcip_del', 'slb_persist_srcip_list_withcommon',
+            'slb_persist_dstip_list', 'slb_persist_dstip_get', 'slb_persist_dstip_add',
+            'slb_persist_dstip_edit', 'slb_persist_dstip_del', 'slb_persist_dstip_list_withcommon',
+            'slb_persist_sslid_list', 'slb_persist_sslid_get', 'slb_persist_sslid_add',
+            'slb_persist_sslid_edit', 'slb_persist_sslid_del', 'slb_persist_sslid_list_withcommon'
         ]),
         # 连接保持参数
         name=dict(type='str', required=False),
@@ -728,54 +728,54 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'persist_cookie_list':
-        adc_persist_cookie_list(module)
-    elif action == 'persist_cookie_get':
-        adc_persist_cookie_get(module)
-    elif action == 'persist_cookie_add':
-        adc_persist_cookie_add(module)
-    elif action == 'persist_cookie_edit':
-        adc_persist_cookie_edit(module)
-    elif action == 'persist_cookie_del':
-        adc_persist_cookie_del(module)
-    elif action == 'persist_cookie_list_withcommon':
-        adc_persist_cookie_list_withcommon(module)
-    elif action == 'persist_srcip_list':
-        adc_persist_srcip_list(module)
-    elif action == 'persist_srcip_get':
-        adc_persist_srcip_get(module)
-    elif action == 'persist_srcip_add':
-        adc_persist_srcip_add(module)
-    elif action == 'persist_srcip_edit':
-        adc_persist_srcip_edit(module)
-    elif action == 'persist_srcip_del':
-        adc_persist_srcip_del(module)
-    elif action == 'persist_srcip_list_withcommon':
-        adc_persist_srcip_list_withcommon(module)
-    elif action == 'persist_dstip_list':
-        adc_persist_dstip_list(module)
-    elif action == 'persist_dstip_get':
-        adc_persist_dstip_get(module)
-    elif action == 'persist_dstip_add':
-        adc_persist_dstip_add(module)
-    elif action == 'persist_dstip_edit':
-        adc_persist_dstip_edit(module)
-    elif action == 'persist_dstip_del':
-        adc_persist_dstip_del(module)
-    elif action == 'persist_dstip_list_withcommon':
-        adc_persist_dstip_list_withcommon(module)
-    elif action == 'persist_sslid_list':
-        adc_persist_sslid_list(module)
-    elif action == 'persist_sslid_get':
-        adc_persist_sslid_get(module)
-    elif action == 'persist_sslid_add':
-        adc_persist_sslid_add(module)
-    elif action == 'persist_sslid_edit':
-        adc_persist_sslid_edit(module)
-    elif action == 'persist_sslid_del':
-        adc_persist_sslid_del(module)
-    elif action == 'persist_sslid_list_withcommon':
-        adc_persist_sslid_list_withcommon(module)
+    if action == 'slb_persist_cookie_list':
+        adc_slb_persist_cookie_list(module)
+    elif action == 'slb_persist_cookie_get':
+        adc_slb_persist_cookie_get(module)
+    elif action == 'slb_persist_cookie_add':
+        adc_slb_persist_cookie_add(module)
+    elif action == 'slb_persist_cookie_edit':
+        adc_slb_persist_cookie_edit(module)
+    elif action == 'slb_persist_cookie_del':
+        adc_slb_persist_cookie_del(module)
+    elif action == 'slb_persist_cookie_list_withcommon':
+        adc_slb_persist_cookie_list_withcommon(module)
+    elif action == 'slb_persist_srcip_list':
+        adc_slb_persist_srcip_list(module)
+    elif action == 'slb_persist_srcip_get':
+        adc_slb_persist_srcip_get(module)
+    elif action == 'slb_persist_srcip_add':
+        adc_slb_persist_srcip_add(module)
+    elif action == 'slb_persist_srcip_edit':
+        adc_slb_persist_srcip_edit(module)
+    elif action == 'slb_persist_srcip_del':
+        adc_slb_persist_srcip_del(module)
+    elif action == 'slb_persist_srcip_list_withcommon':
+        adc_slb_persist_srcip_list_withcommon(module)
+    elif action == 'slb_persist_dstip_list':
+        adc_slb_persist_dstip_list(module)
+    elif action == 'slb_persist_dstip_get':
+        adc_slb_persist_dstip_get(module)
+    elif action == 'slb_persist_dstip_add':
+        adc_slb_persist_dstip_add(module)
+    elif action == 'slb_persist_dstip_edit':
+        adc_slb_persist_dstip_edit(module)
+    elif action == 'slb_persist_dstip_del':
+        adc_slb_persist_dstip_del(module)
+    elif action == 'slb_persist_dstip_list_withcommon':
+        adc_slb_persist_dstip_list_withcommon(module)
+    elif action == 'slb_persist_sslid_list':
+        adc_slb_persist_sslid_list(module)
+    elif action == 'slb_persist_sslid_get':
+        adc_slb_persist_sslid_get(module)
+    elif action == 'slb_persist_sslid_add':
+        adc_slb_persist_sslid_add(module)
+    elif action == 'slb_persist_sslid_edit':
+        adc_slb_persist_sslid_edit(module)
+    elif action == 'slb_persist_sslid_del':
+        adc_slb_persist_sslid_del(module)
+    elif action == 'slb_persist_sslid_list_withcommon':
+        adc_slb_persist_sslid_list_withcommon(module)
 
 
 if __name__ == '__main__':

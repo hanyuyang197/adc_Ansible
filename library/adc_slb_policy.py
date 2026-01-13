@@ -203,7 +203,7 @@ def send_request(url, data=None, method='GET'):
         }
 
 
-def adc_list_policies(module):
+def adc_slb_policy_list(module):
     """List all policy templates"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -214,7 +214,7 @@ def adc_list_policies(module):
     return result
 
 
-def adc_list_policies_withcommon(module):
+def adc_slb_policy_list_withcommon(module):
     """List all policy templates including common partition"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -225,7 +225,7 @@ def adc_list_policies_withcommon(module):
     return result
 
 
-def adc_get_policy(module):
+def adc_slb_policy_get(module):
     """Get a specific policy template"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -245,7 +245,7 @@ def adc_get_policy(module):
     return result
 
 
-def adc_add_policy(module):
+def adc_slb_policy_add(module):
     """Add a new policy template"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -278,7 +278,7 @@ def adc_add_policy(module):
     return result
 
 
-def adc_edit_policy(module):
+def adc_slb_policy_edit(module):
     """Edit an existing policy template"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -311,7 +311,7 @@ def adc_edit_policy(module):
     return result
 
 
-def adc_delete_policy(module):
+def adc_slb_policy_del(module):
     """Delete a policy template"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -340,8 +340,8 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
-                'list_policies', 'list_policies_withcommon', 'get_policy',
-                'add_policy', 'edit_policy', 'delete_policy'
+                'slb_policy_list', 'slb_policy_list_withcommon', 'slb_policy_get',
+                'slb_policy_add', 'slb_policy_edit', 'slb_policy_del'
             ]),
             name=dict(type='str', required=False),
             match_dst_ip=dict(type='int', required=False),
@@ -358,18 +358,18 @@ def main():
 
     action = module.params['action']
 
-    if action == 'list_policies':
-        result = adc_list_policies(module)
-    elif action == 'list_policies_withcommon':
-        result = adc_list_policies_withcommon(module)
-    elif action == 'get_policy':
-        result = adc_get_policy(module)
-    elif action == 'add_policy':
-        result = adc_add_policy(module)
-    elif action == 'edit_policy':
-        result = adc_edit_policy(module)
-    elif action == 'delete_policy':
-        result = adc_delete_policy(module)
+    if action == 'slb_policy_list':
+        result = adc_slb_policy_list(module)
+    elif action == 'slb_policy_list_withcommon':
+        result = adc_slb_policy_list_withcommon(module)
+    elif action == 'slb_policy_get':
+        result = adc_slb_policy_get(module)
+    elif action == 'slb_policy_add':
+        result = adc_slb_policy_add(module)
+    elif action == 'slb_policy_edit':
+        result = adc_slb_policy_edit(module)
+    elif action == 'slb_policy_del':
+        result = adc_slb_policy_del(module)
     else:
         module.fail_json(msg="Unknown action: %s" % action)
 

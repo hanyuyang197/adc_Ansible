@@ -139,7 +139,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['upload', 'del']),
+        action=dict(type='str', required=True, choices=['slb_ssl_key_upload', 'slb_ssl_key_del']),
         name=dict(type='str', required=False),  # 用于删除操作
         key_name=dict(type='str', required=False),
         file_path=dict(type='str', required=False),
@@ -153,9 +153,9 @@ def main():
     )
 
     # 根据action执行相应操作
-    if module.params['action'] == 'upload':
+    if module.params['action'] == 'slb_ssl_key_upload':
         adc_slb_ssl_key_upload(module)
-    elif module.params['action'] == 'del':
+    elif module.params['action'] == 'slb_ssl_key_del':
         # 使用通用函数处理删除操作
         ip = module.params['ip']
         authkey = module.params['authkey']

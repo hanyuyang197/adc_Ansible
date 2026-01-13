@@ -23,7 +23,7 @@ import sys
 
 # ADC API响应解析函数
 
-def adc_list_nodes(module):
+def adc_slb_node_list(module):
     """获取节点列表 (slb.node.list)"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -69,7 +69,7 @@ def adc_list_nodes(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_node(module):
+def adc_slb_node_get(module):
     """获取节点详情 (slb.node.get)"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -130,7 +130,7 @@ def adc_get_node(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_node(module):
+def adc_slb_node_add(module):
     """添加节点"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -198,7 +198,7 @@ def adc_add_node(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_node(module):
+def adc_slb_node_edit(module):
     """编辑节点"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -274,7 +274,7 @@ def adc_edit_node(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_node(module):
+def adc_slb_node_del(module):
     """删除节点"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -332,7 +332,7 @@ def adc_delete_node(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_node_port(module):
+def adc_slb_node_port_add(module):
     """添加节点端口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -404,7 +404,7 @@ def adc_add_node_port(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_node_port(module):
+def adc_slb_node_port_edit(module):
     """编辑节点端口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -476,7 +476,7 @@ def adc_edit_node_port(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_node_port(module):
+def adc_slb_node_port_del(module):
     """删除节点端口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -545,7 +545,7 @@ def adc_delete_node_port(module):
 
 
 
-def adc_node_onoff(module):
+def adc_slb_node_onoff(module):
     """节点启用/禁用"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -598,7 +598,7 @@ def adc_node_onoff(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_node_port_onoff(module):
+def adc_slb_node_port_onoff(module):
     """节点端口启用/禁用"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -660,7 +660,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['list_nodes', 'get_node', 'add_node', 'edit_node', 'delete_node', 'add_node_port', 'edit_node_port', 'delete_node_port', 'node_onoff', 'node_port_onoff']),
+        action=dict(type='str', required=True, choices=['slb_node_list', 'slb_node_get', 'slb_node_add', 'slb_node_edit', 'slb_node_del', 'slb_node_port_add', 'slb_node_port_edit', 'slb_node_port_del', 'slb_node_onoff', 'slb_node_port_onoff']),
         # add_node/edit_node参数
         tc_name=dict(type='str', required=False),
         graceful_time=dict(type='int', required=False),
@@ -721,26 +721,26 @@ def main():
     if hasattr(action, '__str__'):
         action = str(action)
 
-    elif action == 'list_nodes':
-        adc_list_nodes(module)
-    elif action == 'get_node':
-        adc_get_node(module)
-    elif action == 'add_node':
-        adc_add_node(module)
-    elif action == 'edit_node':
-        adc_edit_node(module)
-    elif action == 'delete_node':
-        adc_delete_node(module)
-    elif action == 'add_node_port':
-        adc_add_node_port(module)
-    elif action == 'edit_node_port':
-        adc_edit_node_port(module)
-    elif action == 'delete_node_port':
-        adc_delete_node_port(module)
-    elif action == 'node_onoff':
-        adc_node_onoff(module)
-    elif action == 'node_port_onoff':
-        adc_node_port_onoff(module)
+    if action == 'slb_node_list':
+        adc_slb_node_list(module)
+    elif action == 'slb_node_get':
+        adc_slb_node_get(module)
+    elif action == 'slb_node_add':
+        adc_slb_node_add(module)
+    elif action == 'slb_node_edit':
+        adc_slb_node_edit(module)
+    elif action == 'slb_node_del':
+        adc_slb_node_del(module)
+    elif action == 'slb_node_port_add':
+        adc_slb_node_port_add(module)
+    elif action == 'slb_node_port_edit':
+        adc_slb_node_port_edit(module)
+    elif action == 'slb_node_port_del':
+        adc_slb_node_port_del(module)
+    elif action == 'slb_node_onoff':
+        adc_slb_node_onoff(module)
+    elif action == 'slb_node_port_onoff':
+        adc_slb_node_port_onoff(module)
 
 
 

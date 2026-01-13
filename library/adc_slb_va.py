@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_vas(module):
+def adc_slb_va_list(module):
     """获取虚拟地址列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_vas(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_va(module):
+def adc_slb_va_get(module):
     """获取虚拟地址详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -130,7 +130,7 @@ def adc_get_va(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_va(module):
+def adc_slb_va_add(module):
     """添加虚拟地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -236,7 +236,7 @@ def adc_add_va(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_va(module):
+def adc_slb_va_edit(module):
     """编辑虚拟地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -330,7 +330,7 @@ def adc_edit_va(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_va(module):
+def adc_slb_va_del(module):
     """删除虚拟地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -387,7 +387,7 @@ def adc_delete_va(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_va_stat_list(module):
+def adc_slb_va_stat_list(module):
     """获取虚拟应用统计列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -432,7 +432,7 @@ def adc_va_stat_list(module):
         module.fail_json(msg="获取虚拟应用统计列表失败: %s" % str(e))
 
 
-def adc_va_stat_get(module):
+def adc_slb_va_stat_get(module):
     """获取虚拟应用统计详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -496,8 +496,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'list_vas', 'get_va', 'add_va', 'edit_va', 'delete_va',
-                    'va_stat_list', 'va_stat_get']),
+                    'slb_va_list', 'slb_va_get', 'slb_va_add', 'slb_va_edit', 'slb_va_del',
+                    'slb_va_stat_list', 'slb_va_stat_get']),
         # 虚拟地址参数
         name=dict(type='str', required=False),
         va_type=dict(type='str', required=False, choices=[
@@ -533,20 +533,20 @@ def main():
     if hasattr(action, '__str__'):
         action = str(action)
 
-    if action == 'list_vas':
-        adc_list_vas(module)
-    elif action == 'get_va':
-        adc_get_va(module)
-    elif action == 'add_va':
-        adc_add_va(module)
-    elif action == 'edit_va':
-        adc_edit_va(module)
-    elif action == 'delete_va':
-        adc_delete_va(module)
-    elif action == 'va_stat_list':
-        adc_va_stat_list(module)
-    elif action == 'va_stat_get':
-        adc_va_stat_get(module)
+    if action == 'slb_va_list':
+        adc_slb_va_list(module)
+    elif action == 'slb_va_get':
+        adc_slb_va_get(module)
+    elif action == 'slb_va_add':
+        adc_slb_va_add(module)
+    elif action == 'slb_va_edit':
+        adc_slb_va_edit(module)
+    elif action == 'slb_va_del':
+        adc_slb_va_del(module)
+    elif action == 'slb_va_stat_list':
+        adc_slb_va_stat_list(module)
+    elif action == 'slb_va_stat_get':
+        adc_slb_va_stat_get(module)
 
 
 
