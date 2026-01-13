@@ -24,47 +24,21 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_passive_health_check_add(module):
+def adc_slb_passive_health_check_add(module):
     """添加被动健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
-    # 获取参数
-    name = module.params.get('name')
-    type = module.params.get('type')
-    interval = module.params.get('interval')
-    timeout = module.params.get('timeout')
-    retry = module.params.get('retry')
-    port = module.params.get('port')
-    send = module.params.get('send')
-    receive = module.params.get('receive')
-
-    # 检查必需参数
-    if not name or not type:
-        module.fail_json(msg="添加被动健康检查需要提供name和type参数")
-
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.add" % (ip, authkey)
 
-    # 构造请求数据
-    healthcheck_data = {
-        "name": name,
-        "type": type
-    }
+    # 构造请求数据 - 只包含非None的参数
+    healthcheck_data = {}
+    optional_params = ['name', 'type', 'interval', 'timeout', 'retry', 'port', 'send', 'receive']
 
-    # 添加可选参数
-    if interval:
-        healthcheck_data["interval"] = interval
-    if timeout:
-        healthcheck_data["timeout"] = timeout
-    if retry:
-        healthcheck_data["retry"] = retry
-    if port:
-        healthcheck_data["port"] = port
-    if send:
-        healthcheck_data["send"] = send
-    if receive:
-        healthcheck_data["receive"] = receive
+    for param in optional_params:
+        if module.params.get(param) is not None:
+            healthcheck_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(healthcheck_data)
@@ -92,7 +66,7 @@ def adc_passive_health_check_add(module):
 
         # 解析响应
         result = json.loads(response_data)
-        
+
         # 检查响应状态
         if result.get('status') == 'success':
             module.exit_json(changed=True, msg="被动健康检查添加成功", result=result)
@@ -103,7 +77,7 @@ def adc_passive_health_check_add(module):
         module.fail_json(msg="添加被动健康检查请求失败: %s" % str(e))
 
 
-def adc_passive_health_check_list(module):
+def adc_slb_passive_health_check_list(module):
     """获取被动健康检查列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -148,23 +122,21 @@ def adc_passive_health_check_list(module):
         module.fail_json(msg="获取被动健康检查列表失败: %s" % str(e))
 
 
-def adc_passive_health_check_get(module):
+def adc_slb_passive_health_check_get(module):
     """获取被动健康检查详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params.get('name')
-
-    # 检查必需参数
-    if not name:
-        module.fail_json(msg="获取被动健康检查详情需要提供name参数")
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.get" % (ip, authkey)
 
-    # 构造请求数据
-    healthcheck_data = {
-        "name": name
-    }
+    # 构造请求数据 - 只包含非None的参数
+    healthcheck_data = {}
+    optional_params = ['name']
+
+    for param in optional_params:
+        if module.params.get(param) is not None:
+            healthcheck_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(healthcheck_data)
@@ -192,7 +164,7 @@ def adc_passive_health_check_get(module):
 
         # 解析响应
         result = json.loads(response_data)
-        
+
         # 检查响应状态
         if result.get('status') == 'success' or 'name' in result:
             module.exit_json(changed=False, passive_health_check=result)
@@ -203,48 +175,21 @@ def adc_passive_health_check_get(module):
         module.fail_json(msg="获取被动健康检查详情请求失败: %s" % str(e))
 
 
-def adc_passive_health_check_edit(module):
+def adc_slb_passive_health_check_edit(module):
     """编辑被动健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
-    # 获取参数
-    name = module.params.get('name')
-    type = module.params.get('type')
-    interval = module.params.get('interval')
-    timeout = module.params.get('timeout')
-    retry = module.params.get('retry')
-    port = module.params.get('port')
-    send = module.params.get('send')
-    receive = module.params.get('receive')
-
-    # 检查必需参数
-    if not name:
-        module.fail_json(msg="编辑被动健康检查需要提供name参数")
-
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.edit" % (ip, authkey)
 
-    # 构造请求数据
-    healthcheck_data = {
-        "name": name
-    }
+    # 构造请求数据 - 只包含非None的参数
+    healthcheck_data = {}
+    optional_params = ['name', 'type', 'interval', 'timeout', 'retry', 'port', 'send', 'receive']
 
-    # 添加可选参数
-    if type:
-        healthcheck_data["type"] = type
-    if interval:
-        healthcheck_data["interval"] = interval
-    if timeout:
-        healthcheck_data["timeout"] = timeout
-    if retry:
-        healthcheck_data["retry"] = retry
-    if port:
-        healthcheck_data["port"] = port
-    if send:
-        healthcheck_data["send"] = send
-    if receive:
-        healthcheck_data["receive"] = receive
+    for param in optional_params:
+        if module.params.get(param) is not None:
+            healthcheck_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(healthcheck_data)
@@ -272,7 +217,7 @@ def adc_passive_health_check_edit(module):
 
         # 解析响应
         result = json.loads(response_data)
-        
+
         # 检查响应状态
         if result.get('status') == 'success':
             module.exit_json(changed=True, msg="被动健康检查编辑成功", result=result)
@@ -281,6 +226,51 @@ def adc_passive_health_check_edit(module):
 
     except Exception as e:
         module.fail_json(msg="编辑被动健康检查请求失败: %s" % str(e))
+
+
+def adc_slb_passive_health_check_list_withcommon(module):
+    """获取被动健康检查列表（包含common和本分区）"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.list.withcommon" % (ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 对于获取列表操作，直接返回响应数据，不判断success
+        if response_data:
+            try:
+                parsed_data = json.loads(response_data)
+                # 检查是否有错误信息
+                if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                    module.fail_json(msg="获取被动健康检查列表失败", response=parsed_data)
+                else:
+                    module.exit_json(changed=False, passive_health_checks=parsed_data)
+            except Exception as e:
+                module.fail_json(msg="解析响应失败: %s" % str(e))
+        else:
+            module.fail_json(msg="未收到有效响应")
+
+    except Exception as e:
+        module.fail_json(msg="获取被动健康检查列表失败: %s" % str(e))
 
 
 def main():
@@ -308,17 +298,17 @@ def main():
 
     # 根据action参数调用相应的函数
     action = module.params.get('action')
-    
-    if action == 'passive_health_check_add':
-        adc_passive_health_check_add(module)
-    elif action == 'passive_health_check_list':
-        adc_passive_health_check_list(module)
-    elif action == 'passive_health_check_get':
-        adc_passive_health_check_get(module)
-    elif action == 'passive_health_check_edit':
-        adc_passive_health_check_edit(module)
-    else:
-        module.fail_json(msg="不支持的action: " + str(action))
+
+    if action == 'slb_passive_health_check_add':
+        adc_slb_passive_health_check_add(module)
+    elif action == 'slb_passive_health_check_list':
+        adc_slb_passive_health_check_list(module)
+    elif action == 'slb_passive_health_check_list_withcommon':
+        adc_slb_passive_health_check_list_withcommon(module)
+    elif action == 'slb_passive_health_check_get':
+        adc_slb_passive_health_check_get(module)
+    elif action == 'slb_passive_health_check_edit':
+        adc_slb_passive_health_check_edit(module)
 
 
 if __name__ == '__main__':

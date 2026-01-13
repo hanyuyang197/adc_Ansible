@@ -83,8 +83,6 @@ def main():
     
     if action == 'clear_session':
         adc_clear_session(module)
-    else:
-        module.fail_json(msg="不支持的action: " + str(action))
 
 
 if __name__ == '__main__':

@@ -345,8 +345,7 @@ def main():
         result = adc_edit_vs_profile(module)
     elif action == 'delete_profile':
         result = adc_delete_vs_profile(module)
-    else:
-        module.fail_json(msg="不支持的操作: %s" % action)
+
 
     # 处理结果 - 使用标准的ADC响应格式
     # 成功响应: {"result":"success"} 或直接返回数据

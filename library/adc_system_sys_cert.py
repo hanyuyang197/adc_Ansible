@@ -285,8 +285,6 @@ def main():
         adc_system_sys_csr_get(module)
     elif action == 'csr_list':
         adc_system_sys_csr_list(module)
-    else:
-        module.fail_json(msg="不支持的action: %s" % action)
 
 
 if __name__ == '__main__':

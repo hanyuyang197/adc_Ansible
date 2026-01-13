@@ -600,30 +600,38 @@ def onoff_pool_member(module):
     """启用/禁用服务池成员"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    pool_name = module.params['pool_name'] if 'pool_name' in module.params else ""
-    node = module.params['node'] if 'node' in module.params else ""
-    port = module.params['port'] if 'port' in module.params else 0
-    protocol = module.params['protocol'] if 'protocol' in module.params else 0
-    enable = module.params['enable'] if 'enable' in module.params else True
 
-    if not pool_name:
-        module.fail_json(msg="启用/禁用服务池成员需要提供pool_name参数")
-    if not node:
-        module.fail_json(msg="启用/禁用服务池成员需要提供node参数")
-
+    # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.onoff" % (ip, authkey)
 
+    # 构造请求数据 - 使用与add_node相同的参数处理方式
     pool_data = {
-        "name": pool_name,
-        "member": {
-            "nodename": node,
-            "server": node,
-            "port": port,
-            "protocol": protocol
-        },
-        "enable": 1 if enable else 0
+        "member": {}
     }
 
+    # 定义可选参数列表
+    optional_params = [
+        'name', 'nodename', 'server', 'port', 'protocol', 'enable'
+    ]
+
+    # 添加基本参数
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            # 特殊处理 enable 参数：转换为 0/1
+            if param == 'enable':
+                pool_data[param] = 1 if module.params[param] else 0
+            # 特殊处理 name 参数：这是服务池名称
+            elif param == 'name':
+                pool_data[param] = module.params[param]
+            # nodename 和 server 使用 node 参数
+            elif param in ['nodename', 'server']:
+                if 'node' in module.params and module.params['node'] is not None:
+                    pool_data['member'][param] = module.params['node']
+            # 其他参数放到 member 中
+            else:
+                pool_data['member'][param] = module.params[param]
+
+    # 转换为JSON格式
     post_data = json.dumps(pool_data)
     response_data = ""
 
@@ -713,7 +721,7 @@ def main():
         adc_delete_pool(module)
     elif action == 'pool_member_add':
         adc_add_pool_node(module)
-    elif action == 'pool_member_delete':
+    elif action == 'pool_member_del':
         adc_delete_pool_node(module)
     elif action == 'pool_member_edit':
         edit_pool_member(module)

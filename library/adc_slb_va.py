@@ -387,6 +387,106 @@ def adc_delete_va(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def adc_va_stat_list(module):
+    """获取虚拟应用统计列表"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.stat.list" % (ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 对于获取列表操作，直接返回响应数据，不判断success
+        if response_data:
+            try:
+                parsed_data = json.loads(response_data)
+                # 检查是否有错误信息
+                if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                    module.fail_json(msg="获取虚拟应用统计列表失败", response=parsed_data)
+                else:
+                    module.exit_json(changed=False, va_stats=parsed_data)
+            except Exception as e:
+                module.fail_json(msg="解析响应失败: %s" % str(e))
+        else:
+            module.fail_json(msg="未收到有效响应")
+
+    except Exception as e:
+        module.fail_json(msg="获取虚拟应用统计列表失败: %s" % str(e))
+
+
+def adc_va_stat_get(module):
+    """获取虚拟应用统计详情"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params.get('name')
+
+    # 检查必需参数
+    if not name:
+        module.fail_json(msg="获取虚拟应用统计详情需要提供name参数")
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.stat.get" % (ip, authkey)
+
+    # 构造请求数据
+    stat_data = {
+        "name": name
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(stat_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, data=post_data.encode('utf-8'), method='POST')
+            req.add_header('Content-Type', 'application/json')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data)
+            req.add_header('Content-Type', 'application/json')
+            req.get_method = lambda: 'POST'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 解析响应
+        result = json.loads(response_data)
+
+        # 检查响应状态
+        if result.get('status') == 'success':
+            module.exit_json(changed=False, va_stat=result)
+        else:
+            module.fail_json(msg="获取虚拟应用统计详情失败: " + result.get('message', '未知错误'))
+
+    except Exception as e:
+        module.fail_json(msg="获取虚拟应用统计详情请求失败: %s" % str(e))
+
+
 
 
 
@@ -396,7 +496,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'list_vas', 'get_va', 'add_va', 'edit_va', 'delete_va']),
+                    'list_vas', 'get_va', 'add_va', 'edit_va', 'delete_va',
+                    'va_stat_list', 'va_stat_get']),
         # 虚拟地址参数
         name=dict(type='str', required=False),
         va_type=dict(type='str', required=False, choices=[
@@ -442,6 +543,10 @@ def main():
         adc_edit_va(module)
     elif action == 'delete_va':
         adc_delete_va(module)
+    elif action == 'va_stat_list':
+        adc_va_stat_list(module)
+    elif action == 'va_stat_get':
+        adc_va_stat_get(module)
 
 
 

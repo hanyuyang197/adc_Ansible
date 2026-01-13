@@ -256,8 +256,7 @@ def main():
         module_result = adc_edit_ftp_profile(module)
     elif action == 'delete_profile':
         module_result = adc_delete_ftp_profile(module)
-    else:
-        module.fail_json(msg="不支持的操作: %s" % action)
+
 
     # 处理结果
     if 'status' in module_result and module_result['status'] == 'error':

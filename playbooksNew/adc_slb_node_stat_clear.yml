@@ -17,12 +17,12 @@
         var: login_result
 
     - name: 执行 stat clear
-      adc_slb_node:
+      adc_slb_stat:
         ip: "{ inventory_hostname }"
         authkey: "{ login_result.authkey }"
         action: "node_stat_clear"
         # API action: slb.node.stat.clear
-        # TODO: 添加必要的参数
+        # 此API不需要任何参数
       register: result
       when: login_result is succeeded
 

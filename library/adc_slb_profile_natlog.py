@@ -259,8 +259,7 @@ def main():
         result = adc_edit_natlog_profile(module)
     elif action == 'delete_profile':
         result = adc_delete_natlog_profile(module)
-    else:
-        module.fail_json(msg="不支持的操作: %s" % action)
+
 
     # 处理结果
     if 'status' in result and result['status'] == 'error':

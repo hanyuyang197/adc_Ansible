@@ -200,8 +200,7 @@ def main():
         if not module.params.get('dest_path'):
             module.fail_json(msg="下载操作需要指定dest_path参数")
         adc_system_domaintable_file_download(module)
-    else:
-        module.fail_json(msg="不支持的操作: %s" % action)
+
 
 
 if __name__ == '__main__':

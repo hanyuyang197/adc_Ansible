@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_healthtest_list(module):
+def adc_slb_healthtest_list(module):
     """获取健康检查列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -69,47 +69,21 @@ def adc_healthtest_list(module):
         module.fail_json(msg="获取健康检查列表失败: %s" % str(e))
 
 
-def adc_healthtest_add(module):
+def adc_slb_healthtest_add(module):
     """添加健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
-    # 获取参数
-    name = module.params.get('name')
-    type = module.params.get('type')
-    interval = module.params.get('interval')
-    timeout = module.params.get('timeout')
-    retry = module.params.get('retry')
-    port = module.params.get('port')
-    send = module.params.get('send')
-    receive = module.params.get('receive')
-
-    # 检查必需参数
-    if not name or not type:
-        module.fail_json(msg="添加健康检查需要提供name和type参数")
-
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthtest.add" % (ip, authkey)
 
-    # 构造请求数据
-    healthtest_data = {
-        "name": name,
-        "type": type
-    }
+    # 构造请求数据 - 只包含非None的参数
+    healthtest_data = {}
+    optional_params = ['name', 'type', 'interval', 'timeout', 'retry', 'port', 'send', 'receive']
 
-    # 添加可选参数
-    if interval:
-        healthtest_data["interval"] = interval
-    if timeout:
-        healthtest_data["timeout"] = timeout
-    if retry:
-        healthtest_data["retry"] = retry
-    if port:
-        healthtest_data["port"] = port
-    if send:
-        healthtest_data["send"] = send
-    if receive:
-        healthtest_data["receive"] = receive
+    for param in optional_params:
+        if module.params.get(param) is not None:
+            healthtest_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(healthtest_data)
@@ -137,7 +111,7 @@ def adc_healthtest_add(module):
 
         # 解析响应
         result = json.loads(response_data)
-        
+
         # 检查响应状态
         if result.get('status') == 'success':
             module.exit_json(changed=True, msg="健康检查添加成功", result=result)
@@ -148,23 +122,21 @@ def adc_healthtest_add(module):
         module.fail_json(msg="添加健康检查请求失败: %s" % str(e))
 
 
-def adc_healthtest_get(module):
+def adc_slb_healthtest_get(module):
     """获取健康检查详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params.get('name')
-
-    # 检查必需参数
-    if not name:
-        module.fail_json(msg="获取健康检查详情需要提供name参数")
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthtest.get" % (ip, authkey)
 
-    # 构造请求数据
-    healthtest_data = {
-        "name": name
-    }
+    # 构造请求数据 - 只包含非None的参数
+    healthtest_data = {}
+    optional_params = ['name']
+
+    for param in optional_params:
+        if module.params.get(param) is not None:
+            healthtest_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(healthtest_data)
@@ -192,7 +164,7 @@ def adc_healthtest_get(module):
 
         # 解析响应
         result = json.loads(response_data)
-        
+
         # 检查响应状态
         if result.get('status') == 'success' or 'name' in result:
             module.exit_json(changed=False, healthtest=result)
@@ -203,23 +175,21 @@ def adc_healthtest_get(module):
         module.fail_json(msg="获取健康检查详情请求失败: %s" % str(e))
 
 
-def adc_healthtest_del(module):
+def adc_slb_healthtest_del(module):
     """删除健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params.get('name')
-
-    # 检查必需参数
-    if not name:
-        module.fail_json(msg="删除健康检查需要提供name参数")
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthtest.del" % (ip, authkey)
 
-    # 构造请求数据
-    healthtest_data = {
-        "name": name
-    }
+    # 构造请求数据 - 只包含非None的参数
+    healthtest_data = {}
+    optional_params = ['name']
+
+    for param in optional_params:
+        if module.params.get(param) is not None:
+            healthtest_data[param] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(healthtest_data)
@@ -247,7 +217,7 @@ def adc_healthtest_del(module):
 
         # 解析响应
         result = json.loads(response_data)
-        
+
         # 检查响应状态
         if result.get('status') == 'success':
             module.exit_json(changed=True, msg="健康检查删除成功", result=result)
@@ -283,17 +253,15 @@ def main():
 
     # 根据action参数调用相应的函数
     action = module.params.get('action')
-    
-    if action == 'healthtest_list':
-        adc_healthtest_list(module)
-    elif action == 'healthtest_add':
-        adc_healthtest_add(module)
-    elif action == 'healthtest_get':
-        adc_healthtest_get(module)
-    elif action == 'healthtest_del':
-        adc_healthtest_del(module)
-    else:
-        module.fail_json(msg="不支持的action: " + str(action))
+
+    if action == 'slb_healthtest_list':
+        adc_slb_healthtest_list(module)
+    elif action == 'slb_healthtest_add':
+        adc_slb_healthtest_add(module)
+    elif action == 'slb_healthtest_get':
+        adc_slb_healthtest_get(module)
+    elif action == 'slb_healthtest_del':
+        adc_slb_healthtest_del(module)
 
 
 if __name__ == '__main__':
