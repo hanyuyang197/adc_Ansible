@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_cfgsync_peer_del(module):
+def adc_vrrp_cfgsync_peer_vrrp_cfgsync_peer_del(module):
     """删除指定VRRP配置同步列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_cfgsync_peer_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_cfgsync_peer_list(module):
+def adc_vrrp_cfgsync_peer_vrrp_cfgsync_peer_list(module):
     """获取VRRP配置同步对端列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -133,7 +133,7 @@ def adc_vrrp_cfgsync_peer_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_cfgsync_peer_add(module):
+def adc_vrrp_cfgsync_peer_vrrp_cfgsync_peer_add(module):
     """添加VRRP配置同步对端"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -199,7 +199,7 @@ def adc_vrrp_cfgsync_peer_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_cfgsync_peer_get(module):
+def adc_vrrp_cfgsync_peer_vrrp_cfgsync_peer_get(module):
     """获取指定VRRP配置同步对端"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -255,7 +255,7 @@ def adc_vrrp_cfgsync_peer_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_cfgsync_peer_edit(module):
+def adc_vrrp_cfgsync_peer_vrrp_cfgsync_peer_edit(module):
     """编辑VRRP配置同步对端"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -327,7 +327,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'del', 'list', 'add', 'get', 'edit']),
+                    'vrrp_cfgsync_peer_del', 'vrrp_cfgsync_peer_list', 'vrrp_cfgsync_peer_add', 'vrrp_cfgsync_peer_get', 'vrrp_cfgsync_peer_edit']),
         name=dict(type='str', required=False),
         ip_addr=dict(type='str', required=False),
         port=dict(type='int', required=False),
@@ -352,16 +352,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'del':
-        adc_vrrp_cfgsync_peer_del(module)
-    elif action == 'list':
-        adc_vrrp_cfgsync_peer_list(module)
-    elif action == 'add':
-        adc_vrrp_cfgsync_peer_add(module)
-    elif action == 'get':
-        adc_vrrp_cfgsync_peer_get(module)
-    elif action == 'edit':
-        adc_vrrp_cfgsync_peer_edit(module)
+    if action == 'vrrp_cfgsync_peer_del':
+        adc_vrrp_cfgsync_peer_vrrp_cfgsync_peer_del(module)
+    elif action == 'vrrp_cfgsync_peer_list':
+        adc_vrrp_cfgsync_peer_vrrp_cfgsync_peer_list(module)
+    elif action == 'vrrp_cfgsync_peer_add':
+        adc_vrrp_cfgsync_peer_vrrp_cfgsync_peer_add(module)
+    elif action == 'vrrp_cfgsync_peer_get':
+        adc_vrrp_cfgsync_peer_vrrp_cfgsync_peer_get(module)
+    elif action == 'vrrp_cfgsync_peer_edit':
+        adc_vrrp_cfgsync_peer_vrrp_cfgsync_peer_edit(module)
 
 
 if __name__ == '__main__':

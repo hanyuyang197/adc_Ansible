@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_networks(module):
+def bgp_network_list(module):
     """获取BGP网络列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_networks(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_network(module):
+def bgp_network_add(module):
     """添加BGP网络"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -130,7 +130,7 @@ def adc_add_network(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_network(module):
+def bgp_network_del(module):
     """删除BGP网络"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -190,7 +190,7 @@ def adc_delete_network(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_neighbors(module):
+def bgp_neighbor_list(module):
     """获取BGP邻居列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -236,7 +236,7 @@ def adc_list_neighbors(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_neighbor(module):
+def bgp_neighbor_add(module):
     """添加BGP邻居"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -300,7 +300,7 @@ def adc_add_neighbor(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_neighbor(module):
+def bgp_neighbor_del(module):
     """删除BGP邻居"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -358,7 +358,7 @@ def adc_delete_neighbor(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_status(module):
+def bgp_status_get(module):
     """获取BGP状态"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -404,7 +404,7 @@ def adc_get_status(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_status(module):
+def bgp_status_set(module):
     """设置BGP状态"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -468,9 +468,9 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_networks', 'add_network', 'delete_network',
-            'list_neighbors', 'add_neighbor', 'delete_neighbor',
-            'get_status', 'set_status']),
+            'bgp_network_list', 'bgp_network_add', 'bgp_network_delete',
+            'bgp_neighbor_list', 'bgp_neighbor_add', 'bgp_neighbor_delete',
+            'bgp_status_get', 'bgp_status_set']),
         # BGP参数
         network=dict(type='str', required=False),
         mask=dict(type='str', required=False),
@@ -489,22 +489,22 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_networks':
-        adc_list_networks(module)
-    elif action == 'add_network':
-        adc_add_network(module)
-    elif action == 'delete_network':
-        adc_delete_network(module)
-    elif action == 'list_neighbors':
-        adc_list_neighbors(module)
-    elif action == 'add_neighbor':
-        adc_add_neighbor(module)
-    elif action == 'delete_neighbor':
-        adc_delete_neighbor(module)
-    elif action == 'get_status':
-        adc_get_status(module)
-    elif action == 'set_status':
-        adc_set_status(module)
+    if action == 'bgp_network_list':
+        bgp_network_list(module)
+    elif action == 'bgp_network_add':
+        bgp_network_add(module)
+    elif action == 'bgp_network_delete':
+        bgp_network_del(module)
+    elif action == 'bgp_neighbor_list':
+        bgp_neighbor_list(module)
+    elif action == 'bgp_neighbor_add':
+        bgp_neighbor_add(module)
+    elif action == 'bgp_neighbor_delete':
+        bgp_neighbor_del(module)
+    elif action == 'bgp_status_get':
+        bgp_status_get(module)
+    elif action == 'bgp_status_set':
+        bgp_status_set(module)
 
 
 if __name__ == '__main__':

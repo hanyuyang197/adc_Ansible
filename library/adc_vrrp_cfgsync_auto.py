@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_cfgsync_auto_get(module):
+def adc_vrrp_cfgsync_auto_vrrp_cfgsync_auto_get(module):
     """获取vrrp自动同步配置信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_cfgsync_auto_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_cfgsync_auto_set(module):
+def adc_vrrp_cfgsync_auto_vrrp_cfgsync_auto_set(module):
     """设置vrrp自动同步配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -148,7 +148,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['get', 'set']),
+        action=dict(type='str', required=True, choices=['vrrp_cfgsync_auto_get', 'vrrp_cfgsync_auto_set']),
         enabled=dict(type='int', required=False),
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
@@ -169,10 +169,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get':
-        adc_vrrp_cfgsync_auto_get(module)
-    elif action == 'set':
-        adc_vrrp_cfgsync_auto_set(module)
+    if action == 'vrrp_cfgsync_auto_get':
+        adc_vrrp_cfgsync_auto_vrrp_cfgsync_auto_get(module)
+    elif action == 'vrrp_cfgsync_auto_set':
+        adc_vrrp_cfgsync_auto_vrrp_cfgsync_auto_set(module)
 
 
 if __name__ == '__main__':

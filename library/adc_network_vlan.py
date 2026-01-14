@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_vlans(module):
+def vlan_list(module):
     """获取VLAN列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_vlans(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_vlan(module):
+def vlan_get(module):
     """获取VLAN详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_vlan(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_vlan(module):
+def vlan_add(module):
     """添加VLAN"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -201,7 +201,7 @@ def adc_add_vlan(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_vlan(module):
+def vlan_edit(module):
     """编辑VLAN"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -277,7 +277,7 @@ def adc_edit_vlan(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_vlan(module):
+def vlan_delete(module):
     """删除VLAN"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -341,7 +341,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_vlans', 'get_vlan', 'add_vlan', 'edit_vlan', 'delete_vlan']),
+            'vlan_list', 'vlan_get', 'vlan_add', 'vlan_edit', 'vlan_delete']),
         # VLAN参数
         id=dict(type='int', required=False),
         description=dict(type='str', required=False),
@@ -361,16 +361,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_vlans':
-        adc_list_vlans(module)
-    elif action == 'get_vlan':
-        adc_get_vlan(module)
-    elif action == 'add_vlan':
-        adc_add_vlan(module)
-    elif action == 'edit_vlan':
-        adc_edit_vlan(module)
-    elif action == 'delete_vlan':
-        adc_delete_vlan(module)
+    if action == 'vlan_list':
+        vlan_list(module)
+    elif action == 'vlan_get':
+        vlan_get(module)
+    elif action == 'vlan_add':
+        vlan_add(module)
+    elif action == 'vlan_edit':
+        vlan_edit(module)
+    elif action == 'vlan_delete':
+        vlan_delete(module)
 
 
 if __name__ == '__main__':

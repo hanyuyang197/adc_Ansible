@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_network_mode(module):
+def network_mode_get(module):
     """获取网络模式配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_network_mode(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_network_mode(module):
+def network_mode_set(module):
     """设置网络模式配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -140,7 +140,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'get_network_mode', 'set_network_mode']),
+                    'network_mode_get', 'network_mode_set']),
         # 网络模式参数
         network_mode=dict(type='int', required=False),
         ipv4_addr=dict(type='str', required=False),
@@ -160,10 +160,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_network_mode':
-        adc_get_network_mode(module)
-    elif action == 'set_network_mode':
-        adc_set_network_mode(module)
+    if action == 'network_mode_get':
+        network_mode_get(module)
+    elif action == 'network_mode_set':
+        network_mode_set(module)
 
 
 if __name__ == '__main__':

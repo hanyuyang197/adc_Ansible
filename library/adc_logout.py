@@ -30,7 +30,7 @@ except ImportError:
 import sys
 
 
-def adc_logout(module):
+def logout(module):
     """执行ADC设备登出操作"""
     # 获取参数
     ip = module.params['ip']
@@ -121,7 +121,7 @@ def main():
     )
 
     # 执行登出操作
-    adc_logout(module)
+    logout(module)
 
 
 if __name__ == '__main__':

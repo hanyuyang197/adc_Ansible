@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_global_tc_config(module):
+def tc_get_global(module):
     """获取全局TC配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_global_tc_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_global_tc_config(module):
+def tc_set_global(module):
     """设置全局TC配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -126,7 +126,7 @@ def adc_set_global_tc_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_tc_entries(module):
+def tc_list(module):
     """获取TC条目列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -177,7 +177,7 @@ def adc_list_tc_entries(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_tc_entry(module):
+def tc_get(module):
     """获取TC条目详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -238,7 +238,7 @@ def adc_get_tc_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_tc_entry(module):
+def tc_add(module):
     """添加TC条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -302,7 +302,7 @@ def adc_add_tc_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_tc_entry(module):
+def tc_edit(module):
     """编辑TC条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -366,7 +366,7 @@ def adc_edit_tc_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_tc_entry(module):
+def tc_delete(module):
     """删除TC条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -424,7 +424,7 @@ def adc_delete_tc_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_tc_rules(module):
+def tc_rule_list(module):
     """获取TC规则列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -485,7 +485,7 @@ def adc_list_tc_rules(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_tc_rule(module):
+def tc_rule_get(module):
     """获取TC规则详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -548,7 +548,7 @@ def adc_get_tc_rule(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_tc_rule(module):
+def tc_rule_add(module):
     """添加TC规则"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -620,7 +620,7 @@ def adc_add_tc_rule(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_tc_rule(module):
+def tc_rule_edit(module):
     """编辑TC规则"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -692,7 +692,7 @@ def adc_edit_tc_rule(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_tc_rule(module):
+def tc_rule_delete(module):
     """删除TC规则"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -758,9 +758,9 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_global_tc_config', 'set_global_tc_config',
-            'list_tc_entries', 'get_tc_entry', 'add_tc_entry', 'edit_tc_entry', 'delete_tc_entry',
-            'list_tc_rules', 'get_tc_rule', 'add_tc_rule', 'edit_tc_rule', 'delete_tc_rule']),
+            'tc_get_global', 'tc_set_global',
+            'tc_list', 'tc_get', 'tc_add', 'tc_edit', 'tc_delete',
+            'tc_rule_list', 'tc_rule_get', 'tc_rule_add', 'tc_rule_edit', 'tc_rule_delete']),
         # TC参数
         name=dict(type='str', required=False),
         tc_name=dict(type='str', required=False),
@@ -786,30 +786,30 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_global_tc_config':
-        adc_get_global_tc_config(module)
-    elif action == 'set_global_tc_config':
-        adc_set_global_tc_config(module)
-    elif action == 'list_tc_entries':
-        adc_list_tc_entries(module)
-    elif action == 'get_tc_entry':
-        adc_get_tc_entry(module)
-    elif action == 'add_tc_entry':
-        adc_add_tc_entry(module)
-    elif action == 'edit_tc_entry':
-        adc_edit_tc_entry(module)
-    elif action == 'delete_tc_entry':
-        adc_delete_tc_entry(module)
-    elif action == 'list_tc_rules':
-        adc_list_tc_rules(module)
-    elif action == 'get_tc_rule':
-        adc_get_tc_rule(module)
-    elif action == 'add_tc_rule':
-        adc_add_tc_rule(module)
-    elif action == 'edit_tc_rule':
-        adc_edit_tc_rule(module)
-    elif action == 'delete_tc_rule':
-        adc_delete_tc_rule(module)
+    if action == 'tc_get_global':
+        tc_get_global(module)
+    elif action == 'tc_set_global':
+        tc_set_global(module)
+    elif action == 'tc_list':
+        tc_list(module)
+    elif action == 'tc_get':
+        tc_get(module)
+    elif action == 'tc_add':
+        tc_add(module)
+    elif action == 'tc_edit':
+        tc_edit(module)
+    elif action == 'tc_delete':
+        tc_delete(module)
+    elif action == 'tc_rule_list':
+        tc_rule_list(module)
+    elif action == 'tc_rule_get':
+        tc_rule_get(module)
+    elif action == 'tc_rule_add':
+        tc_rule_add(module)
+    elif action == 'tc_rule_edit':
+        tc_rule_edit(module)
+    elif action == 'tc_rule_delete':
+        tc_rule_delete(module)
 
 
 if __name__ == '__main__':

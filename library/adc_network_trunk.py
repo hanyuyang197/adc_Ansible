@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_trunks(module):
+def trunk_list(module):
     """获取TRUNK列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_trunks(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_trunk(module):
+def trunk_get(module):
     """获取TRUNK详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_trunk(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_trunk(module):
+def trunk_add(module):
     """添加TRUNK"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -195,7 +195,7 @@ def adc_add_trunk(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_trunk(module):
+def trunk_edit(module):
     """编辑TRUNK"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -262,7 +262,7 @@ def adc_edit_trunk(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_trunk(module):
+def trunk_delete(module):
     """删除TRUNK"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -326,7 +326,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_trunks', 'get_trunk', 'add_trunk', 'edit_trunk', 'delete_trunk']),
+            'trunk_list', 'trunk_get', 'trunk_add', 'trunk_edit', 'trunk_delete']),
         # TRUNK参数
         id=dict(type='int', required=False),
         type=dict(type='int', required=False),
@@ -343,16 +343,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_trunks':
-        adc_list_trunks(module)
-    elif action == 'get_trunk':
-        adc_get_trunk(module)
-    elif action == 'add_trunk':
-        adc_add_trunk(module)
-    elif action == 'edit_trunk':
-        adc_edit_trunk(module)
-    elif action == 'delete_trunk':
-        adc_delete_trunk(module)
+    if action == 'trunk_list':
+        trunk_list(module)
+    elif action == 'trunk_get':
+        trunk_get(module)
+    elif action == 'trunk_add':
+        trunk_add(module)
+    elif action == 'trunk_edit':
+        trunk_edit(module)
+    elif action == 'trunk_delete':
+        trunk_delete(module)
 
 
 if __name__ == '__main__':

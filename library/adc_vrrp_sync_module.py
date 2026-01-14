@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_sync_module_set(module):
+def adc_vrrp_sync_module_vrrp_sync_module_set(module):
     """编辑vrrp同步模块"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_sync_module_set(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_sync_module_get(module):
+def adc_vrrp_sync_module_vrrp_sync_module_get(module):
     """获取vrrp同步模块配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -138,7 +138,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['set', 'get']),
+        action=dict(type='str', required=True, choices=['vrrp_sync_module_set', 'vrrp_sync_module_get']),
         module=dict(type='str', required=False),
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
@@ -159,10 +159,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'set':
-        adc_vrrp_sync_module_set(module)
-    elif action == 'get':
-        adc_vrrp_sync_module_get(module)
+    if action == 'vrrp_sync_module_set':
+        adc_vrrp_sync_module_vrrp_sync_module_set(module)
+    elif action == 'vrrp_sync_module_get':
+        adc_vrrp_sync_module_vrrp_sync_module_get(module)
 
 
 if __name__ == '__main__':

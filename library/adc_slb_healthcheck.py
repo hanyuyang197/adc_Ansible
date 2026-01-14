@@ -323,7 +323,7 @@ def adc_delete_healthcheck(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def script_list(module):
+def adc_slb_healthcheck_adc_slb_healthcheck_script_list(module):
     """获取健康检查脚本列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -359,7 +359,7 @@ def script_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def script_upload(module):
+def adc_slb_healthcheck_adc_slb_healthcheck_script_upload(module):
     """上传健康检查脚本"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -419,7 +419,7 @@ def script_upload(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def script_del(module):
+def adc_slb_healthcheck_adc_slb_healthcheck_script_del(module):
     """删除健康检查脚本"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -465,7 +465,7 @@ def script_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def postfile_list(module):
+def adc_slb_healthcheck_adc_slb_healthcheck_postfile_list(module):
     """获取健康检查后置文件列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -501,7 +501,7 @@ def postfile_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def postfile_upload(module):
+def adc_slb_healthcheck_adc_slb_healthcheck_postfile_upload(module):
     """上传健康检查后置文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -609,7 +609,7 @@ def postfile_upload(module):
         module.fail_json(msg="上传健康检查后置文件失败: %s" % str(e))
 
 
-def postfile_del(module):
+def adc_slb_healthcheck_adc_slb_healthcheck_postfile_del(module):
     """删除健康检查后置文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -662,7 +662,7 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
                     'list_healthchecks', 'get_healthcheck', 'add_healthcheck', 'edit_healthcheck', 'delete_healthcheck',
-                    'script_list', 'script_upload', 'script_del', 'postfile_list', 'postfile_upload', 'postfile_del']),
+                    'adc_slb_healthcheck_script_list', 'adc_slb_healthcheck_script_upload', 'adc_slb_healthcheck_script_del', 'adc_slb_healthcheck_postfile_list', 'adc_slb_healthcheck_postfile_upload', 'adc_slb_healthcheck_postfile_del']),
         # 健康检查通用参数
         name=dict(type='str', required=False),
         hc_type=dict(type='str', required=False, choices=[
@@ -731,18 +731,18 @@ def main():
         adc_edit_healthcheck(module)
     elif action == 'delete_healthcheck':
         adc_delete_healthcheck(module)
-    elif action == 'script_list':
-        script_list(module)
-    elif action == 'script_upload':
-        script_upload(module)
-    elif action == 'script_del':
-        script_del(module)
-    elif action == 'postfile_list':
-        postfile_list(module)
-    elif action == 'postfile_upload':
-        postfile_upload(module)
-    elif action == 'postfile_del':
-        postfile_del(module)
+    elif action == 'adc_slb_healthcheck_script_list':
+        adc_slb_healthcheck_script_list(module)
+    elif action == 'adc_slb_healthcheck_script_upload':
+        adc_slb_healthcheck_script_upload(module)
+    elif action == 'adc_slb_healthcheck_script_del':
+        adc_slb_healthcheck_script_del(module)
+    elif action == 'adc_slb_healthcheck_postfile_list':
+        adc_slb_healthcheck_postfile_list(module)
+    elif action == 'adc_slb_healthcheck_postfile_upload':
+        adc_slb_healthcheck_postfile_upload(module)
+    elif action == 'adc_slb_healthcheck_postfile_del':
+        adc_slb_healthcheck_postfile_del(module)
 
 
 if __name__ == '__main__':

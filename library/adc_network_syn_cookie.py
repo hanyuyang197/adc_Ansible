@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_global_syn_cookie(module):
+def syn_cookie_get_global(module):
     """获取全局SYN Cookie配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -71,7 +71,7 @@ def adc_get_global_syn_cookie(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_global_syn_cookie(module):
+def syn_cookie_set_global(module):
     """设置全局SYN Cookie配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -130,7 +130,7 @@ def adc_set_global_syn_cookie(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_vs_syn_cookie(module):
+def syn_cookie_get_vs(module):
     """获取每虚拟服务SYN Cookie配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -192,7 +192,7 @@ def adc_get_vs_syn_cookie(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_vs_syn_cookie(module):
+def syn_cookie_set_vs(module):
     """设置每虚拟服务SYN Cookie配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -262,8 +262,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_global_syn_cookie', 'set_global_syn_cookie',
-            'get_vs_syn_cookie', 'set_vs_syn_cookie']),
+            'syn_cookie_get_global', 'syn_cookie_set_global',
+            'syn_cookie_get_vs', 'syn_cookie_set_vs']),
         # SYN Cookie参数
         enable=dict(type='int', required=False),
         threshold=dict(type='int', required=False),
@@ -279,14 +279,14 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_global_syn_cookie':
-        adc_get_global_syn_cookie(module)
-    elif action == 'set_global_syn_cookie':
-        adc_set_global_syn_cookie(module)
-    elif action == 'get_vs_syn_cookie':
-        adc_get_vs_syn_cookie(module)
-    elif action == 'set_vs_syn_cookie':
-        adc_set_vs_syn_cookie(module)
+    if action == 'syn_cookie_get_global':
+        syn_cookie_get_global(module)
+    elif action == 'syn_cookie_set_global':
+        syn_cookie_set_global(module)
+    elif action == 'syn_cookie_get_vs':
+        syn_cookie_get_vs(module)
+    elif action == 'syn_cookie_set_vs':
+        syn_cookie_set_vs(module)
 
 
 if __name__ == '__main__':

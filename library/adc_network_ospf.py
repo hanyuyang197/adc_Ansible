@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_networks(module):
+def ospf_network_list(module):
     """获取OSPF网络列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_networks(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_network(module):
+def ospf_network_add(module):
     """添加OSPF网络"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -132,7 +132,7 @@ def adc_add_network(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_network(module):
+def ospf_network_del(module):
     """删除OSPF网络"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -192,7 +192,7 @@ def adc_delete_network(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_status(module):
+def ospf_status_get(module):
     """获取OSPF状态"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -238,7 +238,7 @@ def adc_get_status(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_status(module):
+def ospf_status_set(module):
     """设置OSPF状态"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -302,7 +302,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_networks', 'add_network', 'delete_network', 'get_status', 'set_status']),
+            'ospf_network_list', 'ospf_network_add', 'ospf_network_del', 'ospf_status_get', 'ospf_status_set']),
         # OSPF参数
         network=dict(type='str', required=False),
         mask=dict(type='str', required=False),
@@ -319,16 +319,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_networks':
-        adc_list_networks(module)
-    elif action == 'add_network':
-        adc_add_network(module)
-    elif action == 'delete_network':
-        adc_delete_network(module)
-    elif action == 'get_status':
-        adc_get_status(module)
-    elif action == 'set_status':
-        adc_set_status(module)
+    if action == 'ospf_network_list':
+        ospf_network_list(module)
+    elif action == 'ospf_network_add':
+        ospf_network_add(module)
+    elif action == 'ospf_network_del':
+        ospf_network_del(module)
+    elif action == 'ospf_status_get':
+        ospf_status_get(module)
+    elif action == 'ospf_status_set':
+        ospf_status_set(module)
 
 
 if __name__ == '__main__':

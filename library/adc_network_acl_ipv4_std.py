@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_acls(module):
+def acl_ipv4_std_list(module):
     """获取IPv4标准访问列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_acls(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_acl(module):
+def acl_ipv4_std_get(module):
     """获取IPv4标准访问列表详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_acl(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_acl_item(module):
+def acl_ipv4_std_item_add(module):
     """添加IPv4标准访问列表条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -201,7 +201,7 @@ def adc_add_acl_item(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_acl_item(module):
+def acl_ipv4_std_item_edit(module):
     """编辑IPv4标准访问列表条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -269,7 +269,7 @@ def adc_edit_acl_item(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_acl_item(module):
+def acl_ipv4_std_item_del(module):
     """删除IPv4标准访问列表条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -331,7 +331,7 @@ def adc_delete_acl_item(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_acl_description(module):
+def acl_ipv4_std_desc_set(module):
     """设置IPv4标准访问列表描述"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -397,7 +397,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_acls', 'get_acl', 'add_acl_item', 'edit_acl_item', 'delete_acl_item', 'set_acl_description']),
+            'acl_ipv4_std_list', 'acl_ipv4_std_get', 'acl_ipv4_std_item_add', 'acl_ipv4_std_item_edit', 'acl_ipv4_std_item_del', 'acl_ipv4_std_desc_set']),
         # ACL参数
         id=dict(type='int', required=False),
         sequence=dict(type='int', required=False),
@@ -416,18 +416,18 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_acls':
-        adc_list_acls(module)
-    elif action == 'get_acl':
-        adc_get_acl(module)
-    elif action == 'add_acl_item':
-        adc_add_acl_item(module)
-    elif action == 'edit_acl_item':
-        adc_edit_acl_item(module)
-    elif action == 'delete_acl_item':
-        adc_delete_acl_item(module)
-    elif action == 'set_acl_description':
-        adc_set_acl_description(module)
+    if action == 'acl_ipv4_std_list':
+        acl_ipv4_std_list(module)
+    elif action == 'acl_ipv4_std_get':
+        acl_ipv4_std_get(module)
+    elif action == 'acl_ipv4_std_item_add':
+        acl_ipv4_std_item_add(module)
+    elif action == 'acl_ipv4_std_item_edit':
+        acl_ipv4_std_item_edit(module)
+    elif action == 'acl_ipv4_std_item_del':
+        acl_ipv4_std_item_del(module)
+    elif action == 'acl_ipv4_std_desc_set':
+        acl_ipv4_std_desc_set(module)
 
 
 if __name__ == '__main__':

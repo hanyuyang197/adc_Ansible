@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_maps(module):
+def nat_map_list(module):
     """获取NAT映射列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_maps(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_map(module):
+def nat_map_add(module):
     """添加NAT映射"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -130,7 +130,7 @@ def adc_add_map(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_map(module):
+def nat_map_del(module):
     """删除NAT映射"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -190,7 +190,7 @@ def adc_delete_map(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_ipv6_maps(module):
+def nat_ipv6_map_list(module):
     """获取IPv6 NAT映射列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -236,7 +236,7 @@ def adc_list_ipv6_maps(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_ipv6_map(module):
+def nat_ipv6_map_add(module):
     """添加IPv6 NAT映射"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -296,7 +296,7 @@ def adc_add_ipv6_map(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_ipv6_map(module):
+def nat_ipv6_map_del(module):
     """删除IPv6 NAT映射"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -362,7 +362,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_maps', 'add_map', 'delete_map', 'list_ipv6_maps', 'add_ipv6_map', 'delete_ipv6_map']),
+            'nat_map_list', 'nat_map_add', 'nat_map_del', 'nat_ipv6_map_list', 'nat_ipv6_map_add', 'nat_ipv6_map_del']),
         # NAT映射参数
         acl=dict(type='int', required=False),
         nat_pool=dict(type='str', required=False),
@@ -378,18 +378,18 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_maps':
-        adc_list_maps(module)
-    elif action == 'add_map':
-        adc_add_map(module)
-    elif action == 'delete_map':
-        adc_delete_map(module)
-    elif action == 'list_ipv6_maps':
-        adc_list_ipv6_maps(module)
-    elif action == 'add_ipv6_map':
-        adc_add_ipv6_map(module)
-    elif action == 'delete_ipv6_map':
-        adc_delete_ipv6_map(module)
+    if action == 'nat_map_list':
+        nat_map_list(module)
+    elif action == 'nat_map_add':
+        nat_map_add(module)
+    elif action == 'nat_map_del':
+        nat_map_del(module)
+    elif action == 'nat_ipv6_map_list':
+        nat_ipv6_map_list(module)
+    elif action == 'nat_ipv6_map_add':
+        nat_ipv6_map_add(module)
+    elif action == 'nat_ipv6_map_del':
+        nat_ipv6_map_del(module)
 
 
 if __name__ == '__main__':

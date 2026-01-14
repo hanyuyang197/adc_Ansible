@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_track_gateway_del(module):
+def adc_vrrp_track_gateway_vrrp_track_gateway_del(module):
     """删除vrrp网关监控条件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_track_gateway_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_track_gateway_list(module):
+def adc_vrrp_track_gateway_vrrp_track_gateway_list(module):
     """获取vrrp网关监控条件列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -133,7 +133,7 @@ def adc_vrrp_track_gateway_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_track_gateway_edit(module):
+def adc_vrrp_track_gateway_vrrp_track_gateway_edit(module):
     """编辑vrrp网关监控条件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -199,7 +199,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True,
-                    choices=['del', 'list', 'edit']),
+                    choices=['vrrp_track_gateway_del', 'vrrp_track_gateway_list', 'vrrp_track_gateway_edit']),
         group_id=dict(type='int', required=False),
         priority=dict(type='int', required=False),
         ip_addr=dict(type='str', required=False),
@@ -221,12 +221,12 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'del':
-        adc_vrrp_track_gateway_del(module)
-    elif action == 'list':
-        adc_vrrp_track_gateway_list(module)
-    elif action == 'edit':
-        adc_vrrp_track_gateway_edit(module)
+    if action == 'vrrp_track_gateway_del':
+        adc_vrrp_track_gateway_vrrp_track_gateway_del(module)
+    elif action == 'vrrp_track_gateway_list':
+        adc_vrrp_track_gateway_vrrp_track_gateway_list(module)
+    elif action == 'vrrp_track_gateway_edit':
+        adc_vrrp_track_gateway_vrrp_track_gateway_edit(module)
 
 
 if __name__ == '__main__':

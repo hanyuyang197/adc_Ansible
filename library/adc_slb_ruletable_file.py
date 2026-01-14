@@ -23,7 +23,7 @@ import sys
 import os
 
 
-def adc_ruletable_file_upload(module):
+def adc_slb_ruletable_file_upload(module):
     """上传规则表文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -128,7 +128,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'ruletable_file_upload'
+            'slb_ruletable_file_upload'
         ]),
         # 规则表文件参数
         name=dict(type='str', required=False),
@@ -140,15 +140,15 @@ def main():
         argument_spec=module_args,
         supports_check_mode=False,
         required_if=[
-            ['action', 'ruletable_file_upload', ['file_path']]
+            ['action', 'slb_ruletable_file_upload', ['file_path']]
         ]
     )
 
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'ruletable_file_upload':
-        adc_ruletable_file_upload(module)
+    if action == 'slb_ruletable_file_upload':
+        adc_slb_ruletable_file_upload(module)
 
 
 if __name__ == '__main__':

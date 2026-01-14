@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_track_pool_del(module):
+def adc_vrrp_track_pool_vrrp_track_pool_del(module):
     """删除vrrp服务池监控条件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_track_pool_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_track_pool_list(module):
+def adc_vrrp_track_pool_vrrp_track_pool_list(module):
     """获取vrrp服务池监控条件列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -133,7 +133,7 @@ def adc_vrrp_track_pool_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_track_pool_add(module):
+def adc_vrrp_track_pool_vrrp_track_pool_add(module):
     """添加vrrp服务池监控条件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -195,7 +195,7 @@ def adc_vrrp_track_pool_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_track_pool_edit(module):
+def adc_vrrp_track_pool_vrrp_track_pool_edit(module):
     """编辑vrrp服务池监控条件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -263,7 +263,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'del', 'list', 'add', 'edit']),
+                    'vrrp_track_pool_del', 'vrrp_track_pool_list', 'vrrp_track_pool_add', 'vrrp_track_pool_edit']),
         group_id=dict(type='int', required=False),
         pool_name=dict(type='str', required=False),
         min_up_members=dict(type='int', required=False),
@@ -287,14 +287,14 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'del':
-        adc_vrrp_track_pool_del(module)
-    elif action == 'list':
-        adc_vrrp_track_pool_list(module)
-    elif action == 'add':
-        adc_vrrp_track_pool_add(module)
-    elif action == 'edit':
-        adc_vrrp_track_pool_edit(module)
+    if action == 'vrrp_track_pool_del':
+        adc_vrrp_track_pool_vrrp_track_pool_del(module)
+    elif action == 'vrrp_track_pool_list':
+        adc_vrrp_track_pool_vrrp_track_pool_list(module)
+    elif action == 'vrrp_track_pool_add':
+        adc_vrrp_track_pool_vrrp_track_pool_add(module)
+    elif action == 'vrrp_track_pool_edit':
+        adc_vrrp_track_pool_vrrp_track_pool_edit(module)
 
 
 if __name__ == '__main__':

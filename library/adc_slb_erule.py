@@ -56,7 +56,7 @@ import os
 #     return response_data
 
 
-def adc_erule_upload(module):
+def adc_slb_erule_upload(module):
     """erule上传"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -155,7 +155,7 @@ def adc_erule_upload(module):
         module.fail_json(msg="erule上传失败: %s" % str(e))
 
 
-def adc_erule_content_add(module):
+def adc_slb_erule_content_add(module):
     """erule在线编辑"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -187,7 +187,7 @@ def adc_erule_content_add(module):
         module.fail_json(msg="erule在线编辑失败: %s" % str(e))
 
 
-def adc_erule_del(module):
+def adc_slb_erule_del(module):
     """erule文件删除"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -217,7 +217,7 @@ def adc_erule_del(module):
         module.fail_json(msg="erule文件删除失败: %s" % str(e))
 
 
-def adc_erule_list(module):
+def adc_slb_erule_list(module):
     """erule文件列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -233,7 +233,7 @@ def adc_erule_list(module):
         module.fail_json(msg="erule文件列表获取失败: %s" % str(e))
 
 
-def adc_erulefiles_upload(module):
+def adc_slb_erulefiles_upload(module):
     """erule服务器文件上传"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -342,7 +342,7 @@ def adc_erulefiles_upload(module):
         module.fail_json(msg="erule服务器文件上传失败: %s" % str(e))
 
 
-def adc_erulefiles_del(module):
+def adc_slb_erulefiles_del(module):
     """erule服务器文件删除"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -372,7 +372,7 @@ def adc_erulefiles_del(module):
         module.fail_json(msg="erule服务器文件删除失败: %s" % str(e))
 
 
-def adc_erulefiles_list(module):
+def adc_slb_erulefiles_list(module):
     """erule服务器文件列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -388,7 +388,7 @@ def adc_erulefiles_list(module):
         module.fail_json(msg="erule服务器文件列表获取失败: %s" % str(e))
 
 
-def adc_erule_list_withcommon(module):
+def adc_slb_slb_erule_list_withcommon(module):
     """erule文件获取 common 和本分区"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -410,9 +410,9 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'erule_upload', 'erule_content_add', 'erule_del',
-            'erule_list', 'erulefiles_upload', 'erulefiles_del',
-            'erulefiles_list', 'erule_list_withcommon'
+            'slb_erule_upload', 'slb_erule_content_add', 'slb_erule_del',
+            'slb_erule_list', 'slb_erulefiles_upload', 'slb_erulefiles_del',
+            'slb_erulefiles_list', 'slb_erule_list_withcommon'
         ]),
         # erule参数
         name=dict(type='str', required=False),
@@ -425,30 +425,30 @@ def main():
         argument_spec=module_args,
         supports_check_mode=False,
         required_if=[
-            ['action', 'erule_upload', ['file_path']],
-            ['action', 'erulefiles_upload', ['file_path']]
+            ['action', 'slb_erule_upload', ['file_path']],
+            ['action', 'slb_erulefiles_upload', ['file_path']]
         ]
     )
 
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'erule_upload':
-        adc_erule_upload(module)
-    elif action == 'erule_content_add':
-        adc_erule_content_add(module)
-    elif action == 'erule_del':
-        adc_erule_del(module)
-    elif action == 'erule_list':
-        adc_erule_list(module)
-    elif action == 'erulefiles_upload':
-        adc_erulefiles_upload(module)
-    elif action == 'erulefiles_del':
-        adc_erulefiles_del(module)
-    elif action == 'erulefiles_list':
-        adc_erulefiles_list(module)
-    elif action == 'erule_list_withcommon':
-        adc_erule_list_withcommon(module)
+    if action == 'slb_erule_upload':
+        adc_slb_erule_upload(module)
+    elif action == 'slb_erule_content_add':
+        adc_slb_erule_content_add(module)
+    elif action == 'slb_erule_del':
+        adc_slb_erule_del(module)
+    elif action == 'slb_erule_list':
+        adc_slb_erule_list(module)
+    elif action == 'slb_erulefiles_upload':
+        adc_slb_erulefiles_upload(module)
+    elif action == 'slb_erulefiles_del':
+        adc_slb_erulefiles_del(module)
+    elif action == 'slb_erulefiles_list':
+        adc_slb_erulefiles_list(module)
+    elif action == 'slb_erule_list_withcommon':
+        adc_slb_erule_list_withcommon(module)
 
 
 if __name__ == '__main__':

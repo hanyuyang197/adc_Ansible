@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_ipv4_entries(module):
+def arp_ipv4_list(module):
     """获取IPv4 ARP条目列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_ipv4_entries(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_ipv4_entry(module):
+def arp_ipv4_get(module):
     """获取IPv4 ARP条目详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_ipv4_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_ipv4_entry(module):
+def arp_ipv4_add(module):
     """添加IPv4 ARP条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -203,7 +203,7 @@ def adc_add_ipv4_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_ipv4_entry(module):
+def arp_ipv4_edit(module):
     """编辑IPv4 ARP条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -275,7 +275,7 @@ def adc_edit_ipv4_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_ipv4_entry(module):
+def arp_ipv4_del(module):
     """删除IPv4 ARP条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -333,7 +333,7 @@ def adc_delete_ipv4_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_ipv4_statistics(module):
+def arp_ipv4_statis(module):
     """获取IPv4 ARP统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -379,7 +379,7 @@ def adc_get_ipv4_statistics(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_clear_ipv4_statistics(module):
+def arp_ipv4_clear(module):
     """清除IPv4 ARP统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -422,7 +422,7 @@ def adc_clear_ipv4_statistics(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_ipv6_entries(module):
+def arp_ipv6_list(module):
     """获取IPv6 ARP条目列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -468,7 +468,7 @@ def adc_list_ipv6_entries(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_ipv6_entry(module):
+def arp_ipv6_get(module):
     """获取IPv6 ARP条目详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -529,7 +529,7 @@ def adc_get_ipv6_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_ipv6_entry(module):
+def arp_ipv6_add(module):
     """添加IPv6 ARP条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -601,7 +601,7 @@ def adc_add_ipv6_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_ipv6_entry(module):
+def arp_ipv6_edit(module):
     """编辑IPv6 ARP条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -673,7 +673,7 @@ def adc_edit_ipv6_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_ipv6_entry(module):
+def arp_ipv6_del(module):
     """删除IPv6 ARP条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -731,7 +731,7 @@ def adc_delete_ipv6_entry(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_ipv6_statistics(module):
+def arp_ipv6_statis(module):
     """获取IPv6 ARP统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -777,7 +777,7 @@ def adc_get_ipv6_statistics(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_clear_ipv6_statistics(module):
+def arp_ipv6_clear(module):
     """清除IPv6 ARP统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -826,10 +826,10 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_ipv4_entries', 'get_ipv4_entry', 'add_ipv4_entry', 'edit_ipv4_entry', 'delete_ipv4_entry',
-            'get_ipv4_statistics', 'clear_ipv4_statistics',
-            'list_ipv6_entries', 'get_ipv6_entry', 'add_ipv6_entry', 'edit_ipv6_entry', 'delete_ipv6_entry',
-            'get_ipv6_statistics', 'clear_ipv6_statistics']),
+            'arp_ipv4_list', 'arp_ipv4_get', 'arp_ipv4_add', 'arp_ipv4_edit', 'arp_ipv4_delete',
+            'arp_ipv4_statistics', 'arp_ipv4_clear',
+            'arp_ipv6_list', 'arp_ipv6_get', 'arp_ipv6_add', 'arp_ipv6_edit', 'arp_ipv6_delete',
+            'arp_ipv6_statistics', 'arp_ipv6_clear']),
         # ARP参数
         ip_addr=dict(type='str', required=False),
         mac_addr=dict(type='str', required=False),
@@ -848,34 +848,34 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_ipv4_entries':
-        adc_list_ipv4_entries(module)
-    elif action == 'get_ipv4_entry':
-        adc_get_ipv4_entry(module)
-    elif action == 'add_ipv4_entry':
-        adc_add_ipv4_entry(module)
-    elif action == 'edit_ipv4_entry':
-        adc_edit_ipv4_entry(module)
-    elif action == 'delete_ipv4_entry':
-        adc_delete_ipv4_entry(module)
-    elif action == 'get_ipv4_statistics':
-        adc_get_ipv4_statistics(module)
-    elif action == 'clear_ipv4_statistics':
-        adc_clear_ipv4_statistics(module)
-    elif action == 'list_ipv6_entries':
-        adc_list_ipv6_entries(module)
-    elif action == 'get_ipv6_entry':
-        adc_get_ipv6_entry(module)
-    elif action == 'add_ipv6_entry':
-        adc_add_ipv6_entry(module)
-    elif action == 'edit_ipv6_entry':
-        adc_edit_ipv6_entry(module)
-    elif action == 'delete_ipv6_entry':
-        adc_delete_ipv6_entry(module)
-    elif action == 'get_ipv6_statistics':
-        adc_get_ipv6_statistics(module)
-    elif action == 'clear_ipv6_statistics':
-        adc_clear_ipv6_statistics(module)
+    if action == 'arp_ipv4_list':
+        arp_ipv4_list(module)
+    elif action == 'arp_ipv4_get':
+        arp_ipv4_get(module)
+    elif action == 'arp_ipv4_add':
+        arp_ipv4_add(module)
+    elif action == 'arp_ipv4_edit':
+        arp_ipv4_edit(module)
+    elif action == 'arp_ipv4_delete':
+        arp_ipv4_del(module)
+    elif action == 'arp_ipv4_statistics':
+        arp_ipv4_statis(module)
+    elif action == 'arp_ipv4_clear':
+        arp_ipv4_clear(module)
+    elif action == 'arp_ipv6_list':
+        arp_ipv6_list(module)
+    elif action == 'arp_ipv6_get':
+        arp_ipv6_get(module)
+    elif action == 'arp_ipv6_add':
+        arp_ipv6_add(module)
+    elif action == 'arp_ipv6_edit':
+        arp_ipv6_edit(module)
+    elif action == 'arp_ipv6_delete':
+        arp_ipv6_del(module)
+    elif action == 'arp_ipv6_statistics':
+        arp_ipv6_statis(module)
+    elif action == 'arp_ipv6_clear':
+        arp_ipv6_clear(module)
 
 
 if __name__ == '__main__':

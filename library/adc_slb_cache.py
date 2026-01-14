@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_cache_list(module):
+def adc_slb_slb_cache_list_withcommon(module):
     """缓存模板列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -38,7 +38,7 @@ def adc_cache_list(module):
         module.fail_json(msg="缓存模板列表获取失败: %s" % str(e))
 
 
-def adc_cache_list_withcommon(module):
+def adc_slb_cache_list_withcommon_withcommon(module):
     """获取 common 和本分区缓存文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -54,7 +54,7 @@ def adc_cache_list_withcommon(module):
         module.fail_json(msg="获取 common 和本分区缓存文件失败: %s" % str(e))
 
 
-def adc_cache_get(module):
+def adc_slb_cache_get(module):
     """缓存模板获取"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -80,7 +80,7 @@ def adc_cache_get(module):
         module.fail_json(msg="缓存模板获取失败: %s" % str(e))
 
 
-def adc_cache_add(module):
+def adc_slb_cache_add(module):
     """缓存模板添加"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -122,7 +122,7 @@ def adc_cache_add(module):
         module.fail_json(msg="缓存模板添加失败: %s" % str(e))
 
 
-def adc_cache_edit(module):
+def adc_slb_cache_edit(module):
     """缓存模板编辑"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -164,7 +164,7 @@ def adc_cache_edit(module):
         module.fail_json(msg="缓存模板编辑失败: %s" % str(e))
 
 
-def adc_cache_del(module):
+def adc_slb_cache_del(module):
     """缓存模板删除"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -200,8 +200,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'cache_list', 'cache_list_withcommon', 'cache_get',
-            'cache_add', 'cache_edit', 'cache_del'
+            'slb_cache_list_withcommon', 'slb_cache_list_withcommon', 'slb_cache_get',
+            'slb_cache_add', 'slb_cache_edit', 'slb_cache_del'
         ]),
         # 缓存模板参数
         name=dict(type='str', required=False),
@@ -221,18 +221,18 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'cache_list':
-        adc_cache_list(module)
-    elif action == 'cache_list_withcommon':
-        adc_cache_list_withcommon(module)
-    elif action == 'cache_get':
-        adc_cache_get(module)
-    elif action == 'cache_add':
-        adc_cache_add(module)
-    elif action == 'cache_edit':
-        adc_cache_edit(module)
-    elif action == 'cache_del':
-        adc_cache_del(module)
+    if action == 'slb_cache_list_withcommon':
+        adc_slb_slb_cache_list_withcommon(module)
+    elif action == 'slb_cache_list_withcommon':
+        adc_slb_cache_list_withcommon(module)
+    elif action == 'slb_cache_get':
+        adc_slb_cache_get(module)
+    elif action == 'slb_cache_add':
+        adc_slb_cache_add(module)
+    elif action == 'slb_cache_edit':
+        adc_slb_cache_edit(module)
+    elif action == 'slb_cache_del':
+        adc_slb_cache_del(module)
 
 
 if __name__ == '__main__':

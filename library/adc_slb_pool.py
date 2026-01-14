@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_slb_pool_list(module):
+def slb_pool_list(module):
     """获取服务池列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_slb_pool_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_pool_get(module):
+def slb_pool_get(module):
     """获取服务池详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_slb_pool_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_pool_add(module):
+def slb_pool_add(module):
     """添加服务池"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -207,7 +207,7 @@ def adc_slb_pool_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_pool_edit(module):
+def slb_pool_edit(module):
     """编辑服务池"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -291,7 +291,7 @@ def adc_slb_pool_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_pool_del(module):
+def slb_pool_del(module):
     """删除服务池"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -349,7 +349,7 @@ def adc_slb_pool_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_pool_member_add(module):
+def slb_pool_member_add(module):
     """添加节点到服务池"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -425,7 +425,7 @@ def adc_slb_pool_member_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_pool_member_del(module):
+def slb_pool_member_del(module):
     """从服务池删除节点"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -495,7 +495,7 @@ def adc_slb_pool_member_del(module):
 
 
 
-def adc_slb_pool_list_withcommon(module):
+def slb_pool_list_withcommon(module):
     """获取服务池列表(带公共参数)"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -531,7 +531,7 @@ def adc_slb_pool_list_withcommon(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_pool_member_edit(module):
+def slb_pool_member_edit(module):
     """编辑服务池成员"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -596,7 +596,7 @@ def adc_slb_pool_member_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_pool_member_onoff(module):
+def slb_pool_member_onoff(module):
     """启用/禁用服务池成员"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -708,25 +708,25 @@ def main():
         action = str(action)
 
     if action == 'slb_pool_list':
-        adc_slb_pool_list(module)
+        slb_pool_list(module)
     elif action == 'slb_pool_list_withcommon':
-        adc_slb_pool_list_withcommon(module)
+        slb_pool_list_withcommon(module)
     elif action == 'slb_pool_get':
-        adc_slb_pool_get(module)
+        slb_pool_get(module)
     elif action == 'slb_pool_add':
-        adc_slb_pool_add(module)
+        slb_pool_add(module)
     elif action == 'slb_pool_edit':
-        adc_slb_pool_edit(module)
+        slb_pool_edit(module)
     elif action == 'slb_pool_del':
-        adc_slb_pool_del(module)
+        slb_pool_del(module)
     elif action == 'slb_pool_member_add':
-        adc_slb_pool_member_add(module)
+        slb_pool_member_add(module)
     elif action == 'slb_pool_member_del':
-        adc_slb_pool_member_del(module)
+        slb_pool_member_del(module)
     elif action == 'slb_pool_member_edit':
-        adc_slb_pool_member_edit(module)
+        slb_pool_member_edit(module)
     elif action == 'slb_pool_member_onoff':
-        adc_slb_pool_member_onoff(module)
+        slb_pool_member_onoff(module)
 
 
 

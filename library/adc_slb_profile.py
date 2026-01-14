@@ -174,7 +174,7 @@ def adc_fastl7_profile_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_http_hostswitch_del(module):
+def adc_slb_profile_http_hostswitch_del(module):
     """删除HTTP HostSwitch Profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -335,7 +335,7 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
             'fastl5_del', 'fastl6_edit', 'fastl7_get',
-            'http_hostswitch_del', 'dns_list_withcommon',
+            'slb_profile_http_hostswitch_del', 'dns_list_withcommon',
             'smtp_list_withcommon', 'rtsp_list_withcommon'
         ]),
         # Profile通用参数
@@ -363,8 +363,8 @@ def main():
         adc_fastl6_profile_edit(module)
     elif action == 'fastl7_get':
         adc_fastl7_profile_get(module)
-    elif action == 'http_hostswitch_del':
-        adc_http_hostswitch_del(module)
+    elif action == 'slb_profile_http_hostswitch_del':
+        adc_slb_profile_http_hostswitch_del(module)
     elif action == 'dns_list_withcommon':
         adc_dns_profile_list_withcommon(module)
     elif action == 'smtp_list_withcommon':

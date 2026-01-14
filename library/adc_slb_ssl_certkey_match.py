@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_slb_ssl_certkey_match(module):
+def adc_slb_ssl_certkey_slb_ssl_certkey_match(module):
     """校验证书和私钥配对"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -69,7 +69,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['match']),
+        action=dict(type='str', required=True, choices=['slb_ssl_certkey_match']),
         cert_name=dict(type='str', required=True),
         key_name=dict(type='str', required=True),
         password=dict(type='str', required=False, no_log=True)
@@ -84,8 +84,8 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'match':
-        adc_slb_ssl_certkey_match(module)
+    if action == 'slb_ssl_certkey_match':
+        adc_slb_ssl_certkey_slb_ssl_certkey_match(module)
 
 
 if __name__ == '__main__':

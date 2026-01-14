@@ -196,7 +196,7 @@ def adc_system_sys_csr_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_system_sys_csr_list(module):
+def adc_system_sys_system_sys_csr_list(module):
     """获取CSR证书列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -254,7 +254,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['get_cert', 'cert_relevance', 'csr_get', 'csr_list']),
+        action=dict(type='str', required=True, choices=['system_sys_cert_get', 'cert_relevance', 'csr_get', 'system_sys_csr_list']),
         name=dict(type='str', required=False),
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
@@ -273,7 +273,7 @@ def main():
     # 根据action执行不同的操作
     action = module.params['action']
     
-    if action == 'get_cert':
+    if action == 'system_sys_cert_get':
         adc_system_sys_cert_get(module)
     elif action == 'cert_relevance':
         if not module.params.get('name'):
@@ -283,8 +283,8 @@ def main():
         if not module.params.get('name'):
             module.fail_json(msg="获取CSR证书功能需要提供证书名称(name参数)")
         adc_system_sys_csr_get(module)
-    elif action == 'csr_list':
-        adc_system_sys_csr_list(module)
+    elif action == 'system_sys_csr_list':
+        adc_system_sys_system_sys_csr_list(module)
 
 
 if __name__ == '__main__':

@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_login(module):
+def login(module):
     """执行ADC设备登录操作"""
     # 获取参数
     ip = module.params['ip']
@@ -138,7 +138,7 @@ def main():
     )
 
     # 执行登录操作
-    adc_login(module)
+    login(module)
 
 
 if __name__ == '__main__':

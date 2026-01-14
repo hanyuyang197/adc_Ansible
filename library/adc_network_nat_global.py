@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_global(module):
+def nat_global_get(module):
     """获取NAT全局配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_global(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_global(module):
+def nat_global_set(module):
     """设置NAT全局配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -135,7 +135,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_global', 'set_global']),
+            'nat_global_get', 'nat_global_set']),
         # NAT全局配置参数
         enable=dict(type='int', required=False),
         mode=dict(type='int', required=False)
@@ -150,10 +150,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_global':
-        adc_get_global(module)
-    elif action == 'set_global':
-        adc_set_global(module)
+    if action == 'nat_global_get':
+        nat_global_get(module)
+    elif action == 'nat_global_set':
+        nat_global_set(module)
 
 
 if __name__ == '__main__':

@@ -122,7 +122,7 @@ def send_request(url, post_data=None):
     return response_data
 
 
-def adc_bwlist_upload(module):
+def adc_slb_bwlist_upload(module):
     """上传黑白名单文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -221,7 +221,7 @@ def adc_bwlist_upload(module):
         module.fail_json(msg="上传黑白名单文件失败: %s" % str(e))
 
 
-def adc_bwlist_del(module):
+def adc_slb_bwlist_del(module):
     """删除黑白名单文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -251,7 +251,7 @@ def adc_bwlist_del(module):
         module.fail_json(msg="删除黑白名单文件失败: %s" % str(e))
 
 
-def adc_bwlist_list(module):
+def adc_slb_bwlist_list(module):
     """获取黑白名单文件列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -273,7 +273,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'bwlist_upload', 'bwlist_del', 'bwlist_list'
+            'slb_bwlist_upload', 'slb_bwlist_del', 'slb_bwlist_list'
         ]),
         # 黑白名单参数
         name=dict(type='str', required=False),
@@ -285,19 +285,19 @@ def main():
         argument_spec=module_args,
         supports_check_mode=False,
         required_if=[
-            ['action', 'bwlist_upload', ['file_path']]
+            ['action', 'slb_bwlist_upload', ['file_path']]
         ]
     )
 
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'bwlist_upload':
-        adc_bwlist_upload(module)
-    elif action == 'bwlist_del':
-        adc_bwlist_del(module)
-    elif action == 'bwlist_list':
-        adc_bwlist_list(module)
+    if action == 'slb_bwlist_upload':
+        adc_slb_bwlist_upload(module)
+    elif action == 'slb_bwlist_del':
+        adc_slb_bwlist_del(module)
+    elif action == 'slb_bwlist_list':
+        adc_slb_bwlist_list(module)
 
 
 if __name__ == '__main__':

@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_networks(module):
+def nat_network_list(module):
     """获取网络NAT列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_networks(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_network(module):
+def nat_network_get(module):
     """获取网络NAT详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_network(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_network(module):
+def nat_network_add(module):
     """添加网络NAT"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -204,7 +204,7 @@ def adc_add_network(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_network(module):
+def nat_network_edit(module):
     """编辑网络NAT"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -276,7 +276,7 @@ def adc_edit_network(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_network(module):
+def nat_network_del(module):
     """删除网络NAT"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -340,7 +340,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_networks', 'get_network', 'add_network', 'edit_network', 'delete_network']),
+            'nat_network_list', 'nat_network_get', 'nat_network_add', 'nat_network_edit', 'nat_network_del']),
         # 网络NAT参数
         name=dict(type='str', required=False),
         origin_ip=dict(type='str', required=False),
@@ -360,16 +360,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_networks':
-        adc_list_networks(module)
-    elif action == 'get_network':
-        adc_get_network(module)
-    elif action == 'add_network':
-        adc_add_network(module)
-    elif action == 'edit_network':
-        adc_edit_network(module)
-    elif action == 'delete_network':
-        adc_delete_network(module)
+    if action == 'nat_network_list':
+        nat_network_list(module)
+    elif action == 'nat_network_get':
+        nat_network_get(module)
+    elif action == 'nat_network_add':
+        nat_network_add(module)
+    elif action == 'nat_network_edit':
+        nat_network_edit(module)
+    elif action == 'nat_network_del':
+        nat_network_del(module)
 
 
 if __name__ == '__main__':

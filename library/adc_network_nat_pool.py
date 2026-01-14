@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_pools(module):
+def nat_pool_list(module):
     """获取NAT地址池列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_pools(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_pool(module):
+def nat_pool_get(module):
     """获取NAT地址池详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_pool(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_pool(module):
+def nat_pool_add(module):
     """添加NAT地址池"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -208,7 +208,7 @@ def adc_add_pool(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_pool(module):
+def nat_pool_edit(module):
     """编辑NAT地址池"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -285,7 +285,7 @@ def adc_edit_pool(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_pool(module):
+def nat_pool_del(module):
     """删除NAT地址池"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -349,7 +349,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_pools', 'get_pool', 'add_pool', 'edit_pool', 'delete_pool']),
+            'nat_pool_list', 'nat_pool_get', 'nat_pool_add', 'nat_pool_edit', 'nat_pool_del']),
         # NAT地址池参数
         name=dict(type='str', required=False),
         ip_start=dict(type='str', required=False),
@@ -369,16 +369,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_pools':
-        adc_list_pools(module)
-    elif action == 'get_pool':
-        adc_get_pool(module)
-    elif action == 'add_pool':
-        adc_add_pool(module)
-    elif action == 'edit_pool':
-        adc_edit_pool(module)
-    elif action == 'delete_pool':
-        adc_delete_pool(module)
+    if action == 'nat_pool_list':
+        nat_pool_list(module)
+    elif action == 'nat_pool_get':
+        nat_pool_get(module)
+    elif action == 'nat_pool_add':
+        nat_pool_add(module)
+    elif action == 'nat_pool_edit':
+        nat_pool_edit(module)
+    elif action == 'nat_pool_del':
+        nat_pool_del(module)
 
 
 if __name__ == '__main__':

@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_stats(module):
+def nat_pool_stats_list(module):
     """获取NAT地址池统计信息列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_stats(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_clear_stats(module):
+def nat_pool_stats_clear(module):
     """清除NAT地址池统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -139,7 +139,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_stats', 'clear_stats']),
+            'nat_pool_stats_list', 'nat_pool_stats_clear']),
         # NAT地址池统计信息参数
         name=dict(type='str', required=False),
         ip_type=dict(type='int', required=False)
@@ -154,10 +154,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_stats':
-        adc_list_stats(module)
-    elif action == 'clear_stats':
-        adc_clear_stats(module)
+    if action == 'nat_pool_stats_list':
+        nat_pool_stats_list(module)
+    elif action == 'nat_pool_stats_clear':
+        nat_pool_stats_clear(module)
 
 
 if __name__ == '__main__':

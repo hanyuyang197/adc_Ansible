@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_ddos_config(module):
+def ddos_config_get(module):
     """获取DDoS防护配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_ddos_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_ddos_config(module):
+def ddos_config_set(module):
     """设置DDoS防护配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -135,7 +135,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_ddos_config', 'set_ddos_config']),
+            'ddos_config_get', 'ddos_config_set']),
         # DDoS防护参数
         enable=dict(type='int', required=False),
         threshold=dict(type='int', required=False)
@@ -150,10 +150,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_ddos_config':
-        adc_get_ddos_config(module)
-    elif action == 'set_ddos_config':
-        adc_set_ddos_config(module)
+    if action == 'ddos_config_get':
+        ddos_config_get(module)
+    elif action == 'ddos_config_set':
+        ddos_config_set(module)
 
 
 if __name__ == '__main__':

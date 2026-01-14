@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_http_hostswitch_add(module):
+def adc_slb_profile_http_hostswitch_add(module):
     """HTTP模板增加主机动作配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -86,7 +86,7 @@ def adc_http_hostswitch_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_http_hostswitch_del(module):
+def adc_slb_profile_http_hostswitch_del(module):
     """HTTP模板删除主机动作配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -154,7 +154,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'http_hostswitch_add', 'http_hostswitch_del']),
+            'slb_profile_http_hostswitch_add', 'slb_profile_http_hostswitch_del']),
         # HTTP模板主机动作配置参数
         name=dict(type='str', required=False),
         host_class=dict(type='list', required=False)
@@ -169,10 +169,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'http_hostswitch_add':
-        adc_http_hostswitch_add(module)
-    elif action == 'http_hostswitch_del':
-        adc_http_hostswitch_del(module)
+    if action == 'slb_profile_http_hostswitch_add':
+        adc_slb_profile_http_hostswitch_add(module)
+    elif action == 'slb_profile_http_hostswitch_del':
+        adc_slb_profile_http_hostswitch_del(module)
 
 
 if __name__ == '__main__':

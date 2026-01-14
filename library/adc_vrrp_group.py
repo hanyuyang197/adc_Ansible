@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_group_del(module):
+def adc_vrrp_group_vrrp_group_del(module):
     """删除指定vrrp组"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_group_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_group_get(module):
+def adc_vrrp_group_vrrp_group_get(module):
     """获取指定vrrp组"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -143,7 +143,7 @@ def adc_vrrp_group_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_group_edit(module):
+def adc_vrrp_group_vrrp_group_edit(module):
     """编辑vrrp组"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -216,7 +216,7 @@ def adc_vrrp_group_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_group_stats(module):
+def adc_vrrp_group_vrrp_group_stats(module):
     """获取vrrp组状态列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -268,7 +268,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'del', 'get', 'edit', 'stats']),
+                    'vrrp_group_del', 'vrrp_group_get', 'vrrp_group_edit', 'vrrp_group_stats']),
         group_id=dict(type='int', required=False),
         priority=dict(type='int', required=False),
         preempt=dict(type='int', required=False),
@@ -294,14 +294,14 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'del':
-        adc_vrrp_group_del(module)
-    elif action == 'get':
-        adc_vrrp_group_get(module)
-    elif action == 'edit':
-        adc_vrrp_group_edit(module)
-    elif action == 'stats':
-        adc_vrrp_group_stats(module)
+    if action == 'vrrp_group_del':
+        adc_vrrp_group_vrrp_group_del(module)
+    elif action == 'vrrp_group_get':
+        adc_vrrp_group_vrrp_group_get(module)
+    elif action == 'vrrp_group_edit':
+        adc_vrrp_group_vrrp_group_edit(module)
+    elif action == 'vrrp_group_stats':
+        adc_vrrp_group_vrrp_group_stats(module)
 
 
 if __name__ == '__main__':

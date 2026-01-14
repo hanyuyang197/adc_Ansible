@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_groups(module):
+def nat_pool_group_list(module):
     """获取NAT地址池组列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_groups(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_group(module):
+def nat_pool_group_get(module):
     """获取NAT地址池组详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_group(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_group(module):
+def nat_pool_group_add(module):
     """添加NAT地址池组"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -195,7 +195,7 @@ def adc_add_group(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_group(module):
+def nat_pool_group_edit(module):
     """编辑NAT地址池组"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -259,7 +259,7 @@ def adc_edit_group(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_group(module):
+def nat_pool_group_del(module):
     """删除NAT地址池组"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -323,7 +323,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_groups', 'get_group', 'add_group', 'edit_group', 'delete_group']),
+            'nat_pool_group_list', 'nat_pool_group_get', 'nat_pool_group_add', 'nat_pool_group_edit', 'nat_pool_group_del']),
         # NAT地址池组参数
         name=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -339,16 +339,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_groups':
-        adc_list_groups(module)
-    elif action == 'get_group':
-        adc_get_group(module)
-    elif action == 'add_group':
-        adc_add_group(module)
-    elif action == 'edit_group':
-        adc_edit_group(module)
-    elif action == 'delete_group':
-        adc_delete_group(module)
+    if action == 'nat_pool_group_list':
+        nat_pool_group_list(module)
+    elif action == 'nat_pool_group_get':
+        nat_pool_group_get(module)
+    elif action == 'nat_pool_group_add':
+        nat_pool_group_add(module)
+    elif action == 'nat_pool_group_edit':
+        nat_pool_group_edit(module)
+    elif action == 'nat_pool_group_del':
+        nat_pool_group_del(module)
 
 
 if __name__ == '__main__':

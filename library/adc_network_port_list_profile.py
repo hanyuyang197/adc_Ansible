@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_profiles(module):
+def port_list_profile_list(module):
     """获取端口列表模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_profiles(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_profile(module):
+def port_list_profile_get(module):
     """获取端口列表模板详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_profile(module):
+def port_list_profile_add(module):
     """添加端口列表模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -193,7 +193,7 @@ def adc_add_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_profile_item(module):
+def port_list_profile_item_add(module):
     """添加端口列表模板条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -255,7 +255,7 @@ def adc_add_profile_item(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_profile(module):
+def port_list_profile_edit(module):
     """编辑端口列表模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -317,7 +317,7 @@ def adc_edit_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_profile(module):
+def port_list_profile_del(module):
     """删除端口列表模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -375,7 +375,7 @@ def adc_delete_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_profile_item(module):
+def port_list_profile_item_del(module):
     """删除端口列表模板条目"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -443,8 +443,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'get_profile', 'add_profile', 'add_profile_item',
-            'edit_profile', 'delete_profile', 'delete_profile_item']),
+            'port_list_profile_list', 'port_list_profile_get', 'port_list_profile_add', 'port_list_profile_item_add',
+            'port_list_profile_edit', 'port_list_profile_del', 'port_list_profile_item_del']),
         # 端口列表模板参数
         name=dict(type='str', required=False),
         port=dict(type='list', required=False),
@@ -461,20 +461,20 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_profiles':
-        adc_list_profiles(module)
-    elif action == 'get_profile':
-        adc_get_profile(module)
-    elif action == 'add_profile':
-        adc_add_profile(module)
-    elif action == 'add_profile_item':
-        adc_add_profile_item(module)
-    elif action == 'edit_profile':
-        adc_edit_profile(module)
-    elif action == 'delete_profile':
-        adc_delete_profile(module)
-    elif action == 'delete_profile_item':
-        adc_delete_profile_item(module)
+    if action == 'port_list_profile_list':
+        port_list_profile_list(module)
+    elif action == 'port_list_profile_get':
+        port_list_profile_get(module)
+    elif action == 'port_list_profile_add':
+        port_list_profile_add(module)
+    elif action == 'port_list_profile_item_add':
+        port_list_profile_item_add(module)
+    elif action == 'port_list_profile_edit':
+        port_list_profile_edit(module)
+    elif action == 'port_list_profile_del':
+        port_list_profile_del(module)
+    elif action == 'port_list_profile_item_del':
+        port_list_profile_item_del(module)
 
 
 if __name__ == '__main__':

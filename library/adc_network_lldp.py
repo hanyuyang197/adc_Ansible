@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_lldp_config(module):
+def lldp_config_get(module):
     """获取LLDP配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_lldp_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_lldp_config(module):
+def lldp_config_set(module):
     """设置LLDP配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -126,7 +126,7 @@ def adc_set_lldp_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_lldp_neighbors(module):
+def lldp_neighbor_list(module):
     """获取LLDP邻居信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -178,7 +178,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_lldp_config', 'set_lldp_config', 'get_lldp_neighbors']),
+            'lldp_config_get', 'lldp_config_set', 'lldp_neighbor_list']),
         # LLDP参数
         enable=dict(type='int', required=False)
     )
@@ -192,12 +192,12 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_lldp_config':
-        adc_get_lldp_config(module)
-    elif action == 'set_lldp_config':
-        adc_set_lldp_config(module)
-    elif action == 'get_lldp_neighbors':
-        adc_get_lldp_neighbors(module)
+    if action == 'lldp_config_get':
+        lldp_config_get(module)
+    elif action == 'lldp_config_set':
+        lldp_config_set(module)
+    elif action == 'lldp_neighbor_list':
+        lldp_neighbor_list(module)
 
 
 if __name__ == '__main__':

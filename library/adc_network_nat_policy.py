@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_policies(module):
+def nat_policy_list(module):
     """获取NAT策略列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_policies(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_policy(module):
+def nat_policy_get(module):
     """获取NAT策略详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_policy(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_policy(module):
+def nat_policy_add(module):
     """添加NAT策略"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -197,7 +197,7 @@ def adc_add_policy(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_policy(module):
+def nat_policy_edit(module):
     """编辑NAT策略"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -263,7 +263,7 @@ def adc_edit_policy(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_policy(module):
+def nat_policy_del(module):
     """删除NAT策略"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -327,7 +327,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_policies', 'get_policy', 'add_policy', 'edit_policy', 'delete_policy']),
+            'nat_policy_list', 'nat_policy_get', 'nat_policy_add', 'nat_policy_edit', 'nat_policy_del']),
         # NAT策略参数
         name=dict(type='str', required=False),
         acl=dict(type='int', required=False),
@@ -344,16 +344,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_policies':
-        adc_list_policies(module)
-    elif action == 'get_policy':
-        adc_get_policy(module)
-    elif action == 'add_policy':
-        adc_add_policy(module)
-    elif action == 'edit_policy':
-        adc_edit_policy(module)
-    elif action == 'delete_policy':
-        adc_delete_policy(module)
+    if action == 'nat_policy_list':
+        nat_policy_list(module)
+    elif action == 'nat_policy_get':
+        nat_policy_get(module)
+    elif action == 'nat_policy_add':
+        nat_policy_add(module)
+    elif action == 'nat_policy_edit':
+        nat_policy_edit(module)
+    elif action == 'nat_policy_del':
+        nat_policy_del(module)
 
 
 if __name__ == '__main__':

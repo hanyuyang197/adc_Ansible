@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_statics(module):
+def nat_static_list(module):
     """获取静态NAT列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_statics(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_static(module):
+def nat_static_get(module):
     """获取静态NAT详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_static(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_static(module):
+def nat_static_add(module):
     """添加静态NAT"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -197,7 +197,7 @@ def adc_add_static(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_static(module):
+def nat_static_edit(module):
     """编辑静态NAT"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -263,7 +263,7 @@ def adc_edit_static(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_static(module):
+def nat_static_del(module):
     """删除静态NAT"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -321,7 +321,7 @@ def adc_delete_static(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_nat_static_statistics(module):
+def nat_static_statistics_get(module):
     """获取NAT静态映射统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -367,7 +367,7 @@ def adc_get_nat_static_statistics(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_clear_nat_static_statistics(module):
+def nat_static_statistics_clear(module):
     """清除NAT静态映射统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -421,8 +421,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_statics', 'get_static', 'add_static', 'edit_static', 'delete_static',
-            'get_statistics', 'clear_statistics']),
+            'nat_static_list', 'nat_static_get', 'nat_static_add', 'nat_static_edit', 'nat_static_del',
+            'nat_static_statistics_get', 'nat_static_statistics_clear']),
         # 静态NAT参数
         id=dict(type='int', required=False),
         ip_addr=dict(type='str', required=False),
@@ -439,20 +439,20 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_statics':
-        adc_list_statics(module)
-    elif action == 'get_static':
-        adc_get_static(module)
-    elif action == 'add_static':
-        adc_add_static(module)
-    elif action == 'edit_static':
-        adc_edit_static(module)
-    elif action == 'delete_static':
-        adc_delete_static(module)
-    elif action == 'get_statistics':
-        adc_get_nat_static_statistics(module)
-    elif action == 'clear_statistics':
-        adc_clear_nat_static_statistics(module)
+    if action == 'nat_static_list':
+        nat_static_list(module)
+    elif action == 'nat_static_get':
+        nat_static_get(module)
+    elif action == 'nat_static_add':
+        nat_static_add(module)
+    elif action == 'nat_static_edit':
+        nat_static_edit(module)
+    elif action == 'nat_static_del':
+        nat_static_del(module)
+    elif action == 'nat_static_statistics_get':
+        nat_static_statistics_get(module)
+    elif action == 'nat_static_statistics_clear':
+        nat_static_statistics_clear(module)
 
 
 if __name__ == '__main__':

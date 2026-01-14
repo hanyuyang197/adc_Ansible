@@ -23,7 +23,7 @@ import sys
 import os
 
 
-def adc_slb_ssl_enckey_cfca_upload(module):
+def adc_slb_ssl_enckey_cfca_slb_ssl_enckey_cfca_upload(module):
     """上传CFCA私钥"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -113,7 +113,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['upload']),
+        action=dict(type='str', required=True, choices=['slb_ssl_enckey_cfca_upload']),
         sign_file_name=dict(type='str', required=True),
         sign_file_password=dict(type='str', required=False, no_log=True),
         file_path=dict(type='str', required=True)
@@ -128,8 +128,8 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'upload':
-        adc_slb_ssl_enckey_cfca_upload(module)
+    if action == 'slb_ssl_enckey_cfca_upload':
+        adc_slb_ssl_enckey_cfca_slb_ssl_enckey_cfca_upload(module)
 
 
 if __name__ == '__main__':

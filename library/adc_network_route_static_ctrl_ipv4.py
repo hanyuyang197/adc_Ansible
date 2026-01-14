@@ -24,7 +24,7 @@ s  # !/usr/bin/python
 # ADC API响应解析函数
 
 
-def adc_list_routes(module):
+def route_static_ctrl_ipv4_list(module):
     """获取IPv4静态控制路由列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_routes(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_route(module):
+def route_static_ctrl_ipv4_get(module):
     """获取IPv4静态控制路由详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -135,7 +135,7 @@ def adc_get_route(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_route(module):
+def route_static_ctrl_ipv4_add(module):
     """添加IPv4静态控制路由"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -203,7 +203,7 @@ def adc_add_route(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_route(module):
+def route_static_ctrl_ipv4_edit(module):
     """编辑IPv4静态控制路由"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -271,7 +271,7 @@ def adc_edit_route(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_route(module):
+def route_static_ctrl_ipv4_del(module):
     """删除IPv4静态控制路由"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -339,7 +339,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_routes', 'get_route', 'add_route', 'edit_route', 'delete_route']),
+            'route_static_ctrl_ipv4_list', 'route_static_ctrl_ipv4_get', 'route_static_ctrl_ipv4_add', 'route_static_ctrl_ipv4_edit', 'route_static_ctrl_ipv4_del'])
         # IPv4静态控制路由参数
         destination=dict(type='str', required=False),
         netmask=dict(type='str', required=False),
@@ -357,16 +357,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_routes':
-        adc_list_routes(module)
-    elif action == 'get_route':
-        adc_get_route(module)
-    elif action == 'add_route':
-        adc_add_route(module)
-    elif action == 'edit_route':
-        adc_edit_route(module)
-    elif action == 'delete_route':
-        adc_delete_route(module)
+    if action == 'route_static_ctrl_ipv4_list':
+        route_static_ctrl_ipv4_list(module)
+    elif action == 'route_static_ctrl_ipv4_get':
+        route_static_ctrl_ipv4_get(module)
+    elif action == 'route_static_ctrl_ipv4_add':
+        route_static_ctrl_ipv4_add(module)
+    elif action == 'route_static_ctrl_ipv4_edit':
+        route_static_ctrl_ipv4_edit(module)
+    elif action == 'route_static_ctrl_ipv4_del':
+        route_static_ctrl_ipv4_del(module)
 
 
 if __name__ == '__main__':

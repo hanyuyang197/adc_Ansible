@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_timeout(module):
+def nat_timeout_get(module):
     """获取NAT超时配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_timeout(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_timeout(module):
+def nat_timeout_set(module):
     """设置NAT超时配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -138,7 +138,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_timeout', 'set_timeout']),
+            'nat_timeout_get', 'nat_timeout_set']),
         # NAT超时配置参数
         tcp_timeout=dict(type='int', required=False),
         udp_timeout=dict(type='int', required=False),
@@ -154,10 +154,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_timeout':
-        adc_get_timeout(module)
-    elif action == 'set_timeout':
-        adc_set_timeout(module)
+    if action == 'nat_timeout_get':
+        nat_timeout_get(module)
+    elif action == 'nat_timeout_set':
+        nat_timeout_set(module)
 
 
 if __name__ == '__main__':

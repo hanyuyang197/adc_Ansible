@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_l3_peer_get(module):
+def adc_vrrp_l3_peer_vrrp_l3_peer_get(module):
     """获取指定vrrp L3 邻居"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_l3_peer_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_l3_peer_add(module):
+def adc_vrrp_l3_peer_vrrp_l3_peer_add(module):
     """添加vrrp L3 邻居"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -145,7 +145,7 @@ def adc_vrrp_l3_peer_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_l3_peer_list(module):
+def adc_vrrp_l3_peer_vrrp_l3_peer_list(module):
     """获取vrrp L3 邻居列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -191,7 +191,7 @@ def adc_vrrp_l3_peer_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_l3_peer_del(module):
+def adc_vrrp_l3_peer_vrrp_l3_peer_del(module):
     """删除vrrp L3 邻居"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -253,7 +253,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'get', 'add', 'list', 'del']),
+                    'vrrp_l3_peer_get', 'vrrp_l3_peer_add', 'vrrp_l3_peer_list', 'vrrp_l3_peer_del']),
         name=dict(type='str', required=False),
         ip_addr=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -275,14 +275,14 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get':
-        adc_vrrp_l3_peer_get(module)
-    elif action == 'add':
-        adc_vrrp_l3_peer_add(module)
-    elif action == 'list':
-        adc_vrrp_l3_peer_list(module)
-    elif action == 'del':
-        adc_vrrp_l3_peer_del(module)
+    if action == 'vrrp_l3_peer_get':
+        adc_vrrp_l3_peer_vrrp_l3_peer_get(module)
+    elif action == 'vrrp_l3_peer_add':
+        adc_vrrp_l3_peer_vrrp_l3_peer_add(module)
+    elif action == 'vrrp_l3_peer_list':
+        adc_vrrp_l3_peer_vrrp_l3_peer_list(module)
+    elif action == 'vrrp_l3_peer_del':
+        adc_vrrp_l3_peer_vrrp_l3_peer_del(module)
 
 
 if __name__ == '__main__':

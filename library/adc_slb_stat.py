@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_node_stat_list(module):
+def adc_slb_node_stat_list(module):
     """获取节点统计列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -69,7 +69,7 @@ def adc_node_stat_list(module):
         module.fail_json(msg="获取节点统计列表失败: %s" % str(e))
 
 
-def adc_node_stat_get(module):
+def adc_slb_node_stat_get(module):
     """获取节点统计详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -124,7 +124,7 @@ def adc_node_stat_get(module):
         module.fail_json(msg="获取节点统计详情请求失败: %s" % str(e))
 
 
-def adc_node_stat_clear(module):
+def adc_slb_node_stat_clear(module):
     """清除节点统计"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -164,7 +164,7 @@ def adc_node_stat_clear(module):
         module.fail_json(msg="清除节点统计请求失败: %s" % str(e))
 
 
-def adc_pool_stat_list(module):
+def adc_slb_pool_stat_list(module):
     """获取服务池统计列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -209,7 +209,7 @@ def adc_pool_stat_list(module):
         module.fail_json(msg="获取服务池统计列表失败: %s" % str(e))
 
 
-def adc_pool_stat_get(module):
+def adc_slb_pool_stat_get(module):
     """获取服务池统计详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -264,7 +264,7 @@ def adc_pool_stat_get(module):
         module.fail_json(msg="获取服务池统计详情请求失败: %s" % str(e))
 
 
-def adc_pool_stat_clear(module):
+def adc_slb_pool_stat_clear(module):
     """清除服务池统计"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -304,7 +304,7 @@ def adc_pool_stat_clear(module):
         module.fail_json(msg="清除服务池统计请求失败: %s" % str(e))
 
 
-def adc_session_clear(module):
+def adc_slb_session_clear(module):
     """清除SLB会话"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -374,9 +374,9 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'node_stat_list', 'node_stat_get', 'node_stat_clear',
-            'pool_stat_list', 'pool_stat_get', 'pool_stat_clear',
-            'session_clear'
+            'slb_node_stat_list', 'slb_node_stat_get', 'slb_node_stat_clear',
+            'slb_pool_stat_list', 'slb_pool_stat_get', 'slb_pool_stat_clear',
+            'slb_session_clear'
         ]),
         name=dict(type='str', required=False),
         session_type=dict(type='str', required=False),
@@ -392,20 +392,20 @@ def main():
     # 根据action参数调用相应的函数
     action = module.params.get('action')
 
-    if action == 'node_stat_list':
-        adc_node_stat_list(module)
-    elif action == 'node_stat_get':
-        adc_node_stat_get(module)
-    elif action == 'node_stat_clear':
-        adc_node_stat_clear(module)
-    elif action == 'pool_stat_list':
-        adc_pool_stat_list(module)
-    elif action == 'pool_stat_get':
-        adc_pool_stat_get(module)
-    elif action == 'pool_stat_clear':
-        adc_pool_stat_clear(module)
-    elif action == 'session_clear':
-        adc_session_clear(module)
+    if action == 'slb_node_stat_list':
+        adc_slb_node_stat_list(module)
+    elif action == 'slb_node_stat_get':
+        adc_slb_node_stat_get(module)
+    elif action == 'slb_node_stat_clear':
+        adc_slb_node_stat_clear(module)
+    elif action == 'slb_pool_stat_list':
+        adc_slb_pool_stat_list(module)
+    elif action == 'slb_pool_stat_get':
+        adc_slb_pool_stat_get(module)
+    elif action == 'slb_pool_stat_clear':
+        adc_slb_pool_stat_clear(module)
+    elif action == 'slb_session_clear':
+        adc_slb_session_clear(module)
 
 
 if __name__ == '__main__':

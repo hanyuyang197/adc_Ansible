@@ -109,7 +109,7 @@ class ADCBase:
             self.module.fail_json(msg="Failed to download file: %s" % str(e))
             return False
 
-    def format_adc_response_for_ansible(self, response_data, action="", changed_default=True):
+    def format_response_for_ansible(self, response_data, action="", changed_default=True):
         """
         Format ADC response for Ansible module return
 

@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_mgmt_interface(module):
+def interface_mgmt_get(module):
     """获取管理接口配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_mgmt_interface(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_mgmt_interface(module):
+def interface_mgmt_set(module):
     """设置管理接口配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -132,7 +132,7 @@ def adc_set_mgmt_interface(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_ethernet_interfaces(module):
+def interface_ethernet_list(module):
     """获取以太网接口列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -189,7 +189,7 @@ def adc_list_ethernet_interfaces(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_ethernet_interface(module):
+def interface_ethernet_get(module):
     """获取以太网接口详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -250,7 +250,7 @@ def adc_get_ethernet_interface(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_ethernet_interface(module):
+def interface_ethernet_edit(module):
     """编辑以太网接口配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -384,7 +384,7 @@ def adc_edit_ethernet_interface(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_ethernet_statistics(module):
+def interface_ethernet_stat_get(module):
     """获取以太网接口统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -445,7 +445,7 @@ def adc_get_ethernet_statistics(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_ve_interfaces(module):
+def interface_ve_list(module):
     """获取VE接口列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -491,7 +491,7 @@ def adc_list_ve_interfaces(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_ve_interface(module):
+def interface_ve_get(module):
     """获取VE接口详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -552,7 +552,7 @@ def adc_get_ve_interface(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_ve_interface(module):
+def interface_ve_edit(module):
     """编辑VE接口配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -620,7 +620,7 @@ def adc_edit_ve_interface(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_trunk_interfaces(module):
+def interface_trunk_list(module):
     """获取TRUNK接口列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -666,7 +666,7 @@ def adc_list_trunk_interfaces(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_trunk_interface(module):
+def interface_trunk_get(module):
     """获取TRUNK接口详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -727,7 +727,7 @@ def adc_get_trunk_interface(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_trunk_interface(module):
+def interface_trunk_edit(module):
     """编辑TRUNK接口配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -797,10 +797,10 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_mgmt_interface', 'set_mgmt_interface',
-            'list_ethernet_interfaces', 'get_ethernet_interface', 'edit_ethernet_interface', 'get_ethernet_statistics',
-            'list_ve_interfaces', 'get_ve_interface', 'edit_ve_interface',
-            'list_trunk_interfaces', 'get_trunk_interface', 'edit_trunk_interface']),
+            'interface_mgmt_get', 'interface_mgmt_set',
+            'interface_ethernet_list', 'interface_ethernet_get', 'interface_ethernet_edit', 'interface_ethernet_statistics_get',
+            'interface_ve_list', 'interface_ve_get', 'interface_ve_edit',
+            'interface_trunk_list', 'interface_trunk_get', 'interface_trunk_edit']),
         # 管理接口参数
         ip_addr=dict(type='str', required=False),
         netmask=dict(type='str', required=False),
@@ -863,30 +863,30 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_mgmt_interface':
-        adc_get_mgmt_interface(module)
-    elif action == 'set_mgmt_interface':
-        adc_set_mgmt_interface(module)
-    elif action == 'list_ethernet_interfaces':
-        adc_list_ethernet_interfaces(module)
-    elif action == 'get_ethernet_interface':
-        adc_get_ethernet_interface(module)
-    elif action == 'edit_ethernet_interface':
-        adc_edit_ethernet_interface(module)
-    elif action == 'get_ethernet_statistics':
-        adc_get_ethernet_statistics(module)
-    elif action == 'list_ve_interfaces':
-        adc_list_ve_interfaces(module)
-    elif action == 'get_ve_interface':
-        adc_get_ve_interface(module)
-    elif action == 'edit_ve_interface':
-        adc_edit_ve_interface(module)
-    elif action == 'list_trunk_interfaces':
-        adc_list_trunk_interfaces(module)
-    elif action == 'get_trunk_interface':
-        adc_get_trunk_interface(module)
-    elif action == 'edit_trunk_interface':
-        adc_edit_trunk_interface(module)
+    if action == 'interface_mgmt_get':
+        interface_mgmt_get(module)
+    elif action == 'interface_mgmt_set':
+        interface_mgmt_set(module)
+    elif action == 'interface_ethernet_list':
+        interface_ethernet_list(module)
+    elif action == 'interface_ethernet_get':
+        interface_ethernet_get(module)
+    elif action == 'interface_ethernet_edit':
+        interface_ethernet_edit(module)
+    elif action == 'interface_ethernet_statistics_get':
+        interface_ethernet_stat_get(module)
+    elif action == 'interface_ve_list':
+        interface_ve_list(module)
+    elif action == 'interface_ve_get':
+        interface_ve_get(module)
+    elif action == 'interface_ve_edit':
+        interface_ve_edit(module)
+    elif action == 'interface_trunk_list':
+        interface_trunk_list(module)
+    elif action == 'interface_trunk_get':
+        interface_trunk_get(module)
+    elif action == 'interface_trunk_edit':
+        interface_trunk_edit(module)
 
 
 if __name__ == '__main__':
