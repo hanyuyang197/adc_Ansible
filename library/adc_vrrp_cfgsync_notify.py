@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_cfgsync_notify_vrrp_cfgsync_notify_get(module):
+def vrrp_cfgsync_notify_get(module):
     """获取vrrp同步通知配置信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_cfgsync_notify_vrrp_cfgsync_notify_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_cfgsync_notify_vrrp_cfgsync_notify_set(module):
+def vrrp_cfgsync_notify_set(module):
     """设置vrrp同步通知配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -170,9 +170,9 @@ def main():
     action = module.params['action']
 
     if action == 'vrrp_cfgsync_notify_get':
-        adc_vrrp_cfgsync_notify_vrrp_cfgsync_notify_get(module)
+        vrrp_cfgsync_notify_get(module)
     elif action == 'vrrp_cfgsync_notify_set':
-        adc_vrrp_cfgsync_notify_vrrp_cfgsync_notify_set(module)
+        vrrp_cfgsync_notify_set(module)
 
 
 if __name__ == '__main__':

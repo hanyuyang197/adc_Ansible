@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_save_config(module):
+def system_save_config(module):
     """保存配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -64,7 +64,7 @@ def adc_save_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_reboot_system(module):
+def system_action_reboot(module):
     """系统重启"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -119,7 +119,7 @@ def adc_reboot_system(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_reload_config(module):
+def system_action_reload(module):
     """重新加载配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -174,7 +174,7 @@ def adc_reload_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_shutdown_system(module):
+def system_action_shutdown(module):
     """系统关机"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -235,7 +235,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'save_config', 'reboot_system', 'reload_config', 'shutdown_system']),
+            'system_save_config', 'system_action_reboot', 'system_action_reload', 'system_action_shutdown']),
         # 系统操作参数
         save=dict(type='int', required=False)
     )
@@ -249,14 +249,14 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'save_config':
-        adc_save_config(module)
-    elif action == 'reboot_system':
-        adc_reboot_system(module)
-    elif action == 'reload_config':
-        adc_reload_config(module)
-    elif action == 'shutdown_system':
-        adc_shutdown_system(module)
+    if action == 'system_save_config':
+        system_save_config(module)
+    elif action == 'system_action_reboot':
+        system_action_reboot(module)
+    elif action == 'system_action_reload':
+        system_action_reload(module)
+    elif action == 'system_action_shutdown':
+        system_action_shutdown(module)
 
 
 if __name__ == '__main__':

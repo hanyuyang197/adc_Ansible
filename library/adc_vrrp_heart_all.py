@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_heart_all_statis(module):
+def vrrp_heart_all_statis(module):
     """获取所有心跳统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_heart_all_statis(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_heart_all_list(module):
+def vrrp_heart_all_list(module):
     """获取所有心跳口配置列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -138,7 +138,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['statis', 'list']),
+        action=dict(type='str', required=True, choices=['vrrp_heart_all_statis', 'vrrp_heart_all_list']),
         slot=dict(type='int', required=False),
         port=dict(type='int', required=False),
         trunk_id=dict(type='int', required=False),
@@ -160,10 +160,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'statis':
-        adc_vrrp_heart_all_statis(module)
-    elif action == 'list':
-        adc_vrrp_heart_all_list(module)
+    if action == 'vrrp_heart_all_statis':
+        vrrp_heart_all_statis(module)
+    elif action == 'vrrp_heart_all_list':
+        vrrp_heart_all_list(module)
 
 
 if __name__ == '__main__':

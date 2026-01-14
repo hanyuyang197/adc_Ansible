@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_security_banner(module):
+def system_security_banner_get(module):
     """获取登录安全标识"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_security_banner(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_security_banner(module):
+def system_security_banner_set(module):
     """设置登录安全标识"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -133,7 +133,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_security_banner', 'set_security_banner']),
+            'system_security_banner_get', 'system_security_banner_set']),
         # 安全标识参数
         login_banner=dict(type='str', required=False),
         login_success_banner=dict(type='str', required=False)
@@ -148,10 +148,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_security_banner':
-        adc_get_security_banner(module)
-    elif action == 'set_security_banner':
-        adc_set_security_banner(module)
+    if action == 'system_security_banner_get':
+        system_security_banner_get(module)
+    elif action == 'system_security_banner_set':
+        system_security_banner_set(module)
 
 
 if __name__ == '__main__':

@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_floating_ip_del(module):
+def vrrp_floating_ip_del(module):
     """删除vrrp浮动地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_floating_ip_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_floating_ip_list(module):
+def vrrp_floating_ip_list(module):
     """获取vrrp浮动地址列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -138,7 +138,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['del', 'list']),
+        action=dict(type='str', required=True, choices=['vrrp_floating_ip_del', 'vrrp_floating_ip_list']),
         group_id=dict(type='int', required=False),
         floating_ip=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -160,10 +160,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'del':
-        adc_vrrp_floating_ip_del(module)
-    elif action == 'list':
-        adc_vrrp_floating_ip_list(module)
+    if action == 'vrrp_floating_ip_del':
+        vrrp_floating_ip_del(module)
+    elif action == 'vrrp_floating_ip_list':
+        vrrp_floating_ip_list(module)
 
 
 if __name__ == '__main__':

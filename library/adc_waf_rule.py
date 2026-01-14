@@ -24,7 +24,7 @@ import sys
 import os
 
 
-def adc_waf_rule_list(module):
+def waf_rule_list(module):
     """获取WAF规则列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -40,7 +40,7 @@ def adc_waf_rule_list(module):
         module.fail_json(msg="获取WAF规则列表失败: %s" % str(e))
 
 
-def adc_waf_rule_get(module):
+def waf_rule_get(module):
     """获取指定WAF规则"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_waf_rule_get(module):
         module.fail_json(msg="获取WAF规则失败: %s" % str(e))
 
 
-def adc_waf_rule_del(module):
+def waf_rule_del(module):
     """删除WAF规则"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -100,7 +100,7 @@ def adc_waf_rule_del(module):
         module.fail_json(msg="删除WAF规则失败: %s" % str(e))
 
 
-def adc_waf_rule_download(module):
+def waf_rule_download(module):
     """下载WAF规则文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -163,7 +163,7 @@ def adc_waf_rule_download(module):
     )
 
 
-def adc_waf_rule_upload(module):
+def waf_rule_upload(module):
     """上传WAF规则文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -289,15 +289,15 @@ def main():
     action = module.params['action']
 
     if action == 'waf_rule_list':
-        adc_waf_rule_list(module)
+        waf_rule_list(module)
     elif action == 'waf_rule_get':
-        adc_waf_rule_get(module)
+        waf_rule_get(module)
     elif action == 'waf_rule_del':
-        adc_waf_rule_del(module)
+        waf_rule_del(module)
     elif action == 'waf_rule_download':
-        adc_waf_rule_download(module)
+        waf_rule_download(module)
     elif action == 'waf_rule_upload':
-        adc_waf_rule_upload(module)
+        waf_rule_upload(module)
 
 
 if __name__ == '__main__':

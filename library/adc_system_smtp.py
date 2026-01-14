@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_smtp_config(module):
+def system_smtp_get(module):
     """获取SMTP配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_smtp_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_smtp_config(module):
+def system_smtp_set(module):
     """编辑SMTP配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -143,7 +143,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_smtp_config', 'set_smtp_config']),
+            'system_smtp_get', 'system_smtp_set']),
         # SMTP配置参数
         server=dict(type='str', required=False),
         port=dict(type='int', required=False),
@@ -163,10 +163,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_smtp_config':
-        adc_get_smtp_config(module)
-    elif action == 'set_smtp_config':
-        adc_set_smtp_config(module)
+    if action == 'system_smtp_get':
+        system_smtp_get(module)
+    elif action == 'system_smtp_set':
+        system_smtp_set(module)
 
 
 if __name__ == '__main__':

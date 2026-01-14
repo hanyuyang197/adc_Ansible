@@ -92,7 +92,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['execute']),
+        action=dict(type='str', required=True, choices=['vrrp_cfgsync_action_pull_push']),
         group=dict(type='str', required=False),
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),

@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_time(module):
+def adc_system_time_get(module):
     """获取时间配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_time(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_time(module):
+def adc_system_time_set(module):
     """设置时间配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -135,7 +135,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_time', 'set_time']),
+            'system_time_get', 'system_time_set']),
         # 时间配置参数
         date=dict(type='str', required=False),
         time=dict(type='str', required=False),
@@ -151,10 +151,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_time':
-        adc_get_time(module)
-    elif action == 'set_time':
-        adc_set_time(module)
+    if action == 'system_time_get':
+        adc_system_time_get(module)
+    elif action == 'system_time_set':
+        adc_system_time_set(module)
 
 
 if __name__ == '__main__':

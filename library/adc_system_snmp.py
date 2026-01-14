@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_add_snmp_community(module):
+def adc_snmp_comm_item_add(module):
     """添加SNMP团体字"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -84,7 +84,7 @@ def adc_add_snmp_community(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_snmp_communities(module):
+def adc_snmp_comm_item_list(module):
     """获取SNMP团体字列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -130,7 +130,7 @@ def adc_list_snmp_communities(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_snmp_community(module):
+def adc_snmp_comm_item_del(module):
     """删除SNMP团体字"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -190,7 +190,7 @@ def adc_delete_snmp_community(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_snmp_server(module):
+def adc_snmp_server_set(module):
     """设置SNMP服务配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -251,7 +251,7 @@ def adc_set_snmp_server(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_snmp_server(module):
+def adc_snmp_server_get(module):
     """获取SNMP服务配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -297,7 +297,7 @@ def adc_get_snmp_server(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_snmp_trap(module):
+def adc_snmp_trap_item_add(module):
     """添加SNMP TRAP"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -363,7 +363,7 @@ def adc_add_snmp_trap(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_snmp_traps(module):
+def adc_snmp_trap_item_list(module):
     """获取SNMP TRAP列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -409,7 +409,7 @@ def adc_list_snmp_traps(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_snmp_trap(module):
+def adc_snmp_trap_item_del(module):
     """删除SNMP TRAP"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -473,7 +473,7 @@ def adc_delete_snmp_trap(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_snmp_trap(module):
+def adc_snmp_trap_set(module):
     """设置SNMP TRAP配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -528,7 +528,7 @@ def adc_set_snmp_trap(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_snmp_trap(module):
+def adc_snmp_trap_get(module):
     """获取SNMP TRAP配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -580,10 +580,10 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'add_community', 'list_communities', 'delete_community',
-            'set_server', 'get_server',
-            'add_trap', 'list_traps', 'delete_trap',
-            'set_trap', 'get_trap']),
+            'snmp_comm_item_add', 'snmp_comm_item_list', 'snmp_comm_item_del',
+            'snmp_server_set', 'snmp_server_get',
+            'snmp_trap_item_add', 'snmp_trap_item_list', 'snmp_trap_item_del',
+            'snmp_trap_set', 'snmp_trap_get']),
         # SNMP团体字参数
         community=dict(type='str', required=False),
         host=dict(type='str', required=False),
@@ -605,26 +605,26 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'add_community':
-        adc_add_snmp_community(module)
-    elif action == 'list_communities':
-        adc_list_snmp_communities(module)
-    elif action == 'delete_community':
-        adc_delete_snmp_community(module)
-    elif action == 'set_server':
-        adc_set_snmp_server(module)
-    elif action == 'get_server':
-        adc_get_snmp_server(module)
-    elif action == 'add_trap':
-        adc_add_snmp_trap(module)
-    elif action == 'list_traps':
-        adc_list_snmp_traps(module)
-    elif action == 'delete_trap':
-        adc_delete_snmp_trap(module)
-    elif action == 'set_trap':
-        adc_set_snmp_trap(module)
-    elif action == 'get_trap':
-        adc_get_snmp_trap(module)
+    if action == 'snmp_comm_item_add':
+        adc_snmp_comm_item_add(module)
+    elif action == 'snmp_comm_item_list':
+        adc_snmp_comm_item_list(module)
+    elif action == 'snmp_comm_item_del':
+        adc_snmp_comm_item_del(module)
+    elif action == 'snmp_server_set':
+        adc_snmp_server_set(module)
+    elif action == 'snmp_server_get':
+        adc_snmp_server_get(module)
+    elif action == 'snmp_trap_item_add':
+        adc_snmp_trap_item_add(module)
+    elif action == 'snmp_trap_item_list':
+        adc_snmp_trap_item_list(module)
+    elif action == 'snmp_trap_item_del':
+        adc_snmp_trap_item_del(module)
+    elif action == 'snmp_trap_set':
+        adc_snmp_trap_set(module)
+    elif action == 'snmp_trap_get':
+        adc_snmp_trap_get(module)
 
 
 if __name__ == '__main__':

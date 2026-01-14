@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_add_ntp_config(module):
+def system_ntp_add(module):
     """添加NTP配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -93,7 +93,7 @@ def adc_add_ntp_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_ntp_configs(module):
+def system_ntp_list(module):
     """获取NTP配置列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -139,7 +139,7 @@ def adc_list_ntp_configs(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_ntp_config(module):
+def system_ntp_get(module):
     """获取指定NTP配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -198,7 +198,7 @@ def adc_get_ntp_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_ntp_config(module):
+def system_ntp_edit(module):
     """编辑NTP配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -269,7 +269,7 @@ def adc_edit_ntp_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_ntp_config(module):
+def system_ntp_del(module):
     """删除指定NTP配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -332,7 +332,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'add_ntp_config', 'list_ntp_configs', 'get_ntp_config', 'edit_ntp_config', 'delete_ntp_config']),
+            'system_ntp_add', 'system_ntp_list', 'system_ntp_get', 'system_ntp_edit', 'system_ntp_del']),
         # NTP配置参数
         server=dict(type='str', required=False),
         status=dict(type='int', required=False),
@@ -350,16 +350,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'add_ntp_config':
-        adc_add_ntp_config(module)
-    elif action == 'list_ntp_configs':
-        adc_list_ntp_configs(module)
-    elif action == 'get_ntp_config':
-        adc_get_ntp_config(module)
-    elif action == 'edit_ntp_config':
-        adc_edit_ntp_config(module)
-    elif action == 'delete_ntp_config':
-        adc_delete_ntp_config(module)
+    if action == 'system_ntp_add':
+        system_ntp_add(module)
+    elif action == 'system_ntp_list':
+        system_ntp_list(module)
+    elif action == 'system_ntp_get':
+        system_ntp_get(module)
+    elif action == 'system_ntp_edit':
+        system_ntp_edit(module)
+    elif action == 'system_ntp_del':
+        system_ntp_del(module)
 
 
 if __name__ == '__main__':

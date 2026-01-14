@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_mgmt_peer_vrrp_mgmt_peer_list(module):
+def vrrp_mgmt_peer_list(module):
     """获取vrrp mgmt 统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -69,7 +69,7 @@ def adc_vrrp_mgmt_peer_vrrp_mgmt_peer_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_mgmt_peer_vrrp_mgmt_peer_add(module):
+def vrrp_mgmt_peer_add(module):
     """添加vrrp mgmt peer 邻居"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -127,7 +127,7 @@ def adc_vrrp_mgmt_peer_vrrp_mgmt_peer_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_mgmt_peer_vrrp_mgmt_peer_get(module):
+def vrrp_mgmt_peer_get(module):
     """获取指定vrrp mgmt peer 邻居"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -183,7 +183,7 @@ def adc_vrrp_mgmt_peer_vrrp_mgmt_peer_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_mgmt_peer_vrrp_mgmt_peer_del(module):
+def vrrp_mgmt_peer_del(module):
     """删除vrrp mgmt peer 邻居"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -268,13 +268,13 @@ def main():
     action = module.params['action']
 
     if action == 'vrrp_mgmt_peer_list':
-        adc_vrrp_mgmt_peer_vrrp_mgmt_peer_list(module)
+        vrrp_mgmt_peer_list(module)
     elif action == 'vrrp_mgmt_peer_add':
-        adc_vrrp_mgmt_peer_vrrp_mgmt_peer_add(module)
+        vrrp_mgmt_peer_add(module)
     elif action == 'vrrp_mgmt_peer_get':
-        adc_vrrp_mgmt_peer_vrrp_mgmt_peer_get(module)
+        vrrp_mgmt_peer_get(module)
     elif action == 'vrrp_mgmt_peer_del':
-        adc_vrrp_mgmt_peer_vrrp_mgmt_peer_del(module)
+        vrrp_mgmt_peer_del(module)
 
 
 if __name__ == '__main__':

@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_list_partitions(module):
+def system_partition_list(module):
     """获取分区列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -68,7 +68,7 @@ def adc_list_partitions(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_partition(module):
+def system_partition_get(module):
     """获取指定分区"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -127,7 +127,7 @@ def adc_get_partition(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_partition(module):
+def system_partition_add(module):
     """添加分区"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -201,7 +201,7 @@ def adc_add_partition(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_partition(module):
+def system_partition_edit(module):
     """编辑指定分区"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -272,7 +272,7 @@ def adc_edit_partition(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_partition(module):
+def system_partition_del(module):
     """删除指定分区"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -329,7 +329,7 @@ def adc_delete_partition(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_switch_partition(module):
+def system_partition_active(module):
     """切换不同分区"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -392,7 +392,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_partitions', 'get_partition', 'add_partition', 'edit_partition', 'delete_partition', 'switch_partition']),
+            'system_partition_list', 'system_partition_get', 'system_partition_add', 'system_partition_edit', 'system_partition_del', 'system_partition_active']),
         # 分区参数
         name=dict(type='str', required=False),
         partition_id=dict(type='int', required=False),
@@ -410,18 +410,18 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_partitions':
-        adc_list_partitions(module)
-    elif action == 'get_partition':
-        adc_get_partition(module)
-    elif action == 'add_partition':
-        adc_add_partition(module)
-    elif action == 'edit_partition':
-        adc_edit_partition(module)
-    elif action == 'delete_partition':
-        adc_delete_partition(module)
-    elif action == 'switch_partition':
-        adc_switch_partition(module)
+    if action == 'system_partition_list':
+        system_partition_list(module)
+    elif action == 'system_partition_get':
+        system_partition_get(module)
+    elif action == 'system_partition_add':
+        system_partition_add(module)
+    elif action == 'system_partition_edit':
+        system_partition_edit(module)
+    elif action == 'system_partition_del':
+        system_partition_del(module)
+    elif action == 'system_partition_active':
+        system_partition_active(module)
 
 
 if __name__ == '__main__':

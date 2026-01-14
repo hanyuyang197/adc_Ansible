@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_manually_active_set(module):
+def vrrp_manually_active_set(module):
     """设置vrrp主动降备"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -108,7 +108,7 @@ def main():
     )
 
     # 执行操作
-    adc_vrrp_manually_active_set(module)
+    vrrp_manually_active_set(module)
 
 
 if __name__ == '__main__':

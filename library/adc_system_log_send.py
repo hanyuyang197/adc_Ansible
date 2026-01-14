@@ -294,7 +294,7 @@ msg:
 '''
 
 
-def adc_add_syslog_server(module):
+def log_syslog_server_add(module):
     """Add syslog server configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -362,7 +362,7 @@ def adc_add_syslog_server(module):
         return True, {'response': response if response is not None else 'No response data'}
 
 
-def adc_list_syslog_servers(module):
+def log_syslog_server_list(module):
     """List syslog server configurations"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -389,7 +389,7 @@ def adc_list_syslog_servers(module):
         return True, {'servers': response if response is not None else 'No response data'}
 
 
-def adc_get_syslog_server(module):
+def log_syslog_server_get(module):
     """Get specific syslog server configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -430,7 +430,7 @@ def adc_get_syslog_server(module):
         return True, {'server': response if response is not None else 'No response data'}
 
 
-def adc_edit_syslog_server(module):
+def log_syslog_server_edit(module):
     """Edit syslog server configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -498,7 +498,7 @@ def adc_edit_syslog_server(module):
         return True, {'response': response if response is not None else 'No response data'}
 
 
-def adc_delete_syslog_server(module):
+def log_syslog_server_del(module):
     """Delete syslog server configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -546,7 +546,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'add', 'list', 'get', 'edit', 'delete']),
+                    'log_syslog_server_add', 'log_syslog_server_list', 'log_syslog_server_get', 'log_syslog_server_edit', 'log_syslog_server_del']),
         # Parameters for add/edit actions
         host=dict(type='str'),
         port=dict(type='int'),
@@ -585,18 +585,17 @@ def main():
 
     try:
         # Perform requested action
-        if action == 'add':
-            changed, result = adc_add_syslog_server(module)
-        elif action == 'list':
-            changed, result = adc_list_syslog_servers(module)
-        elif action == 'get':
-            changed, result = adc_get_syslog_server(module)
-        elif action == 'edit':
-            changed, result = adc_edit_syslog_server(module)
-        elif action == 'delete':
-            changed, result = adc_delete_syslog_server(module)
-        else:
-            module.fail_json(msg="Unsupported action: %s" % action)
+        if action == 'log_syslog_server_add':
+            changed, result = log_syslog_server_add(module)
+        elif action == 'log_syslog_server_list':
+            changed, result = log_syslog_server_list(module)
+        elif action == 'log_syslog_server_get':
+            changed, result = log_syslog_server_get(module)
+        elif action == 'log_syslog_server_edit':
+            changed, result = log_syslog_server_edit(module)
+        elif action == 'log_syslog_server_del':
+            changed, result = log_syslog_server_del(module)
+
 
         # Exit with result
         if changed:

@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_timeranges(module):
+def adc_system_timerange_list(module):
     """获取时间范围列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_timeranges(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_timerange(module):
+def adc_system_timerange_get(module):
     """获取时间范围详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_timerange(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_timerange(module):
+def adc_system_timerange_add(module):
     """添加时间范围"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -199,7 +199,7 @@ def adc_add_timerange(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_timerange(module):
+def adc_system_timerange_edit(module):
     """编辑时间范围"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -267,7 +267,7 @@ def adc_edit_timerange(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_timerange(module):
+def adc_system_timerange_del(module):
     """删除时间范围"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -331,7 +331,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_timeranges', 'get_timerange', 'add_timerange', 'edit_timerange', 'delete_timerange']),
+            'system_timerange_list', 'system_timerange_get', 'system_timerange_add', 'system_timerange_edit', 'system_timerange_del']),
         # 时间范围参数
         name=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -349,16 +349,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_timeranges':
-        adc_list_timeranges(module)
-    elif action == 'get_timerange':
-        adc_get_timerange(module)
-    elif action == 'add_timerange':
-        adc_add_timerange(module)
-    elif action == 'edit_timerange':
-        adc_edit_timerange(module)
-    elif action == 'delete_timerange':
-        adc_delete_timerange(module)
+    if action == 'system_timerange_list':
+        adc_system_timerange_list(module)
+    elif action == 'system_timerange_get':
+        adc_system_timerange_get(module)
+    elif action == 'system_timerange_add':
+        adc_system_timerange_add(module)
+    elif action == 'system_timerange_edit':
+        adc_system_timerange_edit(module)
+    elif action == 'system_timerange_del':
+        adc_system_timerange_del(module)
 
 
 if __name__ == '__main__':

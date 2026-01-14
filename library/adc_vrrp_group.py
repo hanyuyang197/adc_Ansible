@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_group_vrrp_group_del(module):
+def vrrp_group_del(module):
     """删除指定vrrp组"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_group_vrrp_group_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_group_vrrp_group_get(module):
+def vrrp_group_get(module):
     """获取指定vrrp组"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -143,7 +143,7 @@ def adc_vrrp_group_vrrp_group_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_group_vrrp_group_edit(module):
+def vrrp_group_edit(module):
     """编辑vrrp组"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -216,7 +216,7 @@ def adc_vrrp_group_vrrp_group_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_group_vrrp_group_stats(module):
+def vrrp_group_stats(module):
     """获取vrrp组状态列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -295,13 +295,13 @@ def main():
     action = module.params['action']
 
     if action == 'vrrp_group_del':
-        adc_vrrp_group_vrrp_group_del(module)
+        vrrp_group_del(module)
     elif action == 'vrrp_group_get':
-        adc_vrrp_group_vrrp_group_get(module)
+        vrrp_group_get(module)
     elif action == 'vrrp_group_edit':
-        adc_vrrp_group_vrrp_group_edit(module)
+        vrrp_group_edit(module)
     elif action == 'vrrp_group_stats':
-        adc_vrrp_group_vrrp_group_stats(module)
+        vrrp_group_stats(module)
 
 
 if __name__ == '__main__':

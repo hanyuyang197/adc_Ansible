@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_get_web_ciphers(module):
+def system_web_ciphers_get(module):
     """获取web网页加密算法和版本"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -68,7 +68,7 @@ def adc_get_web_ciphers(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_web_ciphers(module):
+def system_web_ciphers_set(module):
     """设置web网页加密算法和版本"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -135,7 +135,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_web_ciphers', 'set_web_ciphers']),
+            'system_web_ciphers_get', 'system_web_ciphers_set']),
         # 加密算法和版本配置参数
         ciphers_all=dict(type='list', required=False),
         ciphers=dict(type='list', required=False),
@@ -151,10 +151,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_web_ciphers':
-        adc_get_web_ciphers(module)
-    elif action == 'set_web_ciphers':
-        adc_set_web_ciphers(module)
+    if action == 'system_web_ciphers_get':
+        system_web_ciphers_get(module)
+    elif action == 'system_web_ciphers_set':
+        system_web_ciphers_set(module)
 
 
 if __name__ == '__main__':

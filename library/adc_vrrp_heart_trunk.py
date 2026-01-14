@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_heart_trunk_statis(module):
+def vrrp_heart_trunk_statis(module):
     """获取汇聚心跳统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_heart_trunk_statis(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_heart_trunk_list(module):
+def vrrp_heart_trunk_list(module):
     """获取汇聚心跳口配置列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -133,7 +133,7 @@ def adc_vrrp_heart_trunk_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_heart_trunk_add(module):
+def vrrp_heart_trunk_add(module):
     """添加汇聚接口作为心跳接口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -191,7 +191,7 @@ def adc_vrrp_heart_trunk_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_heart_trunk_edit(module):
+def vrrp_heart_trunk_edit(module):
     """编辑汇聚心跳接口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -249,7 +249,7 @@ def adc_vrrp_heart_trunk_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_heart_trunk_del(module):
+def vrrp_heart_trunk_del(module):
     """删除汇聚心跳接口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -311,7 +311,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'statis', 'list', 'add', 'edit', 'del']),
+                    'vrrp_heart_trunk_statis', 'vrrp_heart_trunk_list', 'vrrp_heart_trunk_add', 'vrrp_heart_trunk_edit', 'vrrp_heart_trunk_del']),
         trunk_id=dict(type='int', required=False),
         vlan_id=dict(type='int', required=False),
         description=dict(type='str', required=False),
@@ -332,16 +332,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'statis':
-        adc_vrrp_heart_trunk_statis(module)
-    elif action == 'list':
-        adc_vrrp_heart_trunk_list(module)
-    elif action == 'add':
-        adc_vrrp_heart_trunk_add(module)
-    elif action == 'edit':
-        adc_vrrp_heart_trunk_edit(module)
-    elif action == 'del':
-        adc_vrrp_heart_trunk_del(module)
+    if action == 'vrrp_heart_trunk_statis':
+        vrrp_heart_trunk_statis(module)
+    elif action == 'vrrp_heart_trunk_list':
+        vrrp_heart_trunk_list(module)
+    elif action == 'vrrp_heart_trunk_add':
+        vrrp_heart_trunk_add(module)
+    elif action == 'vrrp_heart_trunk_edit':
+        vrrp_heart_trunk_edit(module)
+    elif action == 'vrrp_heart_trunk_del':
+        vrrp_heart_trunk_del(module)
 
 
 if __name__ == '__main__':

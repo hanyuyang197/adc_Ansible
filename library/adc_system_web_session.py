@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_set_web_session_config(module):
+def system_web_set(module):
     """设置WEB会话超时时间及是否默认显示高级选项"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -81,7 +81,7 @@ def adc_set_web_session_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_web_session_config(module):
+def system_web_get(module):
     """获取WEB会话超时时间及是否默认显示高级选项"""
     ip = module.params['ip']
     authkey = module.params['authkey']

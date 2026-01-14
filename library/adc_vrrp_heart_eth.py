@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_heart_eth_statis(module):
+def vrrp_heart_eth_statis(module):
     """获取以太网心跳统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_heart_eth_statis(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_heart_eth_list(module):
+def vrrp_heart_eth_list(module):
     """获取以太网心跳口配置列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -133,7 +133,7 @@ def adc_vrrp_heart_eth_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_heart_eth_edit(module):
+def vrrp_heart_eth_edit(module):
     """编辑以太网心跳接口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -193,7 +193,7 @@ def adc_vrrp_heart_eth_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_heart_eth_del(module):
+def vrrp_heart_eth_del(module):
     """删除以太网心跳接口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -257,7 +257,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'statis', 'list', 'edit', 'del']),
+                    'vrrp_heart_eth_statis', 'vrrp_heart_eth_list', 'vrrp_heart_eth_edit', 'vrrp_heart_eth_del']),
         slot=dict(type='int', required=False),
         port=dict(type='int', required=False),
         vlan_id=dict(type='int', required=False),
@@ -279,14 +279,14 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'statis':
-        adc_vrrp_heart_eth_statis(module)
-    elif action == 'list':
-        adc_vrrp_heart_eth_list(module)
-    elif action == 'edit':
-        adc_vrrp_heart_eth_edit(module)
-    elif action == 'del':
-        adc_vrrp_heart_eth_del(module)
+    if action == 'vrrp_heart_eth_statis':
+        vrrp_heart_eth_statis(module)
+    elif action == 'vrrp_heart_eth_list':
+        vrrp_heart_eth_list(module)
+    elif action == 'vrrp_heart_eth_edit':
+        vrrp_heart_eth_edit(module)
+    elif action == 'vrrp_heart_eth_del':
+        vrrp_heart_eth_del(module)
 
 
 if __name__ == '__main__':

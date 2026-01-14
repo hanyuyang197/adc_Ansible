@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_sync_module_vrrp_sync_module_set(module):
+def vrrp_sync_module_set(module):
     """编辑vrrp同步模块"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_sync_module_vrrp_sync_module_set(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_sync_module_vrrp_sync_module_get(module):
+def vrrp_sync_module_get(module):
     """获取vrrp同步模块配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -160,9 +160,9 @@ def main():
     action = module.params['action']
 
     if action == 'vrrp_sync_module_set':
-        adc_vrrp_sync_module_vrrp_sync_module_set(module)
+        vrrp_sync_module_set(module)
     elif action == 'vrrp_sync_module_get':
-        adc_vrrp_sync_module_vrrp_sync_module_get(module)
+        vrrp_sync_module_get(module)
 
 
 if __name__ == '__main__':

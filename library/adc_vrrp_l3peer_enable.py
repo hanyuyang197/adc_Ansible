@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_l3peer_enable_vrrp_l3peer_enable_set(module):
+def vrrp_l3peer_enable_set(module):
     """编辑vrrp L3使能状态"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -81,7 +81,7 @@ def adc_vrrp_l3peer_enable_vrrp_l3peer_enable_set(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_l3peer_enable_vrrp_l3peer_enable_get(module):
+def vrrp_l3peer_enable_get(module):
     """获取vrrp L3使能状态"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -154,9 +154,9 @@ def main():
     action = module.params['action']
 
     if action == 'vrrp_l3peer_enable_set':
-        adc_vrrp_l3peer_enable_vrrp_l3peer_enable_set(module)
+        vrrp_l3peer_enable_set(module)
     elif action == 'vrrp_l3peer_enable_get':
-        adc_vrrp_l3peer_enable_vrrp_l3peer_enable_get(module)
+        vrrp_l3peer_enable_get(module)
 
 
 if __name__ == '__main__':

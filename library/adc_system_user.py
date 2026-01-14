@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_add_user(module):
+def admin_user_add(module):
     """添加用户"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -100,7 +100,7 @@ def adc_add_user(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_users(module):
+def admin_user_list(module):
     """获取用户列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -146,7 +146,7 @@ def adc_list_users(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_user(module):
+def admin_user_get(module):
     """获取指定用户"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -207,7 +207,7 @@ def adc_get_user(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_user(module):
+def admin_user_edit(module):
     """编辑指定用户"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -283,7 +283,7 @@ def adc_edit_user(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_user(module):
+def admin_user_del(module):
     """删除指定用户"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -341,7 +341,7 @@ def adc_delete_user(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_user_config(module):
+def admin_cfg_set(module):
     """设置用户锁定和密码配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -415,7 +415,7 @@ def adc_set_user_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_user_config(module):
+def admin_cfg_get(module):
     """获取用户锁定配置和密码配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -461,7 +461,7 @@ def adc_get_user_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_unlock_user(module):
+def admin_user_unlock(module):
     """解锁锁定用户"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -519,7 +519,7 @@ def adc_unlock_user(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_change_password(module):
+def system_password_set(module):
     """修改当前用户密码"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -585,8 +585,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'add_user', 'list_users', 'get_user', 'edit_user', 'delete_user',
-            'set_user_config', 'get_user_config', 'unlock_user', 'change_password']),
+            'admin_user_add', 'admin_user_list', 'admin_user_get', 'admin_user_edit', 'admin_user_del',
+            'admin_cfg_set', 'admin_cfg_get', 'admin_user_unlock', 'system_password_set']),
         # 用户参数
         name=dict(type='str', required=False),
         password=dict(type='str', required=False, no_log=True),
@@ -618,24 +618,24 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'add_user':
-        adc_add_user(module)
-    elif action == 'list_users':
-        adc_list_users(module)
-    elif action == 'get_user':
-        adc_get_user(module)
-    elif action == 'edit_user':
-        adc_edit_user(module)
-    elif action == 'delete_user':
-        adc_delete_user(module)
-    elif action == 'set_user_config':
-        adc_set_user_config(module)
-    elif action == 'get_user_config':
-        adc_get_user_config(module)
-    elif action == 'unlock_user':
-        adc_unlock_user(module)
-    elif action == 'change_password':
-        adc_change_password(module)
+    if action == 'admin_user_add':
+        admin_user_add(module)
+    elif action == 'admin_user_list':
+        admin_user_list(module)
+    elif action == 'admin_user_get':
+        admin_user_get(module)
+    elif action == 'admin_user_edit':
+        admin_user_edit(module)
+    elif action == 'admin_user_del':
+        admin_user_del(module)
+    elif action == 'admin_cfg_set':
+        admin_cfg_set(module)
+    elif action == 'admin_cfg_get':
+        admin_cfg_get(module)
+    elif action == 'admin_user_unlock':
+        admin_user_unlock(module)
+    elif action == 'system_password_set':
+        system_password_set(module)
 
 
 if __name__ == '__main__':

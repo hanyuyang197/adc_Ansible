@@ -23,7 +23,7 @@ import json
 import sys
 
 
-def adc_waf_vserver_statis(module):
+def waf_vserver_statis(module):
     """waf状态统计"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -39,7 +39,7 @@ def adc_waf_vserver_statis(module):
         module.fail_json(msg="waf状态统计获取失败: %s" % str(e))
 
 
-def adc_waf_vserver_clear(module):
+def waf_vserver_clear(module):
     """waf状态清除"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -79,9 +79,9 @@ def main():
     action = module.params['action']
 
     if action == 'waf_vserver_statis':
-        adc_waf_vserver_statis(module)
+        waf_vserver_statis(module)
     elif action == 'waf_vserver_clear':
-        adc_waf_vserver_clear(module)
+        waf_vserver_clear(module)
 
 
 if __name__ == '__main__':

@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_track_pool_vrrp_track_pool_del(module):
+def vrrp_track_pool_del(module):
     """删除vrrp服务池监控条件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -87,7 +87,7 @@ def adc_vrrp_track_pool_vrrp_track_pool_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_track_pool_vrrp_track_pool_list(module):
+def vrrp_track_pool_list(module):
     """获取vrrp服务池监控条件列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -133,7 +133,7 @@ def adc_vrrp_track_pool_vrrp_track_pool_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_track_pool_vrrp_track_pool_add(module):
+def vrrp_track_pool_add(module):
     """添加vrrp服务池监控条件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -195,7 +195,7 @@ def adc_vrrp_track_pool_vrrp_track_pool_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_vrrp_track_pool_vrrp_track_pool_edit(module):
+def vrrp_track_pool_edit(module):
     """编辑vrrp服务池监控条件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -288,13 +288,13 @@ def main():
     action = module.params['action']
 
     if action == 'vrrp_track_pool_del':
-        adc_vrrp_track_pool_vrrp_track_pool_del(module)
+        vrrp_track_pool_del(module)
     elif action == 'vrrp_track_pool_list':
-        adc_vrrp_track_pool_vrrp_track_pool_list(module)
+        vrrp_track_pool_list(module)
     elif action == 'vrrp_track_pool_add':
-        adc_vrrp_track_pool_vrrp_track_pool_add(module)
+        vrrp_track_pool_add(module)
     elif action == 'vrrp_track_pool_edit':
-        adc_vrrp_track_pool_vrrp_track_pool_edit(module)
+        vrrp_track_pool_edit(module)
 
 
 if __name__ == '__main__':

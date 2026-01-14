@@ -286,8 +286,7 @@ def main():
             changed, result = log_alarm_sms_get(module)
         elif action == 'log_alarm_sms_set':
             changed, result = log_alarm_sms_set(module)
-        else:
-            module.fail_json(msg="Unsupported action: %s" % action)
+
 
         # Exit with result
         if changed:

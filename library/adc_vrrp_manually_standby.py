@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_manually_standby_get(module):
+def vrrp_manually_standby_get(module):
     """获取vrrp强制备机信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -108,7 +108,7 @@ def main():
     )
 
     # 执行操作
-    adc_vrrp_manually_standby_get(module)
+    vrrp_manually_standby_get(module)
 
 
 if __name__ == '__main__':

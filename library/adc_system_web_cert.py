@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_list_web_certs(module):
+def system_web_cert_list(module):
     """获取web证书列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -68,7 +68,7 @@ def adc_list_web_certs(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_web_cert(module):
+def system_web_cert_del(module):
     """删除web证书"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -125,7 +125,7 @@ def adc_delete_web_cert(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_apply_web_cert(module):
+def system_web_cert_apply(module):
     """应用web证书"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -168,7 +168,7 @@ def adc_apply_web_cert(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_upload_web_key(module):
+def system_web_key_upload(module):
     """上传web私钥文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -262,7 +262,7 @@ def adc_upload_web_key(module):
         module.fail_json(msg="上传web私钥文件失败: %s" % str(e))
 
 
-def adc_download_web_key(module):
+def system_web_key_download(module):
     """下载web私钥文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -319,7 +319,7 @@ def adc_download_web_key(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_upload_web_cert(module):
+def system_web_cert_upload(module):
     """上传web证书文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -415,7 +415,7 @@ def adc_upload_web_cert(module):
         module.fail_json(msg="上传web证书文件失败: %s" % str(e))
 
 
-def adc_download_web_cert(module):
+def system_web_cert_download(module):
     """下载web证书文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -478,9 +478,9 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_web_certs', 'delete_web_cert', 'apply_web_cert',
-            'upload_web_key', 'download_web_key',
-            'upload_web_cert', 'download_web_cert']),
+            'system_web_cert_list', 'system_web_cert_del', 'system_web_cert_apply',
+            'system_web_key_upload', 'system_web_key_download',
+            'system_web_cert_upload', 'system_web_cert_download']),
         # 证书参数
         name=dict(type='str', required=False),
         file_path=dict(type='str', required=False)  # 上传时的本地文件路径
@@ -499,20 +499,20 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_web_certs':
-        adc_list_web_certs(module)
-    elif action == 'delete_web_cert':
-        adc_delete_web_cert(module)
-    elif action == 'apply_web_cert':
-        adc_apply_web_cert(module)
-    elif action == 'upload_web_key':
-        adc_upload_web_key(module)
-    elif action == 'download_web_key':
-        adc_download_web_key(module)
-    elif action == 'upload_web_cert':
-        adc_upload_web_cert(module)
-    elif action == 'download_web_cert':
-        adc_download_web_cert(module)
+    if action == 'system_web_cert_list':
+        system_web_cert_list(module)
+    elif action == 'system_web_cert_del':
+        system_web_cert_del(module)
+    elif action == 'system_web_cert_apply':
+        system_web_cert_apply(module)
+    elif action == 'system_web_key_upload':
+        system_web_key_upload(module)
+    elif action == 'system_web_key_download':
+        system_web_key_download(module)
+    elif action == 'system_web_cert_upload':
+        system_web_cert_upload(module)
+    elif action == 'system_web_cert_download':
+        system_web_cert_download(module)
 
 
 if __name__ == '__main__':

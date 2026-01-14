@@ -73,7 +73,7 @@ def slb_ssl_crl_upload(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     file_path = module.params['file_path']
-    crl_name = module.params['crl_name']
+    crl_name = module.params.get('crl_name')
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
@@ -83,23 +83,21 @@ def slb_ssl_crl_upload(module):
     with open(file_path, 'rb') as f:
         file_content = f.read().decode('utf-8')
 
-    # 构造表单数据
-    fields = {
-        'authkey': authkey
-    }
+    # 构造表单数据 - 不包含authkey，它在URL中
+    fields = {}
 
     files = {
         'file': {
             'filename': os.path.basename(file_path) if not crl_name else crl_name,
             'content': file_content,
-            'content_type': 'application/pkix-crl'
+            'content_type': 'application/x-pkcs7-crl'
         }
     }
 
     body, boundary = create_form_data(fields, files)
 
-    # 构造请求URL
-    url = "http://%s/adcapi/v2.0/" % ip
+    # 构造请求URL - 包含authkey和action参数
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.crl.upload" % (ip, authkey)
 
     try:
         # 根据Python版本处理请求
@@ -157,19 +155,18 @@ def main():
         authkey = module.params['authkey']
         name = module.params['name']
 
+        # 检查必需参数
+        if not name:
+            module.fail_json(msg="删除SSL证书吊销列表需要提供name参数")
+
         # 构造请求URL
         url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.crl.del" % (
             ip, authkey)
 
-        # 构造请求数据
+        # 构造请求数据 - 只包含name
         request_data = {
-            "ip": ip,
-            "authkey": authkey
+            "name": name
         }
-
-        # 添加可选参数
-        if name:
-            request_data['name'] = name
 
         # 转换为JSON格式
         post_data = json.dumps(request_data)
@@ -184,7 +181,6 @@ def main():
                 response = urllib_request.urlopen(req)
                 response_data = response.read().decode('utf-8')
             else:
-                # Python 2
                 import urllib2 as urllib_request
                 req = urllib_request.Request(url, data=post_data, headers={
                                              'Content-Type': 'application/json'})

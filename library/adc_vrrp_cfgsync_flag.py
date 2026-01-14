@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_vrrp_cfgsync_flag_get(module):
+def vrrp_cfgsync_flag_get(module):
     """获取vrrp同步状态"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -91,7 +91,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['execute']),
+        action=dict(type='str', required=True, choices=['vrrp_cfgsync_flag_get']),
         group=dict(type='str', required=False),
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
@@ -108,7 +108,7 @@ def main():
     )
 
     # 执行操作
-    adc_vrrp_cfgsync_flag_get(module)
+    vrrp_cfgsync_flag_get(module)
 
 
 if __name__ == '__main__':

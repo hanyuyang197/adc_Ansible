@@ -266,15 +266,13 @@ EXAMPLES = r'''
   adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
-    vrrp_component: global
-    action: get
+    action: system_ha_vrrp_global_get
 
 - name: Enable VRRP
   adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
-    vrrp_component: global
-    action: set
+    action: system_ha_vrrp_global_set
     enabled: 1
     unit_id: 1
     interval: 10
@@ -284,8 +282,7 @@ EXAMPLES = r'''
   adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
-    vrrp_component: group
-    action: add
+    action: system_ha_vrrp_group_add
     group_id: 1
     priority: 150
 
@@ -293,15 +290,13 @@ EXAMPLES = r'''
   adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
-    vrrp_component: group
-    action: list
+    action: system_ha_vrrp_group_list
 
 - name: Add Ethernet heartbeat interface
   adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
-    vrrp_component: heartbeat_eth
-    action: add
+    action: system_ha_vrrp_heart_eth_add
     slot: 0
     port: 1
     vlan_id: 100
@@ -310,8 +305,7 @@ EXAMPLES = r'''
   adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
-    vrrp_component: floating_ip
-    action: add
+    action: system_ha_vrrp_floating_ip_add
     group_id: 1
     floating_ip: "192.168.1.100"
 
@@ -319,19 +313,17 @@ EXAMPLES = r'''
   adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
-    vrrp_component: force_offline
-    action: set
+    action: system_ha_vrrp_force_offline_set
     force_offline: 1
 
 - name: Add gateway tracking
   adc_system_ha_vrrp:
     ip: "192.168.1.1"
     authkey: "your_auth_key"
-    vrrp_component: gateway_track
-    action: add
+    action: system_ha_vrrp_track_gateway_add
     group_id: 1
     priority: 50
-    ip: "10.0.0.1"
+    track_ip: "10.0.0.1"
 '''
 
 RETURN = r'''
@@ -365,13 +357,13 @@ msg:
 '''
 
 
-def vrrp_global_get(module):
+def system_ha_vrrp_global_get(module):
     """Get VRRP global configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.global.get" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.ha.vrrp.global.get" % (
         ip, authkey)
 
     # Make API call
@@ -391,13 +383,13 @@ def vrrp_global_get(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def vrrp_global_set(module):
+def system_ha_vrrp_global_set(module):
     """Set VRRP global configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.global.set" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.ha.vrrp.global.set" % (
         ip, authkey)
 
     # Prepare parameters
@@ -437,13 +429,13 @@ def vrrp_global_set(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def vrrp_group_add(module):
+def system_ha_vrrp_group_add(module):
     """Add VRRP group"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.group.add" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.ha.vrrp.group.add" % (
         ip, authkey)
 
     # Prepare parameters
@@ -487,13 +479,13 @@ def vrrp_group_add(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def vrrp_group_list(module):
+def system_ha_vrrp_group_list(module):
     """List VRRP groups"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.group.list" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.ha.vrrp.group.list" % (
         ip, authkey)
 
     # Make API call
@@ -513,13 +505,13 @@ def vrrp_group_list(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def vrrp_heart_eth_add(module):
+def system_ha_vrrp_heart_eth_add(module):
     """Add Ethernet heartbeat interface"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.heart_eth.add" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.ha.vrrp.heart_eth.add" % (
         ip, authkey)
 
     # Prepare parameters
@@ -560,13 +552,13 @@ def vrrp_heart_eth_add(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def vrrp_floating_ip_add(module):
+def system_ha_vrrp_floating_ip_add(module):
     """Add floating IP"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.floating_ip.add" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.ha.vrrp.floating_ip.add" % (
         ip, authkey)
 
     # Prepare parameters
@@ -602,13 +594,13 @@ def vrrp_floating_ip_add(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def vrrp_force_offline_set(module):
+def system_ha_vrrp_force_offline_set(module):
     """Set force offline"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.force_offline.set" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.ha.vrrp.force_offline.set" % (
         ip, authkey)
 
     # Prepare parameters
@@ -638,13 +630,13 @@ def vrrp_force_offline_set(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def vrrp_track_gateway_add(module):
+def system_ha_vrrp_track_gateway_add(module):
     """Add gateway tracking"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.track.gateway.add" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.ha.vrrp.track.gateway.add" % (
         ip, authkey)
 
     # Prepare parameters
@@ -692,13 +684,11 @@ def main():
     argument_spec = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        vrrp_component=dict(type='str', required=True, choices=[
-            'global', 'group', 'heartbeat_eth', 'heartbeat_trunk',
-            'floating_ip', 'force_offline', 'gateway_track', 'route_track',
-            'pool_track', 'ethernet_track', 'trunk_track', 'vlan_track'
-        ]),
         action=dict(type='str', required=True, choices=[
-                    'get', 'set', 'add', 'list', 'edit', 'delete']),
+                    'system_ha_vrrp_global_get', 'system_ha_vrrp_global_set',
+                    'system_ha_vrrp_group_add', 'system_ha_vrrp_group_list',
+                    'system_ha_vrrp_heart_eth_add', 'system_ha_vrrp_floating_ip_add',
+                    'system_ha_vrrp_force_offline_set', 'system_ha_vrrp_track_gateway_add']),
         # Global configuration parameters
         enabled=dict(type='int', choices=[0, 1]),
         as_model=dict(type='int', choices=[0, 1]),
@@ -737,17 +727,10 @@ def main():
     # Create Ansible module
     module = AnsibleModule(
         argument_spec=argument_spec,
-        supports_check_mode=True,
-        required_if=[
-            ('vrrp_component', 'group', ['action']),
-            ('vrrp_component', 'heartbeat_eth', ['action']),
-            ('vrrp_component', 'floating_ip', ['action']),
-            ('vrrp_component', 'gateway_track', ['action']),
-        ]
+        supports_check_mode=True
     )
 
     # Extract module parameters
-    vrrp_component = str(module.params['vrrp_component'])
     action = str(module.params['action'])
 
     # If in check mode, exit without making changes
@@ -756,49 +739,22 @@ def main():
 
     try:
         # Perform requested action based on VRRP component
-        if vrrp_component == 'global':
-            if action == 'get':
-                changed, result = vrrp_global_get(module)
-            elif action == 'set':
-                changed, result = vrrp_global_set(module)
-            else:
-                module.fail_json(
-                    msg="Unsupported action for global: %s" % action)
-        elif vrrp_component == 'group':
-            if action == 'add':
-                changed, result = vrrp_group_add(module)
-            elif action == 'list':
-                changed, result = vrrp_group_list(module)
-            else:
-                module.fail_json(
-                    msg="Unsupported action for group: %s" % action)
-        elif vrrp_component == 'heartbeat_eth':
-            if action == 'add':
-                changed, result = vrrp_heart_eth_add(module)
-            else:
-                module.fail_json(
-                    msg="Unsupported action for heartbeat_eth: %s" % action)
-        elif vrrp_component == 'floating_ip':
-            if action == 'add':
-                changed, result = vrrp_floating_ip_add(module)
-            else:
-                module.fail_json(
-                    msg="Unsupported action for floating_ip: %s" % action)
-        elif vrrp_component == 'force_offline':
-            if action == 'set':
-                changed, result = vrrp_force_offline_set(module)
-            else:
-                module.fail_json(
-                    msg="Unsupported action for force_offline: %s" % action)
-        elif vrrp_component == 'gateway_track':
-            if action == 'add':
-                changed, result = vrrp_track_gateway_add(module)
-            else:
-                module.fail_json(
-                    msg="Unsupported action for gateway_track: %s" % action)
-        else:
-            module.fail_json(
-                msg="Unsupported VRRP component: %s" % vrrp_component)
+        if action == 'system_ha_vrrp_global_get':
+            changed, result = system_ha_vrrp_global_get(module)
+        elif action == 'system_ha_vrrp_global_set':
+            changed, result = system_ha_vrrp_global_set(module)
+        elif action == 'system_ha_vrrp_group_add':
+            changed, result = system_ha_vrrp_group_add(module)
+        elif action == 'system_ha_vrrp_group_list':
+            changed, result = system_ha_vrrp_group_list(module)
+        elif action == 'system_ha_vrrp_heart_eth_add':
+            changed, result = system_ha_vrrp_heart_eth_add(module)
+        elif action == 'system_ha_vrrp_floating_ip_add':
+            changed, result = system_ha_vrrp_floating_ip_add(module)
+        elif action == 'system_ha_vrrp_force_offline_set':
+            changed, result = system_ha_vrrp_force_offline_set(module)
+        elif action == 'system_ha_vrrp_track_gateway_add':
+            changed, result = system_ha_vrrp_track_gateway_add(module)
 
         # Exit with result
         if changed:

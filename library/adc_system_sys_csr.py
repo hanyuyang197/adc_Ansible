@@ -146,7 +146,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['add', 'del']),
+        action=dict(type='str', required=True, choices=['system_sys_csr_add', 'system_sys_csr_del']),
         name=dict(type='str', required=False),
         common_name=dict(type='str', required=False),
         type=dict(type='int', required=False),
@@ -178,9 +178,9 @@ def main():
     )
 
     # 根据action执行相应操作
-    if module.params['action'] == 'add':
+    if module.params['action'] == 'system_sys_csr_add':
         adc_system_sys_csr_add(module)
-    elif module.params['action'] == 'del':
+    elif module.params['action'] == 'system_sys_csr_del':
         adc_system_sys_csr_del(module)
 
 

@@ -232,7 +232,7 @@ def send_request(url, data=None, method='GET'):
         }
 
 
-def adc_list_waf_profiles(module):
+def waf_profile_list(module):
     """List all WAF profiles"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -243,7 +243,7 @@ def adc_list_waf_profiles(module):
     return result
 
 
-def adc_list_waf_profiles_withcommon(module):
+def waf_profile_list_withcommon(module):
     """List all WAF profiles with common partitions"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -254,7 +254,7 @@ def adc_list_waf_profiles_withcommon(module):
     return result
 
 
-def adc_get_waf_profile(module):
+def waf_profile_get(module):
     """Get a specific WAF profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -274,7 +274,7 @@ def adc_get_waf_profile(module):
     return result
 
 
-def adc_add_waf_profile(module):
+def waf_profile_add(module):
     """Add a WAF profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -325,7 +325,7 @@ def adc_add_waf_profile(module):
     return result
 
 
-def adc_edit_waf_profile(module):
+def waf_profile_edit(module):
     """Edit a WAF profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -376,7 +376,7 @@ def adc_edit_waf_profile(module):
     return result
 
 
-def adc_delete_waf_profile(module):
+def waf_profile_del(module):
     """Delete a WAF profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -402,7 +402,7 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
-                'add_profile', 'list_profiles', 'list_profiles_withcommon', 'get_profile', 'edit_profile', 'delete_profile'
+                'waf_profile_add', 'waf_profile_list', 'waf_profile_list_withcommon', 'waf_profile_get', 'waf_profile_edit', 'waf_profile_del'
             ]),
             name=dict(type='str', required=False),
             rule_name=dict(type='str', required=False),
@@ -425,18 +425,18 @@ def main():
 
     action = module.params['action']
 
-    if action == 'list_profiles':
-        result = adc_list_waf_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        result = adc_list_waf_profiles_withcommon(module)
-    elif action == 'get_profile':
-        result = adc_get_waf_profile(module)
-    elif action == 'add_profile':
-        result = adc_add_waf_profile(module)
-    elif action == 'edit_profile':
-        result = adc_edit_waf_profile(module)
-    elif action == 'delete_profile':
-        result = adc_delete_waf_profile(module)
+    if action == 'waf_profile_list':
+        result = waf_profile_list(module)
+    elif action == 'waf_profile_list_withcommon':
+        result = waf_profile_list_withcommon(module)
+    elif action == 'waf_profile_get':
+        result = waf_profile_get(module)
+    elif action == 'waf_profile_add':
+        result = waf_profile_add(module)
+    elif action == 'waf_profile_edit':
+        result = waf_profile_edit(module)
+    elif action == 'waf_profile_del':
+        result = waf_profile_del(module)
 
 
     # 统一使用标准的ADC响应格式处理结果

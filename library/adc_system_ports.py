@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_set_system_ports(module):
+def system_ports_set(module):
     """设置系统应用端口配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -89,7 +89,7 @@ def adc_set_system_ports(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_system_ports(module):
+def system_ports_get(module):
     """获取系统应用端口配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -141,7 +141,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'set_system_ports', 'get_system_ports']),
+            'system_ports_set', 'system_ports_get']),
         # 系统端口配置参数
         sshd_port=dict(type='int', required=False),
         telnet_port=dict(type='int', required=False),
@@ -159,10 +159,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'set_system_ports':
-        adc_set_system_ports(module)
-    elif action == 'get_system_ports':
-        adc_get_system_ports(module)
+    if action == 'system_ports_set':
+        system_ports_set(module)
+    elif action == 'system_ports_get':
+        system_ports_get(module)
 
 
 if __name__ == '__main__':

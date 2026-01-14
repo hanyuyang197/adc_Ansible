@@ -434,8 +434,7 @@ def main():
             changed, result = clear_logs(module)
         elif action in ['log_service_download', 'log_audit_download', 'log_nat_download', 'log_dns_download', 'log_coredump_download', 'log_system_download']:
             changed, result = download_logs(module)
-        else:
-            module.fail_json(msg="Unsupported action: %s" % action)
+
 
         # Exit with result
         if changed:
