@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def syn_cookie_get_global(module):
+def slb_syn_cookie_get(module):
     """获取全局SYN Cookie配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -71,7 +71,7 @@ def syn_cookie_get_global(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def syn_cookie_set_global(module):
+def slb_syn_cookie_edit(module):
     """设置全局SYN Cookie配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -130,7 +130,7 @@ def syn_cookie_set_global(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def syn_cookie_get_vs(module):
+def slb_vs_syn_cookie_get(module):
     """获取每虚拟服务SYN Cookie配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -192,7 +192,7 @@ def syn_cookie_get_vs(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def syn_cookie_set_vs(module):
+def slb_vs_syn_cookie_edit(module):
     """设置每虚拟服务SYN Cookie配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -262,8 +262,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'syn_cookie_get_global', 'syn_cookie_set_global',
-            'syn_cookie_get_vs', 'syn_cookie_set_vs']),
+            'slb_syn_cookie_get', 'slb_syn_cookie_edit',
+            'slb_vs_syn_cookie_get', 'slb_vs_syn_cookie_edit']),
         # SYN Cookie参数
         enable=dict(type='int', required=False),
         threshold=dict(type='int', required=False),
@@ -279,14 +279,14 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'syn_cookie_get_global':
-        syn_cookie_get_global(module)
-    elif action == 'syn_cookie_set_global':
-        syn_cookie_set_global(module)
-    elif action == 'syn_cookie_get_vs':
-        syn_cookie_get_vs(module)
-    elif action == 'syn_cookie_set_vs':
-        syn_cookie_set_vs(module)
+    if action == 'slb_syn_cookie_get':
+        slb_syn_cookie_get(module)
+    elif action == 'slb_syn_cookie_edit':
+        slb_syn_cookie_edit(module)
+    elif action == 'slb_vs_syn_cookie_get':
+        slb_vs_syn_cookie_get(module)
+    elif action == 'slb_vs_syn_cookie_edit':
+        slb_vs_syn_cookie_edit(module)
 
 
 if __name__ == '__main__':

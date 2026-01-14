@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_set_client_lock_config(module):
+def system_client_lock_set(module):
     """设置客户端锁定配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -85,7 +85,7 @@ def adc_set_client_lock_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_client_lock_config(module):
+def system_client_lock_get(module):
     """获取客户端锁定配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_get_client_lock_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_locked_clients(module):
+def system_client_lock_list(module):
     """获取锁定客户端列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -177,7 +177,7 @@ def adc_list_locked_clients(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_unlock_client(module):
+def system_client_unlock(module):
     """解锁锁定客户端"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -240,7 +240,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'set_client_lock_config', 'get_client_lock_config', 'list_locked_clients', 'unlock_client']),
+            'system_client_lock_set', 'system_client_lock_get', 'system_client_lock_list', 'system_client_unlock']),
         # 客户端锁定配置参数
         interval=dict(type='int', required=False),
         maxnum=dict(type='int', required=False),
@@ -259,14 +259,14 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'set_client_lock_config':
-        adc_set_client_lock_config(module)
-    elif action == 'get_client_lock_config':
-        adc_get_client_lock_config(module)
-    elif action == 'list_locked_clients':
-        adc_list_locked_clients(module)
-    elif action == 'unlock_client':
-        adc_unlock_client(module)
+    if action == 'system_client_lock_set':
+        system_client_lock_set(module)
+    elif action == 'system_client_lock_get':
+        system_client_lock_get(module)
+    elif action == 'system_client_lock_list':
+        system_client_lock_list(module)
+    elif action == 'system_client_unlock':
+        system_client_unlock(module)
 
 
 if __name__ == '__main__':

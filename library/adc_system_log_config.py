@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_service_log_config(module):
+def log_config_service_get(module):
     """获取业务日志配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_service_log_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_service_log_config(module):
+def log_config_service_set(module):
     """编辑业务日志配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -127,7 +127,7 @@ def adc_set_service_log_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_audit_log_config(module):
+def log_config_audit_get(module):
     """获取审计日志配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -173,7 +173,7 @@ def adc_get_audit_log_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_audit_log_config(module):
+def log_config_audit_set(module):
     """编辑审计日志配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -230,7 +230,7 @@ def adc_set_audit_log_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_nat_log_config(module):
+def log_config_nat_get(module):
     """获取NAT日志配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -276,7 +276,7 @@ def adc_get_nat_log_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_nat_log_config(module):
+def log_config_nat_set(module):
     """编辑NAT日志配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -333,7 +333,7 @@ def adc_set_nat_log_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_dns_log_config(module):
+def log_config_dns_get(module):
     """获取DNS日志配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -379,7 +379,7 @@ def adc_get_dns_log_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_dns_log_config(module):
+def log_config_dns_set(module):
     """编辑DNS日志配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -442,10 +442,10 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_service_log_config', 'set_service_log_config',
-            'get_audit_log_config', 'set_audit_log_config',
-            'get_nat_log_config', 'set_nat_log_config',
-            'get_dns_log_config', 'set_dns_log_config']),
+            'log_config_service_get', 'log_config_service_set',
+            'log_config_audit_get', 'log_config_audit_set',
+            'log_config_nat_get', 'log_config_nat_set',
+            'log_config_dns_get', 'log_config_dns_set']),
         # 业务日志配置参数
         level=dict(type='int', required=False,
                    choices=[0, 1, 2, 3, 4, 5, 6, 7]),
@@ -463,22 +463,22 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_service_log_config':
-        adc_get_service_log_config(module)
-    elif action == 'set_service_log_config':
-        adc_set_service_log_config(module)
-    elif action == 'get_audit_log_config':
-        adc_get_audit_log_config(module)
-    elif action == 'set_audit_log_config':
-        adc_set_audit_log_config(module)
-    elif action == 'get_nat_log_config':
-        adc_get_nat_log_config(module)
-    elif action == 'set_nat_log_config':
-        adc_set_nat_log_config(module)
-    elif action == 'get_dns_log_config':
-        adc_get_dns_log_config(module)
-    elif action == 'set_dns_log_config':
-        adc_set_dns_log_config(module)
+    if action == 'log_config_service_get':
+        log_config_service_get(module)
+    elif action == 'log_config_service_set':
+        log_config_service_set(module)
+    elif action == 'log_config_audit_get':
+        log_config_audit_get(module)
+    elif action == 'log_config_audit_set':
+        log_config_audit_set(module)
+    elif action == 'log_config_nat_get':
+        log_config_nat_get(module)
+    elif action == 'log_config_nat_set':
+        log_config_nat_set(module)
+    elif action == 'log_config_dns_get':
+        log_config_dns_get(module)
+    elif action == 'log_config_dns_set':
+        log_config_dns_set(module)
 
 
 if __name__ == '__main__':

@@ -35,8 +35,8 @@ def define_module_args():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile',
-            'add_profile', 'edit_profile', 'delete_profile'
+            'slb_profile_ftp_list', 'slb_profile_ftp_list_withcommon', 'slb_profile_ftp_get',
+            'slb_profile_ftp_add', 'slb_profile_ftp_edit', 'slb_profile_ftp_del'
         ]),
         # FTP模板参数
         name=dict(type='str', required=False),
@@ -74,7 +74,7 @@ def send_request(url, data=None, method='GET'):
 # 获取FTP模板列表
 
 
-def adc_list_ftp_profiles(module):
+def slb_profile_ftp_list(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -89,7 +89,7 @@ def adc_list_ftp_profiles(module):
 # 获取包含common分区的FTP模板列表
 
 
-def adc_list_ftp_profiles_withcommon(module):
+def slb_profile_ftp_list_withcommon(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -104,7 +104,7 @@ def adc_list_ftp_profiles_withcommon(module):
 # 获取指定FTP模板
 
 
-def adc_get_ftp_profile(module):
+def slb_profile_ftp_get(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -129,7 +129,7 @@ def adc_get_ftp_profile(module):
 # 添加FTP模板
 
 
-def adc_add_ftp_profile(module):
+def slb_profile_ftp_add(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -167,7 +167,7 @@ def adc_add_ftp_profile(module):
 # 编辑FTP模板
 
 
-def adc_edit_ftp_profile(module):
+def slb_profile_ftp_edit(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -205,7 +205,7 @@ def adc_edit_ftp_profile(module):
 # 删除FTP模板
 
 
-def adc_delete_ftp_profile(module):
+def slb_profile_ftp_del(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -244,18 +244,18 @@ def main():
     action = module.params['action']
 
     # 根据action执行相应操作
-    if action == 'list_profiles':
-        module_result = adc_list_ftp_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        module_result = adc_list_ftp_profiles_withcommon(module)
-    elif action == 'get_profile':
-        module_result = adc_get_ftp_profile(module)
-    elif action == 'add_profile':
-        module_result = adc_add_ftp_profile(module)
-    elif action == 'edit_profile':
-        module_result = adc_edit_ftp_profile(module)
-    elif action == 'delete_profile':
-        module_result = adc_delete_ftp_profile(module)
+    if action == 'slb_profile_ftp_list':
+        module_result = slb_profile_ftp_list(module)
+    elif action == 'slb_profile_ftp_list_withcommon':
+        module_result = slb_profile_ftp_list_withcommon(module)
+    elif action == 'slb_profile_ftp_get':
+        module_result = slb_profile_ftp_get(module)
+    elif action == 'slb_profile_ftp_add':
+        module_result = slb_profile_ftp_add(module)
+    elif action == 'slb_profile_ftp_edit':
+        module_result = slb_profile_ftp_edit(module)
+    elif action == 'slb_profile_ftp_del':
+        module_result = slb_profile_ftp_del(module)
 
 
     # 处理结果

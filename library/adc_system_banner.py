@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_system_banner(module):
+def system_banner_get(module):
     """获取系统banner信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -76,7 +76,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_system_banner'])
+            'system_banner_get'])
     )
 
     # 创建AnsibleModule实例
@@ -88,8 +88,8 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_system_banner':
-        adc_get_system_banner(module)
+    if action == 'system_banner_get':
+        system_banner_get(module)
 
 
 if __name__ == '__main__':

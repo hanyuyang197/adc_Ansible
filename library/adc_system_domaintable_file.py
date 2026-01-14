@@ -23,7 +23,7 @@ import sys
 import os
 
 
-def adc_system_domaintable_file_upload(module):
+def system_domaintable_file_upload(module):
     """上传域名表文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -119,7 +119,7 @@ def adc_system_domaintable_file_upload(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_system_domaintable_file_download(module):
+def system_domaintable_file_download(module):
     """下载域名表文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -174,7 +174,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['upload', 'download']),
+        action=dict(type='str', required=True, choices=['system_domaintable_file_upload', 'system_domaintable_file_download']),
         name=dict(type='str', required=True),  # 文件名
         file_path=dict(type='str', required=False),  # 上传时的本地文件路径
         dest_path=dict(type='str', required=False),  # 下载时的目标路径
@@ -185,21 +185,21 @@ def main():
         argument_spec=module_args,
         supports_check_mode=False,
         required_if=[
-            ['action', 'upload', ['file_path']],
-            ['action', 'download', ['dest_path']]
+            ['action', 'system_domaintable_file_upload', ['file_path']],
+            ['action', 'system_domaintable_file_download', ['dest_path']]
         ]
     )
 
     # 根据action执行相应操作
     action = module.params['action']
-    if action == 'upload':
+    if action == 'system_domaintable_file_upload':
         if not module.params.get('file_path'):
             module.fail_json(msg="上传操作需要指定file_path参数")
-        adc_system_domaintable_file_upload(module)
-    elif action == 'download':
+        system_domaintable_file_upload(module)
+    elif action == 'system_domaintable_file_download':
         if not module.params.get('dest_path'):
             module.fail_json(msg="下载操作需要指定dest_path参数")
-        adc_system_domaintable_file_download(module)
+        system_domaintable_file_download(module)
 
 
 

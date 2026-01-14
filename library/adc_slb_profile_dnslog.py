@@ -35,8 +35,8 @@ def define_module_args():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile',
-            'add_profile', 'edit_profile', 'delete_profile'
+            'slb_profile_dnslog_list', 'slb_profile_dnslog_list_withcommon', 'slb_profile_dnslog_get',
+            'slb_profile_dnslog_add', 'slb_profile_dnslog_edit', 'slb_profile_dnslog_del'
         ]),
         # DNS日志模板参数
         name=dict(type='str', required=False),
@@ -80,7 +80,7 @@ def send_request(url, data=None, method='GET'):
 # 获取DNS日志模板列表
 
 
-def adc_list_dnslog_profiles(module):
+def slb_profile_dnslog_list(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -95,7 +95,7 @@ def adc_list_dnslog_profiles(module):
 # 获取包含common分区的DNS日志模板列表
 
 
-def adc_list_dnslog_profiles_withcommon(module):
+def slb_profile_dnslog_list_withcommon(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -110,7 +110,7 @@ def adc_list_dnslog_profiles_withcommon(module):
 # 获取指定DNS日志模板
 
 
-def adc_get_dnslog_profile(module):
+def slb_profile_dnslog_get(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -135,7 +135,7 @@ def adc_get_dnslog_profile(module):
 # 添加DNS日志模板
 
 
-def adc_add_dnslog_profile(module):
+def slb_profile_dnslog_add(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -170,7 +170,7 @@ def adc_add_dnslog_profile(module):
 # 编辑DNS日志模板
 
 
-def adc_edit_dnslog_profile(module):
+def slb_profile_dnslog_edit(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -205,7 +205,7 @@ def adc_edit_dnslog_profile(module):
 # 删除DNS日志模板
 
 
-def adc_delete_dnslog_profile(module):
+def slb_profile_dnslog_del(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -244,18 +244,18 @@ def main():
     action = module.params['action']
 
     # 根据action执行相应操作
-    if action == 'list_profiles':
-        result = adc_list_dnslog_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        result = adc_list_dnslog_profiles_withcommon(module)
-    elif action == 'get_profile':
-        result = adc_get_dnslog_profile(module)
-    elif action == 'add_profile':
-        result = adc_add_dnslog_profile(module)
-    elif action == 'edit_profile':
-        result = adc_edit_dnslog_profile(module)
-    elif action == 'delete_profile':
-        result = adc_delete_dnslog_profile(module)
+    if action == 'slb_profile_dnslog_list':
+        result = slb_profile_dnslog_list(module)
+    elif action == 'slb_profile_dnslog_list_withcommon':
+        result = slb_profile_dnslog_list_withcommon(module)
+    elif action == 'slb_profile_dnslog_get':
+        result = slb_profile_dnslog_get(module)
+    elif action == 'slb_profile_dnslog_add':
+        result = slb_profile_dnslog_add(module)
+    elif action == 'slb_profile_dnslog_edit':
+        result = slb_profile_dnslog_edit(module)
+    elif action == 'slb_profile_dnslog_del':
+        result = slb_profile_dnslog_del(module)
 
 
     # 处理结果

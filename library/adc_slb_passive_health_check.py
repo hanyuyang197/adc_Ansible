@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_slb_passive_health_check_add(module):
+def slb_passive_health_check_add(module):
     """添加被动健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -77,7 +77,7 @@ def adc_slb_passive_health_check_add(module):
         module.fail_json(msg="添加被动健康检查请求失败: %s" % str(e))
 
 
-def adc_slb_passive_health_check_list(module):
+def slb_passive_health_check_list(module):
     """获取被动健康检查列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -122,7 +122,7 @@ def adc_slb_passive_health_check_list(module):
         module.fail_json(msg="获取被动健康检查列表失败: %s" % str(e))
 
 
-def adc_slb_passive_health_check_get(module):
+def slb_passive_health_check_get(module):
     """获取被动健康检查详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -175,7 +175,7 @@ def adc_slb_passive_health_check_get(module):
         module.fail_json(msg="获取被动健康检查详情请求失败: %s" % str(e))
 
 
-def adc_slb_passive_health_check_edit(module):
+def slb_passive_health_check_edit(module):
     """编辑被动健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -228,7 +228,7 @@ def adc_slb_passive_health_check_edit(module):
         module.fail_json(msg="编辑被动健康检查请求失败: %s" % str(e))
 
 
-def adc_slb_passive_health_check_list_withcommon(module):
+def slb_passive_health_check_list_withcommon(module):
     """获取被动健康检查列表（包含common和本分区）"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -300,15 +300,15 @@ def main():
     action = module.params.get('action')
 
     if action == 'slb_passive_health_check_add':
-        adc_slb_passive_health_check_add(module)
+        slb_passive_health_check_add(module)
     elif action == 'slb_passive_health_check_list':
-        adc_slb_passive_health_check_list(module)
+        slb_passive_health_check_list(module)
     elif action == 'slb_passive_health_check_list_withcommon':
-        adc_slb_passive_health_check_list_withcommon(module)
+        slb_passive_health_check_list_withcommon(module)
     elif action == 'slb_passive_health_check_get':
-        adc_slb_passive_health_check_get(module)
+        slb_passive_health_check_get(module)
     elif action == 'slb_passive_health_check_edit':
-        adc_slb_passive_health_check_edit(module)
+        slb_passive_health_check_edit(module)
 
 
 if __name__ == '__main__':

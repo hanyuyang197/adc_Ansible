@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_slb_ssl_filtercert_slb_ssl_filtercert_list(module):
+def slb_ssl_filtercert_list(module):
     """获取证书过滤列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -112,7 +112,7 @@ def main():
     action = module.params['action']
 
     if action == 'slb_ssl_filtercert_list':
-        adc_slb_ssl_filtercert_slb_ssl_filtercert_list(module)
+        slb_ssl_filtercert_list(module)
 
 
 if __name__ == '__main__':

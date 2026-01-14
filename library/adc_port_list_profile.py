@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_port_list_profile_del(module):
+def port_list_profile_del(module):
     """端口列表模板删除"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -91,7 +91,7 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['execute']),
+        action=dict(type='str', required=True, choices=['port_list_profile_del']),
         name=dict(type='str', required=False),
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
@@ -108,7 +108,10 @@ def main():
     )
 
     # 执行操作
-    adc_port_list_profile_del(module)
+    action = module.params['action']
+    
+    if action == 'port_list_profile_del':
+        port_list_profile_del(module)
 
 
 if __name__ == '__main__':

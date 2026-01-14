@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_slb_global_allow_promis_intf_vip_get(module):
+def slb_global_allow_promis_intf_vip_get(module):
     """获取 slb 全局混杂配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -38,7 +38,7 @@ def adc_slb_global_allow_promis_intf_vip_get(module):
         module.fail_json(msg="获取 slb 全局混杂配置失败: %s" % str(e))
 
 
-def adc_slb_global_allow_promis_intf_vip_set(module):
+def slb_global_allow_promis_intf_vip_set(module):
     """设置 slb 全局混杂配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -65,7 +65,7 @@ def adc_slb_global_allow_promis_intf_vip_set(module):
         module.fail_json(msg="设置 slb 全局混杂配置失败: %s" % str(e))
 
 
-def adc_slb_graceful_shutdown_get(module):
+def slb_graceful_shutdown_get(module):
     """获取 slb 全局软关机"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -81,7 +81,7 @@ def adc_slb_graceful_shutdown_get(module):
         module.fail_json(msg="获取 slb 全局软关机失败: %s" % str(e))
 
 
-def adc_slb_graceful_shutdown_set(module):
+def slb_graceful_shutdown_set(module):
     """设置 slb 全局软关机"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -120,7 +120,7 @@ def adc_slb_graceful_shutdown_set(module):
         module.fail_json(msg="设置 slb 全局软关机失败: %s" % str(e))
 
 
-def adc_system_rate_limit_icmp_get(module):
+def system_rate_limit_icmp_get(module):
     """获取 ICMP 速率限制配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -136,7 +136,7 @@ def adc_system_rate_limit_icmp_get(module):
         module.fail_json(msg="获取 ICMP 速率限制配置失败: %s" % str(e))
 
 
-def adc_system_rate_limit_icmp_set(module):
+def system_rate_limit_icmp_set(module):
     """设置 ICMP 速率限制配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -172,7 +172,7 @@ def adc_system_rate_limit_icmp_set(module):
         module.fail_json(msg="设置 ICMP 速率限制配置失败: %s" % str(e))
 
 
-def adc_system_tcp_syn_protect_get(module):
+def system_tcp_syn_protect_get(module):
     """获取 tcp 新建保护配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -188,7 +188,7 @@ def adc_system_tcp_syn_protect_get(module):
         module.fail_json(msg="获取 tcp 新建保护配置失败: %s" % str(e))
 
 
-def adc_system_tcp_syn_protect_set(module):
+def system_tcp_syn_protect_set(module):
     """设置 tcp 新建保护配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -219,7 +219,7 @@ def adc_system_tcp_syn_protect_set(module):
         module.fail_json(msg="设置 tcp 新建保护配置失败: %s" % str(e))
 
 
-def adc_system_vlan_keyed_connection_get(module):
+def system_vlan_keyed_connection_get(module):
     """获取 SLB 全局 VLAN 一致性检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -236,7 +236,7 @@ def adc_system_vlan_keyed_connection_get(module):
         module.fail_json(msg="获取 SLB 全局 VLAN 一致性检查失败: %s" % str(e))
 
 
-def adc_system_vlan_keyed_connection_set(module):
+def system_vlan_keyed_connection_set(module):
     """设置 SLB 全局 VLAN 一致性检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -265,7 +265,7 @@ def adc_system_vlan_keyed_connection_set(module):
         module.fail_json(msg="设置 SLB 全局 VLAN 一致性检查失败: %s" % str(e))
 
 
-def adc_global_connection_mirror_get(module):
+def global_connection_mirror_get(module):
     """获取 SLB 全局连接镜像"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -281,7 +281,7 @@ def adc_global_connection_mirror_get(module):
         module.fail_json(msg="获取 SLB 全局连接镜像失败: %s" % str(e))
 
 
-def adc_global_connection_mirror_set(module):
+def global_connection_mirror_set(module):
     """设置 SLB 全局连接镜像"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -308,7 +308,7 @@ def adc_global_connection_mirror_set(module):
         module.fail_json(msg="设置 SLB 全局连接镜像失败: %s" % str(e))
 
 
-def adc_global_path_persist_get(module):
+def global_path_persist_get(module):
     """获取 SLB 全局路径保持"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -324,7 +324,7 @@ def adc_global_path_persist_get(module):
         module.fail_json(msg="获取 SLB 全局路径保持失败: %s" % str(e))
 
 
-def adc_global_path_persist_set(module):
+def global_path_persist_set(module):
     """设置 SLB 全局路径保持"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -351,7 +351,7 @@ def adc_global_path_persist_set(module):
         module.fail_json(msg="设置 SLB 全局路径保持失败: %s" % str(e))
 
 
-def adc_global_slb_snat_on_vip_get(module):
+def global_slb_snat_on_vip_get(module):
     """获取 SLB 全局策略地址转换配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -367,7 +367,7 @@ def adc_global_slb_snat_on_vip_get(module):
         module.fail_json(msg="获取 SLB 全局策略地址转换配置失败: %s" % str(e))
 
 
-def adc_global_slb_snat_on_vip_set(module):
+def global_slb_snat_on_vip_set(module):
     """设置 SLB 全局策略地址转换配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -394,7 +394,7 @@ def adc_global_slb_snat_on_vip_set(module):
         module.fail_json(msg="设置 SLB 全局策略地址转换配置失败: %s" % str(e))
 
 
-def adc_global_slb_snat_interface_iprr_get(module):
+def global_slb_snat_interface_iprr_get(module):
     """获取 SLB 全局源 NAT 接口地址轮询"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -411,7 +411,7 @@ def adc_global_slb_snat_interface_iprr_get(module):
         module.fail_json(msg="获取 SLB 全局源 NAT 接口地址轮询失败: %s" % str(e))
 
 
-def adc_global_slb_snat_interface_iprr_set(module):
+def global_slb_snat_interface_iprr_set(module):
     """设置 SLB 全局源 NAT 接口地址轮询"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -438,7 +438,7 @@ def adc_global_slb_snat_interface_iprr_set(module):
         module.fail_json(msg="设置 SLB 全局源 NAT 接口地址轮询失败: %s" % str(e))
 
 
-def adc_slb_global_virtual_mac_get(module):
+def slb_global_virtual_mac_get(module):
     """获取 SLB 全局虚拟 MAC"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -454,7 +454,7 @@ def adc_slb_global_virtual_mac_get(module):
         module.fail_json(msg="获取 SLB 全局虚拟 MAC 失败: %s" % str(e))
 
 
-def adc_slb_global_virtual_mac_set(module):
+def slb_global_virtual_mac_set(module):
     """设置 SLB 全局虚拟 MAC"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -547,45 +547,45 @@ def main():
     action = module.params['action']
 
     if action == 'slb_global_allow_promis_intf_vip_get':
-        adc_slb_global_allow_promis_intf_vip_get(module)
+        slb_global_allow_promis_intf_vip_get(module)
     elif action == 'slb_global_allow_promis_intf_vip_set':
-        adc_slb_global_allow_promis_intf_vip_set(module)
+        slb_global_allow_promis_intf_vip_set(module)
     elif action == 'slb_graceful_shutdown_get':
-        adc_slb_graceful_shutdown_get(module)
+        slb_graceful_shutdown_get(module)
     elif action == 'slb_graceful_shutdown_set':
-        adc_slb_graceful_shutdown_set(module)
+        slb_graceful_shutdown_set(module)
     elif action == 'system_rate_limit_icmp_get':
-        adc_system_rate_limit_icmp_get(module)
+        system_rate_limit_icmp_get(module)
     elif action == 'system_rate_limit_icmp_set':
-        adc_system_rate_limit_icmp_set(module)
+        system_rate_limit_icmp_set(module)
     elif action == 'system_tcp_syn_protect_get':
-        adc_system_tcp_syn_protect_get(module)
+        system_tcp_syn_protect_get(module)
     elif action == 'system_tcp_syn_protect_set':
-        adc_system_tcp_syn_protect_set(module)
+        system_tcp_syn_protect_set(module)
     elif action == 'system_vlan_keyed_connection_get':
-        adc_system_vlan_keyed_connection_get(module)
+        system_vlan_keyed_connection_get(module)
     elif action == 'system_vlan_keyed_connection_set':
-        adc_system_vlan_keyed_connection_set(module)
+        system_vlan_keyed_connection_set(module)
     elif action == 'global_connection_mirror_get':
-        adc_global_connection_mirror_get(module)
+        global_connection_mirror_get(module)
     elif action == 'global_connection_mirror_set':
-        adc_global_connection_mirror_set(module)
+        global_connection_mirror_set(module)
     elif action == 'global_path_persist_get':
-        adc_global_path_persist_get(module)
+        global_path_persist_get(module)
     elif action == 'global_path_persist_set':
-        adc_global_path_persist_set(module)
+        global_path_persist_set(module)
     elif action == 'global_slb_snat_on_vip_get':
-        adc_global_slb_snat_on_vip_get(module)
+        global_slb_snat_on_vip_get(module)
     elif action == 'global_slb_snat_on_vip_set':
-        adc_global_slb_snat_on_vip_set(module)
+        global_slb_snat_on_vip_set(module)
     elif action == 'global_slb_snat_interface_iprr_get':
-        adc_global_slb_snat_interface_iprr_get(module)
+        global_slb_snat_interface_iprr_get(module)
     elif action == 'global_slb_snat_interface_iprr_set':
-        adc_global_slb_snat_interface_iprr_set(module)
+        global_slb_snat_interface_iprr_set(module)
     elif action == 'slb_global_virtual_mac_get':
-        adc_slb_global_virtual_mac_get(module)
+        slb_global_virtual_mac_get(module)
     elif action == 'slb_global_virtual_mac_set':
-        adc_slb_global_virtual_mac_set(module)
+        slb_global_virtual_mac_set(module)
 
 
 if __name__ == '__main__':

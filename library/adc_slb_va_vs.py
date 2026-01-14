@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_add_vs(module):
+def slb_va_vs_add(module):
     """添加虚拟服务"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -226,7 +226,7 @@ def adc_add_vs(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_vs(module):
+def slb_va_vs_edit(module):
     """编辑虚拟服务"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -318,7 +318,7 @@ def adc_edit_vs(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_vs(module):
+def slb_va_vs_del(module):
     """删除虚拟服务"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -380,7 +380,7 @@ def adc_delete_vs(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_vs(module):
+def slb_va_vs_get(module):
     """获取虚拟服务详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -451,7 +451,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'add_vs', 'edit_vs', 'delete_vs', 'get_vs']),
+                    'slb_va_vs_add', 'slb_va_vs_edit', 'slb_va_vs_del', 'slb_va_vs_get']),
         # 虚拟服务参数
         va_name=dict(type='str', required=False),
         name=dict(type='str', required=False),
@@ -519,14 +519,14 @@ def main():
     if hasattr(action, '__str__'):
         action = str(action)
 
-    if action == 'add_vs':
-        adc_add_vs(module)
-    elif action == 'edit_vs':
-        adc_edit_vs(module)
-    elif action == 'delete_vs':
-        adc_delete_vs(module)
-    elif action == 'get_vs':
-        adc_get_vs(module)
+    if action == 'slb_va_vs_add':
+        slb_va_vs_add(module)
+    elif action == 'slb_va_vs_edit':
+        slb_va_vs_edit(module)
+    elif action == 'slb_va_vs_del':
+        slb_va_vs_del(module)
+    elif action == 'slb_va_vs_get':
+        slb_va_vs_get(module)
 
 
 if __name__ == '__main__':

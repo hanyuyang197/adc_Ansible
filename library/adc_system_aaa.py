@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_set_aaa_general_config(module):
+def aaa_general_set(module):
     """设置AAA全局配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -83,7 +83,7 @@ def adc_set_aaa_general_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_aaa_general_config(module):
+def aaa_general_get(module):
     """获取AAA全局配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -129,7 +129,7 @@ def adc_get_aaa_general_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_radius_config(module):
+def aaa_radius_set(module):
     """设置Radius认证配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -226,7 +226,7 @@ def adc_set_radius_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_radius_config(module):
+def aaa_radius_get(module):
     """获取Radius认证配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -272,7 +272,7 @@ def adc_get_radius_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_tacacs_config(module):
+def aaa_tacacs_set(module):
     """设置TACACS+认证配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -354,7 +354,7 @@ def adc_set_tacacs_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_tacacs_config(module):
+def aaa_tacacs_get(module):
     """获取TACACS+认证配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -400,7 +400,7 @@ def adc_get_tacacs_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_ldap_config(module):
+def aaa_ldap_set(module):
     """设置LDAP认证配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -494,7 +494,7 @@ def adc_set_ldap_config(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_ldap_config(module):
+def aaa_ldap_get(module):
     """获取LDAP认证配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -546,10 +546,10 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'set_aaa_general_config', 'get_aaa_general_config',
-            'set_radius_config', 'get_radius_config',
-            'set_tacacs_config', 'get_tacacs_config',
-            'set_ldap_config', 'get_ldap_config']),
+            'aaa_general_set', 'aaa_general_get',
+            'aaa_radius_set', 'aaa_radius_get',
+            'aaa_tacacs_set', 'aaa_tacacs_get',
+            'aaa_ldap_set', 'aaa_ldap_get']),
         # AAA全局配置参数
         local_disabled=dict(type='int', required=False),
         auth_order=dict(type='int', required=False),
@@ -599,22 +599,22 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'set_aaa_general_config':
-        adc_set_aaa_general_config(module)
-    elif action == 'get_aaa_general_config':
-        adc_get_aaa_general_config(module)
-    elif action == 'set_radius_config':
-        adc_set_radius_config(module)
-    elif action == 'get_radius_config':
-        adc_get_radius_config(module)
-    elif action == 'set_tacacs_config':
-        adc_set_tacacs_config(module)
-    elif action == 'get_tacacs_config':
-        adc_get_tacacs_config(module)
-    elif action == 'set_ldap_config':
-        adc_set_ldap_config(module)
-    elif action == 'get_ldap_config':
-        adc_get_ldap_config(module)
+    if action == 'aaa_general_set':
+        aaa_general_set(module)
+    elif action == 'aaa_general_get':
+        aaa_general_get(module)
+    elif action == 'aaa_radius_set':
+        aaa_radius_set(module)
+    elif action == 'aaa_radius_get':
+        aaa_radius_get(module)
+    elif action == 'aaa_tacacs_set':
+        aaa_tacacs_set(module)
+    elif action == 'aaa_tacacs_get':
+        aaa_tacacs_get(module)
+    elif action == 'aaa_ldap_set':
+        aaa_ldap_set(module)
+    elif action == 'aaa_ldap_get':
+        aaa_ldap_get(module)
 
 
 if __name__ == '__main__':

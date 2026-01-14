@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_slb_profile_http_hostswitch_add(module):
+def slb_profile_http_hostswitch_add(module):
     """HTTP模板增加主机动作配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -86,7 +86,7 @@ def adc_slb_profile_http_hostswitch_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_profile_http_hostswitch_del(module):
+def slb_profile_http_hostswitch_del(module):
     """HTTP模板删除主机动作配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -170,9 +170,9 @@ def main():
     action = module.params['action']
 
     if action == 'slb_profile_http_hostswitch_add':
-        adc_slb_profile_http_hostswitch_add(module)
+        slb_profile_http_hostswitch_add(module)
     elif action == 'slb_profile_http_hostswitch_del':
-        adc_slb_profile_http_hostswitch_del(module)
+        slb_profile_http_hostswitch_del(module)
 
 
 if __name__ == '__main__':

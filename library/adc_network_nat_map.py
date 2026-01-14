@@ -362,7 +362,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'nat_map_list', 'nat_map_add', 'nat_map_del', 'nat_ipv6_map_list', 'nat_ipv6_map_add', 'nat_ipv6_map_del']),
+            'nat_map_list', 'nat_map_add', 'nat_map_delete', 'nat_ipv6_map_list', 'nat_ipv6_map_add', 'nat_ipv6_map_delete']),
         # NAT映射参数
         acl=dict(type='int', required=False),
         nat_pool=dict(type='str', required=False),
@@ -382,13 +382,13 @@ def main():
         nat_map_list(module)
     elif action == 'nat_map_add':
         nat_map_add(module)
-    elif action == 'nat_map_del':
+    elif action == 'nat_map_delete':
         nat_map_del(module)
     elif action == 'nat_ipv6_map_list':
         nat_ipv6_map_list(module)
     elif action == 'nat_ipv6_map_add':
         nat_ipv6_map_add(module)
-    elif action == 'nat_ipv6_map_del':
+    elif action == 'nat_ipv6_map_delete':
         nat_ipv6_map_del(module)
 
 

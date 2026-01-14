@@ -29,8 +29,8 @@ def define_module_args():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile',
-            'add_profile', 'edit_profile', 'delete_profile'
+            'slb_profile_sip_list', 'slb_profile_sip_list_withcommon', 'slb_profile_sip_get',
+            'slb_profile_sip_add', 'slb_profile_sip_edit', 'slb_profile_sip_del'
         ]),
         # SIP模板参数
         name=dict(type='str', required=False),
@@ -51,18 +51,18 @@ def define_module_args():
         body_trans=dict(type='int', required=False),
         nonat_match_acl=dict(type='int', required=False),
         nonat_match_acl6=dict(type='str', required=False),
-        header_trans_list=dict(type='list', required=False),
+        header_trans_list=dict(type='slb_profile_sip_list', required=False),
         sdp_dnat_pool=dict(type='str', required=False),
         sdp_snat_pool=dict(type='str', required=False),
-        client_request_header_add_list=dict(type='list', required=False),
-        client_response_header_add_list=dict(type='list', required=False),
-        server_request_header_add_list=dict(type='list', required=False),
-        server_response_header_add_list=dict(type='list', required=False),
-        client_request_header_del_list=dict(type='list', required=False),
-        client_response_header_del_list=dict(type='list', required=False),
-        server_request_header_del_list=dict(type='list', required=False),
-        server_response_header_del_list=dict(type='list', required=False),
-        modify_header_list=dict(type='list', required=False),
+        client_request_header_add_list=dict(type='slb_profile_sip_list', required=False),
+        client_response_header_add_list=dict(type='slb_profile_sip_list', required=False),
+        server_request_header_add_list=dict(type='slb_profile_sip_list', required=False),
+        server_response_header_add_list=dict(type='slb_profile_sip_list', required=False),
+        client_request_header_del_list=dict(type='slb_profile_sip_list', required=False),
+        client_response_header_del_list=dict(type='slb_profile_sip_list', required=False),
+        server_request_header_del_list=dict(type='slb_profile_sip_list', required=False),
+        server_response_header_del_list=dict(type='slb_profile_sip_list', required=False),
+        modify_header_list=dict(type='slb_profile_sip_list', required=False),
         description=dict(type='str', required=False)
     )
 
@@ -163,7 +163,7 @@ def send_request(url, data=None, method='GET'):
 # 获取SIP模板列表
 
 
-def adc_list_sip_profiles(module):
+def slb_profile_sip_list(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -178,7 +178,7 @@ def adc_list_sip_profiles(module):
 # 获取包含common分区的SIP模板列表
 
 
-def adc_list_sip_profiles_withcommon(module):
+def slb_profile_sip_list_withcommon(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -193,7 +193,7 @@ def adc_list_sip_profiles_withcommon(module):
 # 获取指定SIP模板
 
 
-def adc_get_sip_profile(module):
+def slb_profile_sip_get(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     profile_name = module.params['name']
@@ -218,7 +218,7 @@ def adc_get_sip_profile(module):
 # 添加SIP模板
 
 
-def adc_add_sip_profile(module):
+def slb_profile_sip_add(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     profile_name = module.params['name']
@@ -261,7 +261,7 @@ def adc_add_sip_profile(module):
 # 编辑SIP模板
 
 
-def adc_edit_sip_profile(module):
+def slb_profile_sip_edit(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     profile_name = module.params['name']
@@ -304,7 +304,7 @@ def adc_edit_sip_profile(module):
 # 删除SIP模板
 
 
-def adc_delete_sip_profile(module):
+def slb_profile_sip_del(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     profile_name = module.params['name']
@@ -343,18 +343,18 @@ def main():
     action = module.params['action']
 
     # 根据action执行相应操作
-    if action == 'list_profiles':
-        result = adc_list_sip_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        result = adc_list_sip_profiles_withcommon(module)
-    elif action == 'get_profile':
-        result = adc_get_sip_profile(module)
-    elif action == 'add_profile':
-        result = adc_add_sip_profile(module)
-    elif action == 'edit_profile':
-        result = adc_edit_sip_profile(module)
-    elif action == 'delete_profile':
-        result = adc_delete_sip_profile(module)
+    if action == 'slb_profile_sip_list':
+        result = slb_profile_sip_list(module)
+    elif action == 'slb_profile_sip_list_withcommon':
+        result = slb_profile_sip_list_withcommon(module)
+    elif action == 'slb_profile_sip_get':
+        result = slb_profile_sip_get(module)
+    elif action == 'slb_profile_sip_add':
+        result = slb_profile_sip_add(module)
+    elif action == 'slb_profile_sip_edit':
+        result = slb_profile_sip_edit(module)
+    elif action == 'slb_profile_sip_del':
+        result = slb_profile_sip_del(module)
 
 
     # 处理结果 - 使用标准的ADC响应格式

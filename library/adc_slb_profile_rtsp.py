@@ -36,13 +36,13 @@ def define_module_args():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile',
-            'add_profile', 'edit_profile', 'delete_profile'
+            'slb_profile_rtsp_list', 'slb_profile_rtsp_list_withcommon', 'slb_profile_rtsp_get',
+            'slb_profile_rtsp_add', 'slb_profile_rtsp_edit', 'slb_profile_rtsp_del'
         ]),
         # RTSP模板参数
         name=dict(type='str', required=False),
         description=dict(type='str', required=False, default=""),
-        uri_switch=dict(type='list', required=False, default=[])
+        uri_switch=dict(type='slb_profile_rtsp_list', required=False, default=[])
     )
 
 # 发送HTTP请求
@@ -82,7 +82,7 @@ def send_request(url, data=None, method='GET'):
 # 获取RTSP模板列表
 
 
-def adc_list_rtsp_profiles(module):
+def slb_profile_rtsp_list(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -97,7 +97,7 @@ def adc_list_rtsp_profiles(module):
 # 获取包含common分区的RTSP模板列表
 
 
-def adc_list_rtsp_profiles_withcommon(module):
+def slb_profile_rtsp_list_withcommon(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -112,7 +112,7 @@ def adc_list_rtsp_profiles_withcommon(module):
 # 获取指定RTSP模板
 
 
-def adc_get_rtsp_profile(module):
+def slb_profile_rtsp_get(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -137,7 +137,7 @@ def adc_get_rtsp_profile(module):
 # 添加RTSP模板
 
 
-def adc_add_rtsp_profile(module):
+def slb_profile_rtsp_add(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -166,7 +166,7 @@ def adc_add_rtsp_profile(module):
 # 编辑RTSP模板
 
 
-def adc_edit_rtsp_profile(module):
+def slb_profile_rtsp_edit(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -195,7 +195,7 @@ def adc_edit_rtsp_profile(module):
 # 删除RTSP模板
 
 
-def adc_delete_rtsp_profile(module):
+def slb_profile_rtsp_del(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -234,18 +234,18 @@ def main():
     action = module.params['action']
 
     # 根据action执行相应操作
-    if action == 'list_profiles':
-        result = adc_list_rtsp_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        result = adc_list_rtsp_profiles_withcommon(module)
-    elif action == 'get_profile':
-        result = adc_get_rtsp_profile(module)
-    elif action == 'add_profile':
-        result = adc_add_rtsp_profile(module)
-    elif action == 'edit_profile':
-        result = adc_edit_rtsp_profile(module)
-    elif action == 'delete_profile':
-        result = adc_delete_rtsp_profile(module)
+    if action == 'slb_profile_rtsp_list':
+        result = slb_profile_rtsp_list(module)
+    elif action == 'slb_profile_rtsp_list_withcommon':
+        result = slb_profile_rtsp_list_withcommon(module)
+    elif action == 'slb_profile_rtsp_get':
+        result = slb_profile_rtsp_get(module)
+    elif action == 'slb_profile_rtsp_add':
+        result = slb_profile_rtsp_add(module)
+    elif action == 'slb_profile_rtsp_edit':
+        result = slb_profile_rtsp_edit(module)
+    elif action == 'slb_profile_rtsp_del':
+        result = slb_profile_rtsp_del(module)
 
 
     # 处理结果 - 使用标准的ADC响应格式

@@ -240,7 +240,7 @@ def send_request(url, data=None, method='GET'):
         }
 
 
-def adc_slb_ssl_client_list(module):
+def slb_sslclient_list(module):
     """List all client SSL profiles"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -251,7 +251,7 @@ def adc_slb_ssl_client_list(module):
     return result
 
 
-def adc_slb_ssl_client_list_withcommon(module):
+def slb_sslclient_list_withcommon(module):
     """List all client SSL profiles including common partition"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -262,7 +262,7 @@ def adc_slb_ssl_client_list_withcommon(module):
     return result
 
 
-def adc_slb_ssl_client_get(module):
+def slb_sslclient_get(module):
     """Get a specific client SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -282,7 +282,7 @@ def adc_slb_ssl_client_get(module):
     return result
 
 
-def adc_slb_ssl_client_add(module):
+def slb_sslclient_add(module):
     """Add a new client SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -317,7 +317,7 @@ def adc_slb_ssl_client_add(module):
     return result
 
 
-def adc_slb_ssl_client_edit(module):
+def slb_sslclient_edit(module):
     """Edit an existing client SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -352,7 +352,7 @@ def adc_slb_ssl_client_edit(module):
     return result
 
 
-def adc_slb_ssl_client_del(module):
+def slb_sslclient_del(module):
     """Delete a client SSL profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -381,8 +381,8 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
-                'list_profiles', 'list_profiles_withcommon', 'get_profile',
-                'add_profile', 'edit_profile', 'delete_profile'
+                'slb_sslclient_list', 'slb_sslclient_list_withcommon', 'slb_sslclient_get',
+                'slb_sslclient_add', 'slb_sslclient_edit', 'slb_sslclient_del'
             ]),
             name=dict(type='str', required=False),
             cert=dict(type='str', required=False),
@@ -410,20 +410,19 @@ def main():
 
     action = module.params['action']
 
-    if action == 'list_profiles':
-        result = adc_list_sslclient_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        result = adc_list_sslclient_profiles_withcommon(module)
-    elif action == 'get_profile':
-        result = adc_get_sslclient_profile(module)
-    elif action == 'add_profile':
-        result = adc_add_sslclient_profile(module)
-    elif action == 'edit_profile':
-        result = adc_edit_sslclient_profile(module)
-    elif action == 'delete_profile':
-        result = adc_delete_sslclient_profile(module)
-    else:
-        module.fail_json(msg="Unknown action: %s" % action)
+    if action == 'slb_sslclient_list':
+        result = slb_sslclient_list(module)
+    elif action == 'slb_sslclient_list_withcommon':
+        result = slb_sslclient_list_withcommon(module)
+    elif action == 'slb_sslclient_get':
+        result = slb_sslclient_get(module)
+    elif action == 'slb_sslclient_add':
+        result = slb_sslclient_add(module)
+    elif action == 'slb_sslclient_edit':
+        result = slb_sslclient_edit(module)
+    elif action == 'slb_sslclient_del':
+        result = slb_sslclient_del(module)
+
 
     # 统一使用标准的ADC响应格式处理结果
     # 成功响应: {"result":"success"} 或直接返回数据

@@ -180,7 +180,7 @@ def send_request(url, data=None, method='GET'):
         }
 
 
-def adc_list_ruletables(module):
+def slb_ruletable_list(module):
     """List all rule tables"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -191,7 +191,7 @@ def adc_list_ruletables(module):
     return result
 
 
-def adc_list_ruletables_withcommon(module):
+def slb_ruletable_list_withcommon(module):
     """List all rule tables including common partition"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -202,7 +202,7 @@ def adc_list_ruletables_withcommon(module):
     return result
 
 
-def adc_get_ruletable(module):
+def slb_ruletable_get(module):
     """Get a specific rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -222,7 +222,7 @@ def adc_get_ruletable(module):
     return result
 
 
-def adc_add_ruletable(module):
+def slb_ruletable_add(module):
     """Add a new rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -247,7 +247,7 @@ def adc_add_ruletable(module):
     return result
 
 
-def adc_delete_ruletable(module):
+def slb_ruletable_del(module):
     """Delete a rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -270,7 +270,7 @@ def adc_delete_ruletable(module):
     return result
 
 
-def adc_add_ruletable_entry(module):
+def slb_ruletable_add_entry(module):
     """Add entries to a rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -298,7 +298,7 @@ def adc_add_ruletable_entry(module):
     return result
 
 
-def adc_delete_ruletable_entry(module):
+def slb_ruletable_del_entry(module):
     """Delete entries from a rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -332,8 +332,8 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True, no_log=True),
     action=dict(type='str', required=True, choices=[
-        'list_ruletables', 'list_ruletables_withcommon', 'get_ruletable',
-        'add_ruletable', 'delete_ruletable', 'add_ruletable_entry', 'delete_ruletable_entry'
+        'slb_ruletable_list', 'slb_ruletable_list_withcommon', 'slb_ruletable_get',
+        'slb_ruletable_add', 'slb_ruletable_del', 'slb_ruletable_add_entry', 'slb_ruletable_del_entry'
     ]),
             name=dict(type='str', required=False),
             entrys=dict(type='list', required=False),
@@ -343,22 +343,20 @@ def main():
 
     action = module.params['action']
 
-    if action == 'list_ruletables':
-        result = adc_list_ruletables(module)
-    elif action == 'list_ruletables_withcommon':
-        result = adc_list_ruletables_withcommon(module)
-    elif action == 'get_ruletable':
-        result = adc_get_ruletable(module)
-    elif action == 'add_ruletable':
-        result = adc_add_ruletable(module)
-    elif action == 'delete_ruletable':
-        result = adc_delete_ruletable(module)
-    elif action == 'add_ruletable_entry':
-        result = adc_add_ruletable_entry(module)
-    elif action == 'delete_ruletable_entry':
-        result = adc_delete_ruletable_entry(module)
-    else:
-        module.fail_json(msg="Unknown action: %s" % action)
+    if action == 'slb_ruletable_list':
+        result = slb_ruletable_list(module)
+    elif action == 'slb_ruletable_list_withcommon':
+        result = slb_ruletable_list_withcommon(module)
+    elif action == 'slb_ruletable_get':
+        result = slb_ruletable_get(module)
+    elif action == 'slb_ruletable_add':
+        result = slb_ruletable_add(module)
+    elif action == 'slb_ruletable_del':
+        result = slb_ruletable_del(module)
+    elif action == 'slb_ruletable_add_entry':
+        result = slb_ruletable_add_entry(module)
+    elif action == 'slb_ruletable_del_entry':
+        result = slb_ruletable_del_entry(module)
 
     # 统一使用标准的ADC响应格式处理结果
     # 成功响应: {"result":"success"} 或直接返回数据

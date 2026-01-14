@@ -370,8 +370,7 @@ def main():
         result = adc_slb_policy_edit(module)
     elif action == 'slb_policy_del':
         result = adc_slb_policy_del(module)
-    else:
-        module.fail_json(msg="Unknown action: %s" % action)
+
 
     # 打印result的详细信息，便于调试
     print("DEBUG: result type = %s" % type(result).__name__)

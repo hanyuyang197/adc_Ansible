@@ -365,7 +365,7 @@ msg:
 '''
 
 
-def adc_get_vrrp_global_config(module):
+def vrrp_global_get(module):
     """Get VRRP global configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -391,7 +391,7 @@ def adc_get_vrrp_global_config(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def adc_set_vrrp_global_config(module):
+def vrrp_global_set(module):
     """Set VRRP global configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -437,7 +437,7 @@ def adc_set_vrrp_global_config(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def adc_add_vrrp_group(module):
+def vrrp_group_add(module):
     """Add VRRP group"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -487,7 +487,7 @@ def adc_add_vrrp_group(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def adc_list_vrrp_groups(module):
+def vrrp_group_list(module):
     """List VRRP groups"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -513,7 +513,7 @@ def adc_list_vrrp_groups(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def adc_add_heartbeat_eth(module):
+def vrrp_heart_eth_add(module):
     """Add Ethernet heartbeat interface"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -560,7 +560,7 @@ def adc_add_heartbeat_eth(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def adc_add_floating_ip(module):
+def vrrp_floating_ip_add(module):
     """Add floating IP"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -602,7 +602,7 @@ def adc_add_floating_ip(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def adc_set_force_offline(module):
+def vrrp_force_offline_set(module):
     """Set force offline"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -638,7 +638,7 @@ def adc_set_force_offline(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def adc_add_gateway_track(module):
+def vrrp_track_gateway_add(module):
     """Add gateway tracking"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -758,41 +758,41 @@ def main():
         # Perform requested action based on VRRP component
         if vrrp_component == 'global':
             if action == 'get':
-                changed, result = adc_get_vrrp_global_config(module)
+                changed, result = vrrp_global_get(module)
             elif action == 'set':
-                changed, result = adc_set_vrrp_global_config(module)
+                changed, result = vrrp_global_set(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for global: %s" % action)
         elif vrrp_component == 'group':
             if action == 'add':
-                changed, result = adc_add_vrrp_group(module)
+                changed, result = vrrp_group_add(module)
             elif action == 'list':
-                changed, result = adc_list_vrrp_groups(module)
+                changed, result = vrrp_group_list(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for group: %s" % action)
         elif vrrp_component == 'heartbeat_eth':
             if action == 'add':
-                changed, result = adc_add_heartbeat_eth(module)
+                changed, result = vrrp_heart_eth_add(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for heartbeat_eth: %s" % action)
         elif vrrp_component == 'floating_ip':
             if action == 'add':
-                changed, result = adc_add_floating_ip(module)
+                changed, result = vrrp_floating_ip_add(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for floating_ip: %s" % action)
         elif vrrp_component == 'force_offline':
             if action == 'set':
-                changed, result = adc_set_force_offline(module)
+                changed, result = vrrp_force_offline_set(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for force_offline: %s" % action)
         elif vrrp_component == 'gateway_track':
             if action == 'add':
-                changed, result = adc_add_gateway_track(module)
+                changed, result = vrrp_track_gateway_add(module)
             else:
                 module.fail_json(
                     msg="Unsupported action for gateway_track: %s" % action)

@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_set_hostname(module):
+def system_hostname_set(module):
     """设置系统主机名"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -82,7 +82,7 @@ def adc_set_hostname(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_hostname_ipv4(module):
+def system_host_ipv4_get(module):
     """获取主机名IPv4地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -128,7 +128,7 @@ def adc_get_hostname_ipv4(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_hostname_ipv4(module):
+def system_host_ipv4_set(module):
     """设置主机名IPv4地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -186,7 +186,7 @@ def adc_set_hostname_ipv4(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_hostname_ipv6(module):
+def system_host_ipv6_get(module):
     """获取主机名IPv6地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -232,7 +232,7 @@ def adc_get_hostname_ipv6(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_hostname_ipv6(module):
+def system_host_ipv6_set(module):
     """设置主机名IPv6地址"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -296,7 +296,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'set_hostname', 'get_hostname_ipv4', 'set_hostname_ipv4', 'get_hostname_ipv6', 'set_hostname_ipv6']),
+            'system_hostname_set', 'system_host_ipv4_get', 'system_host_ipv4_set', 'system_host_ipv6_get', 'system_host_ipv6_set']),
         # 主机名参数
         hostname=dict(type='str', required=False),
         host_ipv4_address=dict(type='str', required=False),
@@ -312,16 +312,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'set_hostname':
-        adc_set_hostname(module)
-    elif action == 'get_hostname_ipv4':
-        adc_get_hostname_ipv4(module)
-    elif action == 'set_hostname_ipv4':
-        adc_set_hostname_ipv4(module)
-    elif action == 'get_hostname_ipv6':
-        adc_get_hostname_ipv6(module)
-    elif action == 'set_hostname_ipv6':
-        adc_set_hostname_ipv6(module)
+    if action == 'system_hostname_set':
+        system_hostname_set(module)
+    elif action == 'system_host_ipv4_get':
+        system_host_ipv4_get(module)
+    elif action == 'system_host_ipv4_set':
+        system_host_ipv4_set(module)
+    elif action == 'system_host_ipv6_get':
+        system_host_ipv6_get(module)
+    elif action == 'system_host_ipv6_set':
+        system_host_ipv6_set(module)
 
 
 if __name__ == '__main__':

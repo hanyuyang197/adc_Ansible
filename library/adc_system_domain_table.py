@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_domain_tables(module):
+def system_domaintable_list(module):
     """获取域名解析自定义列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_domain_tables(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_domain_table(module):
+def system_domaintable_add(module):
     """添加域名解析自定义"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -138,7 +138,7 @@ def adc_add_domain_table(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_domain_table(module):
+def system_domaintable_del(module):
     """删除域名解析自定义"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -196,7 +196,7 @@ def adc_delete_domain_table(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_domain_files(module):
+def system_domaintable_file_list(module):
     """查看域名表文件列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -242,7 +242,7 @@ def adc_list_domain_files(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_upload_domain_file(module):
+def system_domaintable_file_upload(module):
     """上传域名表文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -341,7 +341,7 @@ def adc_upload_domain_file(module):
         module.fail_json(msg="上传域名表文件失败: %s" % str(e))
 
 
-def adc_delete_domain_file(module):
+def system_domaintable_file_delete(module):
     """删除域名表文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -402,8 +402,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_domain_tables', 'add_domain_table', 'delete_domain_table',
-            'list_domain_files', 'upload_domain_file', 'delete_domain_file']),
+            'system_domaintable_list', 'system_domaintable_add', 'system_domaintable_del',
+            'system_domaintable_file_list', 'system_domaintable_file_upload', 'system_domaintable_file_delete']),
         # 域名表参数
         name=dict(type='str', required=False),
         ttl=dict(type='int', required=False),
@@ -418,25 +418,25 @@ def main():
         argument_spec=module_args,
         supports_check_mode=False,
         required_if=[
-            ['action', 'upload_domain_file', ['file_path']]
+            ['action', 'system_domaintable_file_upload', ['file_path']]
         ]
     )
 
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_domain_tables':
-        adc_list_domain_tables(module)
-    elif action == 'add_domain_table':
-        adc_add_domain_table(module)
-    elif action == 'delete_domain_table':
-        adc_delete_domain_table(module)
-    elif action == 'list_domain_files':
-        adc_list_domain_files(module)
-    elif action == 'upload_domain_file':
-        adc_upload_domain_file(module)
-    elif action == 'delete_domain_file':
-        adc_delete_domain_file(module)
+    if action == 'system_domaintable_list':
+        system_domaintable_list(module)
+    elif action == 'system_domaintable_add':
+        system_domaintable_add(module)
+    elif action == 'system_domaintable_del':
+        system_domaintable_del(module)
+    elif action == 'system_domaintable_file_list':
+        system_domaintable_file_list(module)
+    elif action == 'system_domaintable_file_upload':
+        system_domaintable_file_upload(module)
+    elif action == 'system_domaintable_file_delete':
+        system_domaintable_file_delete(module)
 
 
 if __name__ == '__main__':

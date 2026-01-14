@@ -395,9 +395,10 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'list', 'clear', 'download']),
-        log_type=dict(type='str', required=True, choices=[
-                      'service', 'audit', 'nat', 'dns', 'coredump', 'system']),
+                    'log_service_list', 'log_audit_list', 'log_nat_list', 'log_dns_list',
+                    'log_service_clear', 'log_audit_clear', 'log_nat_clear', 'log_dns_clear',
+                    'log_service_download', 'log_audit_download', 'log_nat_download', 'log_dns_download',
+                    'log_coredump_download', 'log_system_download']),
         # Options for list action
         direct=dict(type='int', choices=[0, 1, 2, 3], default=0),
         index=dict(type='int', default=0),
@@ -414,7 +415,7 @@ def main():
         argument_spec=argument_spec,
         supports_check_mode=True,
         required_if=[
-            ('log_type', 'audit', ['user_name'], True),
+            ('action', 'log_audit_list', ['user_name'], True),
         ]
     )
 
@@ -427,11 +428,11 @@ def main():
 
     try:
         # Perform requested action
-        if action == 'list':
+        if action in ['log_service_list', 'log_audit_list', 'log_nat_list', 'log_dns_list']:
             changed, result = list_logs(module)
-        elif action == 'clear':
+        elif action in ['log_service_clear', 'log_audit_clear', 'log_nat_clear', 'log_dns_clear']:
             changed, result = clear_logs(module)
-        elif action == 'download':
+        elif action in ['log_service_download', 'log_audit_download', 'log_nat_download', 'log_dns_download', 'log_coredump_download', 'log_system_download']:
             changed, result = download_logs(module)
         else:
             module.fail_json(msg="Unsupported action: %s" % action)

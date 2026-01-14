@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_slb_ssl_certkey_slb_ssl_certkey_match(module):
+def slb_ssl_certkey_match(module):
     """校验证书和私钥配对"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -85,7 +85,7 @@ def main():
     action = module.params['action']
 
     if action == 'slb_ssl_certkey_match':
-        adc_slb_ssl_certkey_slb_ssl_certkey_match(module)
+        slb_ssl_certkey_match(module)
 
 
 if __name__ == '__main__':

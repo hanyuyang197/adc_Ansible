@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_udp_profiles(module):
+def slb_profile_udp_list(module):
     """获取UDP模板列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_udp_profiles(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_udp_profiles_withcommon(module):
+def slb_profile_udp_list_withcommon(module):
     """获取包含common分区的UDP模板列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -117,7 +117,7 @@ def adc_list_udp_profiles_withcommon(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_udp_profile(module):
+def slb_profile_udp_get(module):
     """获取UDP模板详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -178,7 +178,7 @@ def adc_get_udp_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_udp_profile(module):
+def slb_profile_udp_add(module):
     """添加UDP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -246,7 +246,7 @@ def adc_add_udp_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_udp_profile(module):
+def slb_profile_udp_edit(module):
     """编辑UDP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -316,7 +316,7 @@ def adc_edit_udp_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_udp_profile(module):
+def slb_profile_udp_del(module):
     """删除UDP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -380,7 +380,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile', 'add_profile', 'edit_profile', 'delete_profile']),
+            'slb_profile_udp_list', 'slb_profile_udp_list_withcommon', 'slb_profile_udp_get',
+            'slb_profile_udp_add', 'slb_profile_udp_edit', 'slb_profile_udp_del']),
         # UDP模板参数
         name=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -400,18 +401,18 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_profiles':
-        adc_list_udp_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        adc_list_udp_profiles_withcommon(module)
-    elif action == 'get_profile':
-        adc_get_udp_profile(module)
-    elif action == 'add_profile':
-        adc_add_udp_profile(module)
-    elif action == 'edit_profile':
-        adc_edit_udp_profile(module)
-    elif action == 'delete_profile':
-        adc_delete_udp_profile(module)
+    if action == 'slb_profile_udp_list':
+        slb_profile_udp_list(module)
+    elif action == 'slb_profile_udp_list_withcommon':
+        slb_profile_udp_list_withcommon(module)
+    elif action == 'slb_profile_udp_get':
+        slb_profile_udp_get(module)
+    elif action == 'slb_profile_udp_add':
+        slb_profile_udp_add(module)
+    elif action == 'slb_profile_udp_edit':
+        slb_profile_udp_edit(module)
+    elif action == 'slb_profile_udp_del':
+        slb_profile_udp_del(module)
 
 
 if __name__ == '__main__':

@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_http_profiles(module):
+def slb_profile_http_list(module):
     """获取HTTP模板列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_http_profiles(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_http_profiles_withcommon(module):
+def slb_profile_http_list_withcommon(module):
     """获取包含common分区的HTTP模板列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -117,7 +117,7 @@ def adc_list_http_profiles_withcommon(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_http_profile(module):
+def slb_profile_http_get(module):
     """获取HTTP模板详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -178,7 +178,7 @@ def adc_get_http_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_http_profile(module):
+def slb_profile_http_add(module):
     """添加HTTP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -255,7 +255,7 @@ def adc_add_http_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_http_profile(module):
+def slb_profile_http_edit(module):
     """编辑HTTP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -391,7 +391,7 @@ def adc_edit_http_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_http_profile(module):
+def slb_profile_http_del(module):
     """删除HTTP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -455,7 +455,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile', 'add_profile', 'edit_profile', 'delete_profile']),
+            'slb_profile_http_list', 'slb_profile_http_list_withcommon', 'slb_profile_http_get',
+            'slb_profile_http_add', 'slb_profile_http_edit', 'slb_profile_http_del']),
         # HTTP模板参数
         name=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -507,18 +508,18 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_profiles':
-        adc_list_http_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        adc_list_http_profiles_withcommon(module)
-    elif action == 'get_profile':
-        adc_get_http_profile(module)
-    elif action == 'add_profile':
-        adc_add_http_profile(module)
-    elif action == 'edit_profile':
-        adc_edit_http_profile(module)
-    elif action == 'delete_profile':
-        adc_delete_http_profile(module)
+    if action == 'slb_profile_http_list':
+        slb_profile_http_list(module)
+    elif action == 'slb_profile_http_list_withcommon':
+        slb_profile_http_list_withcommon(module)
+    elif action == 'slb_profile_http_get':
+        slb_profile_http_get(module)
+    elif action == 'slb_profile_http_add':
+        slb_profile_http_add(module)
+    elif action == 'slb_profile_http_edit':
+        slb_profile_http_edit(module)
+    elif action == 'slb_profile_http_del':
+        slb_profile_http_del(module)
 
 
 if __name__ == '__main__':

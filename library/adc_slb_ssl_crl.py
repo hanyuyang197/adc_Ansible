@@ -68,7 +68,7 @@ def create_form_data(fields, files=None):
     return body, BOUNDARY
 
 
-def adc_slb_ssl_crl_upload(module):
+def slb_ssl_crl_upload(module):
     """上传SSL证书吊销列表文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -150,7 +150,7 @@ def main():
 
     # 根据action执行相应操作
     if module.params['action'] == 'slb_ssl_crl_upload':
-        adc_slb_ssl_crl_upload(module)
+        slb_ssl_crl_upload(module)
     elif module.params['action'] == 'slb_ssl_crl_del':
         # 使用通用函数处理删除操作
         ip = module.params['ip']

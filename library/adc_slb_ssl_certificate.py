@@ -68,7 +68,7 @@ def create_form_data(fields, files=None):
     return body, BOUNDARY
 
 
-def adc_slb_ssl_certificate_upload(module):
+def slb_ssl_certificate_upload(module):
     """上传SSL证书文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def adc_slb_ssl_certificate_upload(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_ssl_certificate_add(module):
+def slb_ssl_certificate_add(module):
     """生成SSL自签名证书"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -192,7 +192,7 @@ def adc_slb_ssl_certificate_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_ssl_certificate_list(module):
+def slb_ssl_certificate_list(module):
     """获取SSL证书列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -227,7 +227,7 @@ def adc_slb_ssl_certificate_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_ssl_certificate_list_withcommon(module):
+def slb_ssl_certificate_list_withcommon(module):
     """获取SSL证书列表（包含common分区）"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -262,7 +262,7 @@ def adc_slb_ssl_certificate_list_withcommon(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_ssl_certificate_del(module):
+def slb_ssl_certificate_del(module):
     """删除自签名证书"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -325,7 +325,7 @@ def adc_slb_ssl_certificate_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_ssl_key_upload(module):
+def slb_ssl_key_upload(module):
     """上传SSL私钥文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -388,7 +388,7 @@ def adc_slb_ssl_key_upload(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_ssl_crl_upload(module):
+def slb_ssl_crl_upload(module):
     """上传SSL CRL文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -451,7 +451,7 @@ def adc_slb_ssl_crl_upload(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_ssl_pfx_upload(module):
+def slb_ssl_pfx_upload(module):
     """上传SSL PFX文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -527,7 +527,7 @@ def main():
         action=dict(type='str', required=True, choices=[
                     'slb_ssl_certificate_upload', 'slb_ssl_certificate_add',
                     'slb_ssl_certificate_list', 'slb_ssl_certificate_list_withcommon',
-                    'slb_ssl_certificate_del', 'slb_ssl_certificate_pfx_upload']),
+                    'slb_ssl_certificate_del', 'slb_ssl_pfx_upload', 'slb_ssl_key_upload', 'slb_ssl_crl_upload']),
         name=dict(type='str', required=False),
         cert_name=dict(type='str', required=False),
         key_name=dict(type='str', required=False),
@@ -565,17 +565,21 @@ def main():
 
     # 根据action执行相应操作
     if module.params['action'] == 'slb_ssl_certificate_upload':
-        adc_slb_ssl_certificate_upload(module)
+        slb_ssl_certificate_upload(module)
     elif module.params['action'] == 'slb_ssl_certificate_add':
-        adc_slb_ssl_certificate_add(module)
+        slb_ssl_certificate_add(module)
     elif module.params['action'] == 'slb_ssl_certificate_list':
-        adc_slb_ssl_certificate_list(module)
+        slb_ssl_certificate_list(module)
     elif module.params['action'] == 'slb_ssl_certificate_list_withcommon':
-        adc_slb_ssl_certificate_list_withcommon(module)
+        slb_ssl_certificate_list_withcommon(module)
     elif module.params['action'] == 'slb_ssl_certificate_del':
-        adc_slb_ssl_certificate_del(module)
-    elif module.params['action'] == 'slb_ssl_certificate_pfx_upload':
-        adc_slb_ssl_pfx_upload(module)
+        slb_ssl_certificate_del(module)
+    elif module.params['action'] == 'slb_ssl_pfx_upload':
+        slb_ssl_pfx_upload(module)
+    elif module.params['action'] == 'slb_ssl_key_upload':
+        slb_ssl_key_upload(module)
+    elif module.params['action'] == 'slb_ssl_crl_upload':
+        slb_ssl_crl_upload(module)
 
 
 if __name__ == '__main__':

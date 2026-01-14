@@ -23,7 +23,7 @@ import sys
 
 # ADC API响应解析函数
 
-def adc_slb_node_list(module):
+def slb_node_list(module):
     """获取节点列表 (slb.node.list)"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -69,7 +69,7 @@ def adc_slb_node_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_node_get(module):
+def slb_node_get(module):
     """获取节点详情 (slb.node.get)"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -130,7 +130,7 @@ def adc_slb_node_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_node_add(module):
+def slb_node_add(module):
     """添加节点"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -198,7 +198,7 @@ def adc_slb_node_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_node_edit(module):
+def slb_node_edit(module):
     """编辑节点"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -274,7 +274,7 @@ def adc_slb_node_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_node_del(module):
+def slb_node_del(module):
     """删除节点"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -332,7 +332,7 @@ def adc_slb_node_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_node_port_add(module):
+def slb_node_port_add(module):
     """添加节点端口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -404,7 +404,7 @@ def adc_slb_node_port_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_node_port_edit(module):
+def slb_node_port_edit(module):
     """编辑节点端口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -476,7 +476,7 @@ def adc_slb_node_port_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_node_port_del(module):
+def slb_node_port_del(module):
     """删除节点端口"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -545,7 +545,7 @@ def adc_slb_node_port_del(module):
 
 
 
-def adc_slb_node_onoff(module):
+def slb_node_onoff(module):
     """节点启用/禁用"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -598,7 +598,7 @@ def adc_slb_node_onoff(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_node_port_onoff(module):
+def slb_node_port_onoff(module):
     """节点端口启用/禁用"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -722,25 +722,25 @@ def main():
         action = str(action)
 
     if action == 'slb_node_list':
-        adc_slb_node_list(module)
+        slb_node_list(module)
     elif action == 'slb_node_get':
-        adc_slb_node_get(module)
+        slb_node_get(module)
     elif action == 'slb_node_add':
-        adc_slb_node_add(module)
+        slb_node_add(module)
     elif action == 'slb_node_edit':
-        adc_slb_node_edit(module)
+        slb_node_edit(module)
     elif action == 'slb_node_del':
-        adc_slb_node_del(module)
+        slb_node_del(module)
     elif action == 'slb_node_port_add':
-        adc_slb_node_port_add(module)
+        slb_node_port_add(module)
     elif action == 'slb_node_port_edit':
-        adc_slb_node_port_edit(module)
+        slb_node_port_edit(module)
     elif action == 'slb_node_port_del':
-        adc_slb_node_port_del(module)
+        slb_node_port_del(module)
     elif action == 'slb_node_onoff':
-        adc_slb_node_onoff(module)
+        slb_node_onoff(module)
     elif action == 'slb_node_port_onoff':
-        adc_slb_node_port_onoff(module)
+        slb_node_port_onoff(module)
 
 
 

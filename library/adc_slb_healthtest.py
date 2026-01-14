@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_slb_healthtest_list(module):
+def slb_healthtest_list(module):
     """获取健康检查列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -69,7 +69,7 @@ def adc_slb_healthtest_list(module):
         module.fail_json(msg="获取健康检查列表失败: %s" % str(e))
 
 
-def adc_slb_healthtest_add(module):
+def slb_healthtest_add(module):
     """添加健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -122,7 +122,7 @@ def adc_slb_healthtest_add(module):
         module.fail_json(msg="添加健康检查请求失败: %s" % str(e))
 
 
-def adc_slb_healthtest_get(module):
+def slb_healthtest_get(module):
     """获取健康检查详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -175,7 +175,7 @@ def adc_slb_healthtest_get(module):
         module.fail_json(msg="获取健康检查详情请求失败: %s" % str(e))
 
 
-def adc_slb_healthtest_del(module):
+def slb_healthtest_del(module):
     """删除健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -255,13 +255,13 @@ def main():
     action = module.params.get('action')
 
     if action == 'slb_healthtest_list':
-        adc_slb_healthtest_list(module)
+        slb_healthtest_list(module)
     elif action == 'slb_healthtest_add':
-        adc_slb_healthtest_add(module)
+        slb_healthtest_add(module)
     elif action == 'slb_healthtest_get':
-        adc_slb_healthtest_get(module)
+        slb_healthtest_get(module)
     elif action == 'slb_healthtest_del':
-        adc_slb_healthtest_del(module)
+        slb_healthtest_del(module)
 
 
 if __name__ == '__main__':

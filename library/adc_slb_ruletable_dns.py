@@ -155,7 +155,7 @@ def send_request(url, data=None, method='POST'):
         }
 
 
-def adc_add_dns_entries(module):
+def slb_ruletable_dns_add(module):
     """Add DNS entries to a rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -183,7 +183,7 @@ def adc_add_dns_entries(module):
     return result
 
 
-def adc_delete_dns_entries(module):
+def slb_ruletable_dns_del(module):
     """Delete DNS entries from a rule table"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -217,7 +217,7 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
-                'add_dns', 'delete_dns'
+                'slb_ruletable_dns_add', 'slb_ruletable_dns_del'
             ]),
             name=dict(type='str', required=True),
             dnss=dict(type='list', required=True),
@@ -227,12 +227,11 @@ def main():
 
     action = module.params['action']
 
-    if action == 'add_dns':
-        result = adc_add_dns_entries(module)
-    elif action == 'delete_dns':
-        result = adc_delete_dns_entries(module)
-    else:
-        module.fail_json(msg="Unknown action: %s" % action)
+    if action == 'slb_ruletable_dns_add':
+        result = slb_ruletable_dns_add(module)
+    elif action == 'slb_ruletable_dns_del':
+        result = slb_ruletable_dns_del(module)
+
 
     # 统一使用标准的ADC响应格式处理结果
     # 成功响应: {"result":"success"} 或直接返回数据

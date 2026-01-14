@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_tcp_profiles(module):
+def slb_profile_tcp_list(module):
     """获取TCP模板列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_tcp_profiles(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_tcp_profiles_withcommon(module):
+def slb_profile_tcp_list_withcommon(module):
     """获取包含common分区的TCP模板列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -117,7 +117,7 @@ def adc_list_tcp_profiles_withcommon(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_get_tcp_profile(module):
+def slb_profile_tcp_get(module):
     """获取TCP模板详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -178,7 +178,7 @@ def adc_get_tcp_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_tcp_profile(module):
+def slb_profile_tcp_add(module):
     """添加TCP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -248,7 +248,7 @@ def adc_add_tcp_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_edit_tcp_profile(module):
+def slb_profile_tcp_edit(module):
     """编辑TCP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -334,7 +334,7 @@ def adc_edit_tcp_profile(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_tcp_profile(module):
+def slb_profile_tcp_del(module):
     """删除TCP模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -398,7 +398,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile', 'add_profile', 'edit_profile', 'delete_profile']),
+            'slb_profile_tcp_list', 'slb_profile_tcp_list_withcommon', 'slb_profile_tcp_get',
+            'slb_profile_tcp_add', 'slb_profile_tcp_edit', 'slb_profile_tcp_del']),
         # TCP模板参数
         name=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -425,18 +426,18 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_profiles':
-        adc_list_tcp_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        adc_list_tcp_profiles_withcommon(module)
-    elif action == 'get_profile':
-        adc_get_tcp_profile(module)
-    elif action == 'add_profile':
-        adc_add_tcp_profile(module)
-    elif action == 'edit_profile':
-        adc_edit_tcp_profile(module)
-    elif action == 'delete_profile':
-        adc_delete_tcp_profile(module)
+    if action == 'slb_profile_tcp_list':
+        slb_profile_tcp_list(module)
+    elif action == 'slb_profile_tcp_list_withcommon':
+        slb_profile_tcp_list_withcommon(module)
+    elif action == 'slb_profile_tcp_get':
+        slb_profile_tcp_get(module)
+    elif action == 'slb_profile_tcp_add':
+        slb_profile_tcp_add(module)
+    elif action == 'slb_profile_tcp_edit':
+        slb_profile_tcp_edit(module)
+    elif action == 'slb_profile_tcp_del':
+        slb_profile_tcp_del(module)
 
 
 if __name__ == '__main__':

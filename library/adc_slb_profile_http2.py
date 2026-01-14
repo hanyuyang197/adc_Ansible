@@ -35,8 +35,8 @@ def define_module_args():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_profiles', 'list_profiles_withcommon', 'get_profile',
-            'add_profile', 'edit_profile', 'delete_profile'
+            'slb_profile_http2_list', 'slb_profile_http2_list_withcommon', 'slb_profile_http2_get',
+            'slb_profile_http2_add', 'slb_profile_http2_edit', 'slb_profile_http2_del'
         ]),
         # HTTP2模板参数
         name=dict(type='str', required=False),
@@ -72,7 +72,7 @@ def send_request(url, data=None, method='GET'):
 # 获取HTTP2模板列表
 
 
-def adc_list_http2_profiles(module):
+def slb_profile_http2_list(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -87,7 +87,7 @@ def adc_list_http2_profiles(module):
 # 获取包含common分区的HTTP2模板列表
 
 
-def adc_list_http2_profiles_withcommon(module):
+def slb_profile_http2_list_withcommon(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
@@ -102,7 +102,7 @@ def adc_list_http2_profiles_withcommon(module):
 # 获取指定HTTP2模板
 
 
-def adc_get_http2_profile(module):
+def slb_profile_http2_get(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -127,7 +127,7 @@ def adc_get_http2_profile(module):
 # 添加HTTP2模板
 
 
-def adc_add_http2_profile(module):
+def slb_profile_http2_add(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -161,7 +161,7 @@ def adc_add_http2_profile(module):
 # 编辑HTTP2模板
 
 
-def adc_edit_http2_profile(module):
+def slb_profile_http2_edit(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -195,7 +195,7 @@ def adc_edit_http2_profile(module):
 # 删除HTTP2模板
 
 
-def adc_delete_http2_profile(module):
+def slb_profile_http2_del(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
@@ -234,18 +234,18 @@ def main():
     action = module.params['action']
 
     # 根据action执行相应操作
-    if action == 'list_profiles':
-        module_result = adc_list_http2_profiles(module)
-    elif action == 'list_profiles_withcommon':
-        module_result = adc_list_http2_profiles_withcommon(module)
-    elif action == 'get_profile':
-        module_result = adc_get_http2_profile(module)
-    elif action == 'add_profile':
-        module_result = adc_add_http2_profile(module)
-    elif action == 'edit_profile':
-        module_result = adc_edit_http2_profile(module)
-    elif action == 'delete_profile':
-        module_result = adc_delete_http2_profile(module)
+    if action == 'slb_profile_http2_list':
+        module_result = slb_profile_http2_list(module)
+    elif action == 'slb_profile_http2_list_withcommon':
+        module_result = slb_profile_http2_list_withcommon(module)
+    elif action == 'slb_profile_http2_get':
+        module_result = slb_profile_http2_get(module)
+    elif action == 'slb_profile_http2_add':
+        module_result = slb_profile_http2_add(module)
+    elif action == 'slb_profile_http2_edit':
+        module_result = slb_profile_http2_edit(module)
+    elif action == 'slb_profile_http2_del':
+        module_result = slb_profile_http2_del(module)
 
 
     # 处理结果

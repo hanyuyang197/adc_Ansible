@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_fastl5_profile_del(module):
+def slb_profile_fastl5_del(module):
     """删除FastL5 Profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_fastl5_profile_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_fastl6_profile_edit(module):
+def slb_profile_fastl6_edit(module):
     """编辑FastL6 Profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -126,7 +126,7 @@ def adc_fastl6_profile_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_fastl7_profile_get(module):
+def slb_profile_fastl7_get(module):
     """获取FastL7 Profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -174,7 +174,7 @@ def adc_fastl7_profile_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_slb_profile_http_hostswitch_del(module):
+def slb_profile_http_hostswitch_del(module):
     """删除HTTP HostSwitch Profile"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -220,7 +220,7 @@ def adc_slb_profile_http_hostswitch_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_dns_profile_list_withcommon(module):
+def slb_profile_dns_list_withcommon(module):
     """获取DNS Profile列表（包含common分区）"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -256,7 +256,7 @@ def adc_dns_profile_list_withcommon(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_smtp_profile_list_withcommon(module):
+def slb_profile_smtp_list_withcommon(module):
     """获取SMTP Profile列表（包含common分区）"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -292,7 +292,7 @@ def adc_smtp_profile_list_withcommon(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_rtsp_profile_list_withcommon(module):
+def slb_profile_rtsp_list_withcommon(module):
     """获取RTSP Profile列表（包含common分区）"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -334,9 +334,9 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'fastl5_del', 'fastl6_edit', 'fastl7_get',
-            'slb_profile_http_hostswitch_del', 'dns_list_withcommon',
-            'smtp_list_withcommon', 'rtsp_list_withcommon'
+            'slb_profile_fastl5_del', 'slb_profile_fastl6_edit', 'slb_profile_fastl7_get',
+            'slb_profile_http_hostswitch_del', 'slb_profile_dns_list_withcommon',
+            'slb_profile_smtp_list_withcommon', 'slb_profile_rtsp_list_withcommon'
         ]),
         # Profile通用参数
         name=dict(type='str', required=False),
@@ -357,20 +357,20 @@ def main():
     if hasattr(action, '__str__'):
         action = str(action)
 
-    if action == 'fastl5_del':
-        adc_fastl5_profile_del(module)
-    elif action == 'fastl6_edit':
-        adc_fastl6_profile_edit(module)
-    elif action == 'fastl7_get':
-        adc_fastl7_profile_get(module)
+    if action == 'slb_profile_fastl5_del':
+        slb_profile_fastl5_del(module)
+    elif action == 'slb_profile_fastl6_edit':
+        slb_profile_fastl6_edit(module)
+    elif action == 'slb_profile_fastl7_get':
+        slb_profile_fastl7_get(module)
     elif action == 'slb_profile_http_hostswitch_del':
-        adc_slb_profile_http_hostswitch_del(module)
-    elif action == 'dns_list_withcommon':
-        adc_dns_profile_list_withcommon(module)
-    elif action == 'smtp_list_withcommon':
-        adc_smtp_profile_list_withcommon(module)
-    elif action == 'rtsp_list_withcommon':
-        adc_rtsp_profile_list_withcommon(module)
+        slb_profile_http_hostswitch_del(module)
+    elif action == 'slb_profile_dns_list_withcommon':
+        slb_profile_dns_list_withcommon(module)
+    elif action == 'slb_profile_smtp_list_withcommon':
+        slb_profile_smtp_list_withcommon(module)
+    elif action == 'slb_profile_rtsp_list_withcommon':
+        slb_profile_rtsp_list_withcommon(module)
 
 
 if __name__ == '__main__':

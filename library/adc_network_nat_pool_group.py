@@ -323,7 +323,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'nat_pool_group_list', 'nat_pool_group_get', 'nat_pool_group_add', 'nat_pool_group_edit', 'nat_pool_group_del']),
+            'nat_pool_group_list', 'nat_pool_group_get', 'nat_pool_group_add', 'nat_pool_group_edit', 'nat_pool_group_delete']),
         # NAT地址池组参数
         name=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -347,7 +347,7 @@ def main():
         nat_pool_group_add(module)
     elif action == 'nat_pool_group_edit':
         nat_pool_group_edit(module)
-    elif action == 'nat_pool_group_del':
+    elif action == 'nat_pool_group_delete':
         nat_pool_group_del(module)
 
 

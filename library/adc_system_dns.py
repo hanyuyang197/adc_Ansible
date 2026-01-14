@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_get_dns(module):
+def system_dns_get(module):
     """获取DNS服务器配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_get_dns(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_set_dns(module):
+def system_dns_set(module):
     """设置DNS服务器配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -133,7 +133,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'get_dns', 'set_dns']),
+            'system_dns_get', 'system_dns_set']),
         # DNS参数
         domain=dict(type='str', required=False),
         dns_server=dict(type='str', required=False)
@@ -148,10 +148,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'get_dns':
-        adc_get_dns(module)
-    elif action == 'set_dns':
-        adc_set_dns(module)
+    if action == 'system_dns_get':
+        system_dns_get(module)
+    elif action == 'system_dns_set':
+        system_dns_set(module)
 
 
 if __name__ == '__main__':

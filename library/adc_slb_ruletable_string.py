@@ -48,7 +48,7 @@ options:
         description:
             - The action to perform (add_string, delete_string)
         required: true
-        choices: ['add_string', 'delete_string']
+        choices: ['slb_ruletable_string_add', 'slb_ruletable_string_del']
     name:
         description:
             - The name of the rule table
@@ -215,7 +215,7 @@ def main():
             ip=dict(type='str', required=True),
             authkey=dict(type='str', required=True, no_log=True),
             action=dict(type='str', required=True, choices=[
-                'add_string', 'delete_string'
+                'slb_ruletable_string_add', 'slb_ruletable_string_del'
             ]),
             name=dict(type='str', required=True),
             strings=dict(type='list', required=True),
@@ -225,12 +225,11 @@ def main():
 
     action = module.params['action']
 
-    if action == 'add_string':
+    if action == 'slb_ruletable_string_add':
         result = adc_add_string_entries(module)
-    elif action == 'delete_string':
+    elif action == 'slb_ruletable_string_del':
         result = adc_delete_string_entries(module)
-    else:
-        module.fail_json(msg="Unknown action: %s" % action)
+
 
     # 统一使用标准的ADC响应格式处理结果
     # 成功响应: {"result":"success"} 或直接返回数据

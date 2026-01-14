@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def trunk_list(module):
+def network_trunk_list(module):
     """获取TRUNK列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def trunk_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def trunk_get(module):
+def network_trunk_get(module):
     """获取TRUNK详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def trunk_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def trunk_add(module):
+def network_trunk_add(module):
     """添加TRUNK"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -195,7 +195,7 @@ def trunk_add(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def trunk_edit(module):
+def network_trunk_edit(module):
     """编辑TRUNK"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -262,7 +262,7 @@ def trunk_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def trunk_delete(module):
+def network_trunk_del(module):
     """删除TRUNK"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -326,7 +326,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'trunk_list', 'trunk_get', 'trunk_add', 'trunk_edit', 'trunk_delete']),
+            'network_trunk_list', 'network_trunk_get', 'network_trunk_add', 'network_trunk_edit', 'network_trunk_del']),
         # TRUNK参数
         id=dict(type='int', required=False),
         type=dict(type='int', required=False),
@@ -343,16 +343,16 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'trunk_list':
-        trunk_list(module)
-    elif action == 'trunk_get':
-        trunk_get(module)
-    elif action == 'trunk_add':
-        trunk_add(module)
-    elif action == 'trunk_edit':
-        trunk_edit(module)
-    elif action == 'trunk_delete':
-        trunk_delete(module)
+    if action == 'network_trunk_list':
+        network_trunk_list(module)
+    elif action == 'network_trunk_get':
+        network_trunk_get(module)
+    elif action == 'network_trunk_add':
+        network_trunk_add(module)
+    elif action == 'network_trunk_edit':
+        network_trunk_edit(module)
+    elif action == 'network_trunk_del':
+        network_trunk_del(module)
 
 
 if __name__ == '__main__':

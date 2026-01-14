@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def adc_add_config_file(module):
+def system_config_add(module):
     """添加配置文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -90,7 +90,7 @@ def adc_add_config_file(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_list_config_files(module):
+def system_config_list(module):
     """获取配置文件列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -136,7 +136,7 @@ def adc_list_config_files(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_apply_config_file(module):
+def system_config_apply(module):
     """指定配置文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -193,7 +193,7 @@ def adc_apply_config_file(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_config_file(module):
+def system_config_del(module):
     """删除配置文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -250,7 +250,7 @@ def adc_delete_config_file(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_backup_config_file(module):
+def system_config_backup(module):
     """配置文件导出"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -329,7 +329,7 @@ def adc_backup_config_file(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_restore_config_file(module):
+def system_config_restore(module):
     """配置文件导入"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -378,8 +378,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'add_config_file', 'list_config_files', 'apply_config_file', 'delete_config_file',
-            'backup_config_file', 'restore_config_file']),
+            'system_config_add', 'system_config_list', 'system_config_apply', 'system_config_del',
+            'system_config_backup', 'system_config_restore']),
         # 配置文件参数
         file_name=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -397,18 +397,18 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'add_config_file':
-        adc_add_config_file(module)
-    elif action == 'list_config_files':
-        adc_list_config_files(module)
-    elif action == 'apply_config_file':
-        adc_apply_config_file(module)
-    elif action == 'delete_config_file':
-        adc_delete_config_file(module)
-    elif action == 'backup_config_file':
-        adc_backup_config_file(module)
-    elif action == 'restore_config_file':
-        adc_restore_config_file(module)
+    if action == 'system_config_add':
+        system_config_add(module)
+    elif action == 'system_config_list':
+        system_config_list(module)
+    elif action == 'system_config_apply':
+        system_config_apply(module)
+    elif action == 'system_config_del':
+        system_config_del(module)
+    elif action == 'system_config_backup':
+        system_config_backup(module)
+    elif action == 'system_config_restore':
+        system_config_restore(module)
 
 
 if __name__ == '__main__':

@@ -116,7 +116,7 @@ def send_request(url, data=None, method='GET'):
         }
 
 
-def adc_get_email_alarm_config(module):
+def log_alarm_email_get(module):
     """Get email alarm configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -142,7 +142,7 @@ def adc_get_email_alarm_config(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def adc_set_email_alarm_config(module):
+def log_alarm_email_set(module):
     """Set email alarm configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -182,7 +182,7 @@ def adc_set_email_alarm_config(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def adc_get_sms_alarm_config(module):
+def log_alarm_sms_get(module):
     """Get SMS alarm configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -208,7 +208,7 @@ def adc_get_sms_alarm_config(module):
         return False, {'msg': '响应数据格式错误'}
 
 
-def adc_set_sms_alarm_config(module):
+def log_alarm_sms_set(module):
     """Set SMS alarm configuration"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -251,8 +251,9 @@ def main():
     argument_spec = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        alarm_type=dict(type='str', required=True, choices=['email', 'sms']),
-        action=dict(type='str', required=True, choices=['get', 'set']),
+        action=dict(type='str', required=True, choices=[
+                    'log_alarm_email_get', 'log_alarm_email_set',
+                    'log_alarm_sms_get', 'log_alarm_sms_set']),
         # Parameters for email alarm configuration
         delay_send_buff=dict(type='int'),
         delay_send_time=dict(type='int'),
@@ -269,7 +270,6 @@ def main():
     )
 
     # Extract module parameters
-    alarm_type = str(module.params['alarm_type'])
     action = str(module.params['action'])
 
     # If in check mode, exit without making changes
@@ -277,25 +277,17 @@ def main():
         module.exit_json(changed=False)
 
     try:
-        # Perform requested action based on alarm type
-        if alarm_type == 'email':
-            if action == 'get':
-                changed, result = adc_get_email_alarm_config(module)
-            elif action == 'set':
-                changed, result = adc_set_email_alarm_config(module)
-            else:
-                module.fail_json(
-                    msg="Unsupported action for email alarm: %s" % action)
-        elif alarm_type == 'sms':
-            if action == 'get':
-                changed, result = adc_get_sms_alarm_config(module)
-            elif action == 'set':
-                changed, result = adc_set_sms_alarm_config(module)
-            else:
-                module.fail_json(
-                    msg="Unsupported action for SMS alarm: %s" % action)
+        # Perform requested action
+        if action == 'log_alarm_email_get':
+            changed, result = log_alarm_email_get(module)
+        elif action == 'log_alarm_email_set':
+            changed, result = log_alarm_email_set(module)
+        elif action == 'log_alarm_sms_get':
+            changed, result = log_alarm_sms_get(module)
+        elif action == 'log_alarm_sms_set':
+            changed, result = log_alarm_sms_set(module)
         else:
-            module.fail_json(msg="Unsupported alarm type: %s" % alarm_type)
+            module.fail_json(msg="Unsupported action: %s" % action)
 
         # Exit with result
         if changed:

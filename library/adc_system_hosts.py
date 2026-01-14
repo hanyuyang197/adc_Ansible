@@ -24,7 +24,7 @@ import sys
 # ADC API响应解析函数
 
 
-def adc_list_hosts(module):
+def system_hosts_list(module):
     """获取Hosts列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -70,7 +70,7 @@ def adc_list_hosts(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_add_host(module):
+def system_hosts_add(module):
     """添加Hosts记录"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -130,7 +130,7 @@ def adc_add_host(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def adc_delete_host(module):
+def system_hosts_del(module):
     """删除Hosts记录"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -196,7 +196,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'list_hosts', 'add_host', 'delete_host']),
+            'system_hosts_list', 'system_hosts_add', 'system_hosts_del']),
         # Hosts参数
         hostname=dict(type='str', required=False),
         host_ip_address=dict(type='str', required=False)
@@ -211,12 +211,12 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'list_hosts':
-        adc_list_hosts(module)
-    elif action == 'add_host':
-        adc_add_host(module)
-    elif action == 'delete_host':
-        adc_delete_host(module)
+    if action == 'system_hosts_list':
+        system_hosts_list(module)
+    elif action == 'system_hosts_add':
+        system_hosts_add(module)
+    elif action == 'system_hosts_del':
+        system_hosts_del(module)
 
 
 if __name__ == '__main__':

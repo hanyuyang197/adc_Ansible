@@ -55,7 +55,7 @@ def send_request(url, post_data=None):
     return response_data
 
 
-def adc_slb_connmulti_list(module):
+def slb_connmulti_list(module):
     """连接复用模板列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -71,7 +71,7 @@ def adc_slb_connmulti_list(module):
         module.fail_json(msg="连接复用模板列表获取失败: %s" % str(e))
 
 
-def adc_slb_slb_connmulti_list_withcommon(module):
+def slb_connmulti_list_withcommon(module):
     """连接复用模板获取 common 和本分区"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -88,7 +88,7 @@ def adc_slb_slb_connmulti_list_withcommon(module):
         module.fail_json(msg="连接复用模板获取 common 和本分区失败: %s" % str(e))
 
 
-def adc_slb_connmulti_get(module):
+def slb_connmulti_get(module):
     """获取连接复用模板"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -114,7 +114,7 @@ def adc_slb_connmulti_get(module):
         module.fail_json(msg="获取连接复用模板失败: %s" % str(e))
 
 
-def adc_slb_connmulti_add(module):
+def slb_connmulti_add(module):
     """连接复用模板添加"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -154,7 +154,7 @@ def adc_slb_connmulti_add(module):
         module.fail_json(msg="连接复用模板添加失败: %s" % str(e))
 
 
-def adc_slb_connmulti_edit(module):
+def slb_connmulti_edit(module):
     """连接复用模板编辑"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -194,7 +194,7 @@ def adc_slb_connmulti_edit(module):
         module.fail_json(msg="连接复用模板编辑失败: %s" % str(e))
 
 
-def adc_slb_connmulti_del(module):
+def slb_connmulti_del(module):
     """连接复用模板删除"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -251,17 +251,17 @@ def main():
     action = module.params['action']
 
     if action == 'slb_connmulti_list':
-        adc_slb_connmulti_list(module)
+        slb_connmulti_list(module)
     elif action == 'slb_connmulti_list_withcommon':
-        adc_slb_connmulti_list_withcommon(module)
+        slb_connmulti_list_withcommon(module)
     elif action == 'slb_connmulti_get':
-        adc_slb_connmulti_get(module)
+        slb_connmulti_get(module)
     elif action == 'slb_connmulti_add':
-        adc_slb_connmulti_add(module)
+        slb_connmulti_add(module)
     elif action == 'slb_connmulti_edit':
-        adc_slb_connmulti_edit(module)
+        slb_connmulti_edit(module)
     elif action == 'slb_connmulti_del':
-        adc_slb_connmulti_del(module)
+        slb_connmulti_del(module)
 
 
 if __name__ == '__main__':
