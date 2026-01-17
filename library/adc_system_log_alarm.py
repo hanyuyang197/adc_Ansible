@@ -4,7 +4,6 @@
 # Copyright: (c) 2024, Horizon Inc.
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.horizon.modules.plugins.module_utils.adc_common import (
     make_adc_request,
@@ -24,7 +23,6 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
 )
 import json
 import sys
-__metaclass__ = type
 
 # ADC API响应解析函数
 
@@ -289,10 +287,10 @@ def main():
 
 
         # Exit with result
-        if changed:
-            module.exit_json(changed=True, **result)
+        if 'msg' in result and '失败' in result['msg']:
+            module.fail_json(msg=result['msg'])
         else:
-            module.fail_json(msg=result.get('msg', 'Unknown error'))
+            module.exit_json(changed=changed, **result)
 
     except Exception as e:
         module.fail_json(msg="An error occurred: %s" % str(e))

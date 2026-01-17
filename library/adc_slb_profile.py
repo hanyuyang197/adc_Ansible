@@ -357,9 +357,9 @@ def main():
     if hasattr(action, '__str__'):
         action = str(action)
 
-    if action == 'slb_profile_fastl5_del':
-        slb_profile_fastl5_del(module)
-    elif action == 'slb_profile_fastl6_edit':
+    # if action == 'slb_profile_fastl5_del':
+    #     slb_profile_fastl5_del(module)
+    if action == 'slb_profile_fastl6_edit':
         slb_profile_fastl6_edit(module)
     elif action == 'slb_profile_fastl7_get':
         slb_profile_fastl7_get(module)

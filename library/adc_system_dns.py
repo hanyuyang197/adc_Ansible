@@ -70,7 +70,7 @@ def system_dns_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def system_dns_set(module):
+def system_dns_v2_set(module):
     """设置DNS服务器配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -150,8 +150,8 @@ def main():
 
     if action == 'system_dns_get':
         system_dns_get(module)
-    elif action == 'system_dns_set':
-        system_dns_set(module)
+    elif action == 'system_dns_v2_set':
+        system_dns_v2_set(module)
 
 
 if __name__ == '__main__':

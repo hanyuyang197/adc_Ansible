@@ -1,0 +1,1228 @@
+================================================================================
+ADC Ansible Modules - Actions Mapping
+================================================================================
+
+总模块数: 132
+有action的模块数: 129
+需要人工检查的模块数: 3
+总action数: 666
+
+adc_base:
+  [需要人工检查] 没有找到main函数
+
+adc_login:
+  [需要人工检查] 找到action参数但未匹配到choices或if-elif语句
+
+adc_logout:
+  [需要人工检查] 找到action参数但未匹配到choices或if-elif语句
+
+adc_network_acl_ipv4_ext:
+  - acl_ipv4_ext_desc_set
+  - acl_ipv4_ext_get
+  - acl_ipv4_ext_item_add
+  - acl_ipv4_ext_item_del
+  - acl_ipv4_ext_item_edit
+  - acl_ipv4_ext_list
+
+adc_network_acl_ipv4_std:
+  - acl_ipv4_std_desc_set
+  - acl_ipv4_std_get
+  - acl_ipv4_std_item_add
+  - acl_ipv4_std_item_del
+  - acl_ipv4_std_item_edit
+  - acl_ipv4_std_list
+
+adc_network_acl_ipv6:
+  - acl_ipv6_ext_desc_set
+  - acl_ipv6_ext_get
+  - acl_ipv6_ext_item_add
+  - acl_ipv6_ext_item_del
+  - acl_ipv6_ext_item_edit
+  - acl_ipv6_ext_list
+
+adc_network_arp:
+  - arp_ipv4_add
+  - arp_ipv4_clear
+  - arp_ipv4_delete
+  - arp_ipv4_edit
+  - arp_ipv4_get
+  - arp_ipv4_list
+  - arp_ipv4_statistics
+  - arp_ipv6_add
+  - arp_ipv6_clear
+  - arp_ipv6_delete
+  - arp_ipv6_edit
+  - arp_ipv6_get
+  - arp_ipv6_list
+  - arp_ipv6_statistics
+
+adc_network_bgp:
+  - bgp_neighbor_add
+  - bgp_neighbor_delete
+  - bgp_neighbor_list
+  - bgp_network_add
+  - bgp_network_delete
+  - bgp_network_list
+  - bgp_status_get
+  - bgp_status_set
+
+adc_network_ddos:
+  - ddos_config_get
+  - ddos_config_set
+
+adc_network_interface:
+  - interface_ethernet_edit
+  - interface_ethernet_get
+  - interface_ethernet_list
+  - interface_ethernet_statistics_get
+  - interface_mgmt_get
+  - interface_mgmt_set
+  - interface_trunk_edit
+  - interface_trunk_get
+  - interface_trunk_list
+  - interface_ve_edit
+  - interface_ve_get
+  - interface_ve_list
+
+adc_network_lldp:
+  - lldp_config_get
+  - lldp_config_set
+  - lldp_neighbor_list
+
+adc_network_mode:
+  - network_mode_get
+  - network_mode_set
+
+adc_network_nat_global:
+  - nat_global_get
+  - nat_global_set
+
+adc_network_nat_map:
+  - nat_ipv6_map_add
+  - nat_ipv6_map_delete
+  - nat_ipv6_map_list
+  - nat_map_add
+  - nat_map_delete
+  - nat_map_list
+
+adc_network_nat_network:
+  - nat_network_add
+  - nat_network_delete
+  - nat_network_edit
+  - nat_network_get
+  - nat_network_list
+
+adc_network_nat_policy:
+  - nat_policy_add
+  - nat_policy_delete
+  - nat_policy_edit
+  - nat_policy_get
+  - nat_policy_list
+
+adc_network_nat_pool:
+  - nat_pool_add
+  - nat_pool_delete
+  - nat_pool_edit
+  - nat_pool_get
+  - nat_pool_list
+
+adc_network_nat_pool_group:
+  - nat_pool_group_add
+  - nat_pool_group_delete
+  - nat_pool_group_edit
+  - nat_pool_group_get
+  - nat_pool_group_list
+
+adc_network_nat_pool_stats:
+  - nat_pool_stats_clear
+  - nat_pool_stats_list
+
+adc_network_nat_static:
+  - nat_static_add
+  - nat_static_delete
+  - nat_static_edit
+  - nat_static_get
+  - nat_static_list
+  - nat_static_statistics_clear
+  - nat_static_statistics_get
+
+adc_network_nat_timeout:
+  - nat_timeout_get
+  - nat_timeout_set
+
+adc_network_ospf:
+  - ospf_network_add
+  - ospf_network_del
+  - ospf_network_list
+  - ospf_status_get
+  - ospf_status_set
+
+adc_network_port_list_profile:
+  - port_list_profile_add
+  - port_list_profile_del
+  - port_list_profile_edit
+  - port_list_profile_get
+  - port_list_profile_item_add
+  - port_list_profile_item_del
+  - port_list_profile_list
+
+adc_network_route_static_ctrl_ipv4:
+  - route_static_ctrl_ipv4_add
+  - route_static_ctrl_ipv4_del
+  - route_static_ctrl_ipv4_edit
+  - route_static_ctrl_ipv4_get
+  - route_static_ctrl_ipv4_list
+
+adc_network_route_static_ctrl_ipv6:
+  - route_static_ctrl_ipv6_add
+  - route_static_ctrl_ipv6_del
+  - route_static_ctrl_ipv6_edit
+  - route_static_ctrl_ipv6_get
+  - route_static_ctrl_ipv6_list
+
+adc_network_route_static_ipv4:
+  - route_static_ipv4_add
+  - route_static_ipv4_del
+  - route_static_ipv4_edit
+  - route_static_ipv4_get
+  - route_static_ipv4_list
+
+adc_network_route_static_ipv6:
+  - route_static_ipv6_add
+  - route_static_ipv6_del
+  - route_static_ipv6_edit
+  - route_static_ipv6_get
+  - route_static_ipv6_list
+
+adc_network_route_static_mgmt_ipv4:
+  - route_static_mgmt_ipv4_add
+  - route_static_mgmt_ipv4_delete
+  - route_static_mgmt_ipv4_edit
+  - route_static_mgmt_ipv4_get
+  - route_static_mgmt_ipv4_list
+
+adc_network_route_static_mgmt_ipv6:
+  - route_static_mgmt_ipv6_add
+  - route_static_mgmt_ipv6_delete
+  - route_static_mgmt_ipv6_edit
+  - route_static_mgmt_ipv6_get
+  - route_static_mgmt_ipv6_list
+
+adc_network_syn_cookie:
+  - slb_syn_cookie_edit
+  - slb_syn_cookie_get
+  - slb_vs_syn_cookie_edit
+  - slb_vs_syn_cookie_get
+
+adc_network_tc:
+  - network_tc_add
+  - network_tc_del
+  - network_tc_edit
+  - network_tc_get
+  - network_tc_global_get
+  - network_tc_global_set
+  - network_tc_list
+  - network_tc_rule_add
+  - network_tc_rule_del
+  - network_tc_rule_edit
+  - network_tc_rule_get
+  - network_tc_rule_list
+
+adc_network_trunk:
+  - network_trunk_add
+  - network_trunk_del
+  - network_trunk_edit
+  - network_trunk_get
+  - network_trunk_list
+
+adc_network_vlan:
+  - network_vlan_add
+  - network_vlan_del
+  - network_vlan_edit
+  - network_vlan_get
+  - network_vlan_list
+
+adc_port_list_profile:
+  - port_list_profile_del
+
+adc_port_list_profile_item:
+  - port_list_profile_item_del
+
+adc_slb_bwlist:
+  - slb_bwlist_del
+  - slb_bwlist_list
+  - slb_bwlist_upload
+
+adc_slb_cache:
+  - slb_cache_add
+  - slb_cache_del
+  - slb_cache_edit
+  - slb_cache_get
+  - slb_cache_list
+  - slb_cache_list_withcommon
+
+adc_slb_connmulti:
+  - slb_connmulti_add
+  - slb_connmulti_del
+  - slb_connmulti_edit
+  - slb_connmulti_get
+  - slb_connmulti_list
+  - slb_connmulti_list_withcommon
+
+adc_slb_erule:
+  - slb_erule_content_add
+  - slb_erule_del
+  - slb_erule_list
+  - slb_erule_list_withcommon
+  - slb_erule_upload
+  - slb_erulefiles_del
+  - slb_erulefiles_list
+  - slb_erulefiles_upload
+
+adc_slb_healthcheck:
+  - slb_healthcheck_add
+  - slb_healthcheck_del
+  - slb_healthcheck_edit
+  - slb_healthcheck_get
+  - slb_healthcheck_list
+  - slb_healthcheck_postfile_del
+  - slb_healthcheck_postfile_list
+  - slb_healthcheck_postfile_upload
+  - slb_healthcheck_script_del
+  - slb_healthcheck_script_list
+  - slb_healthcheck_script_upload
+
+adc_slb_healthtest:
+  - slb_healthtest_add
+  - slb_healthtest_del
+  - slb_healthtest_get
+  - slb_healthtest_list
+
+adc_slb_node:
+  - slb_node_add
+  - slb_node_del
+  - slb_node_edit
+  - slb_node_get
+  - slb_node_list
+  - slb_node_onoff
+  - slb_node_port_add
+  - slb_node_port_del
+  - slb_node_port_edit
+  - slb_node_port_onoff
+
+adc_slb_passive_health_check:
+  - slb_passive_health_check_add
+  - slb_passive_health_check_edit
+  - slb_passive_health_check_get
+  - slb_passive_health_check_list
+  - slb_passive_health_check_list_withcommon
+
+adc_slb_persist:
+  - slb_persist_cookie_add
+  - slb_persist_cookie_del
+  - slb_persist_cookie_edit
+  - slb_persist_cookie_get
+  - slb_persist_cookie_list
+  - slb_persist_cookie_list_withcommon
+  - slb_persist_dstip_add
+  - slb_persist_dstip_del
+  - slb_persist_dstip_edit
+  - slb_persist_dstip_get
+  - slb_persist_dstip_list
+  - slb_persist_dstip_list_withcommon
+  - slb_persist_srcip_add
+  - slb_persist_srcip_del
+  - slb_persist_srcip_edit
+  - slb_persist_srcip_get
+  - slb_persist_srcip_list
+  - slb_persist_srcip_list_withcommon
+  - slb_persist_sslid_add
+  - slb_persist_sslid_del
+  - slb_persist_sslid_edit
+  - slb_persist_sslid_get
+  - slb_persist_sslid_list
+  - slb_persist_sslid_list_withcommon
+
+adc_slb_policy:
+  - slb_policy_add
+  - slb_policy_del
+  - slb_policy_edit
+  - slb_policy_get
+  - slb_policy_list
+  - slb_policy_list_withcommon
+
+adc_slb_pool:
+  - slb_pool_add
+  - slb_pool_del
+  - slb_pool_edit
+  - slb_pool_get
+  - slb_pool_list
+  - slb_pool_list_withcommon
+  - slb_pool_member_add
+  - slb_pool_member_del
+  - slb_pool_member_edit
+  - slb_pool_member_onoff
+
+adc_slb_profile:
+  - slb_profile_dns_list_withcommon
+  - slb_profile_fastl5_del
+  - slb_profile_fastl6_edit
+  - slb_profile_fastl7_get
+  - slb_profile_http_hostswitch_del
+  - slb_profile_rtsp_list_withcommon
+  - slb_profile_smtp_list_withcommon
+
+adc_slb_profile_dns:
+  - slb_profile_dns_add
+  - slb_profile_dns_del
+  - slb_profile_dns_edit
+  - slb_profile_dns_get
+  - slb_profile_dns_list
+  - slb_profile_dns_list_withcommon
+
+adc_slb_profile_dnslog:
+  - slb_profile_dnslog_add
+  - slb_profile_dnslog_del
+  - slb_profile_dnslog_edit
+  - slb_profile_dnslog_get
+  - slb_profile_dnslog_list
+  - slb_profile_dnslog_list_withcommon
+
+adc_slb_profile_fastl4:
+  - slb_profile_fastl4_add
+  - slb_profile_fastl4_del
+  - slb_profile_fastl4_edit
+  - slb_profile_fastl4_get
+  - slb_profile_fastl4_list
+  - slb_profile_fastl4_list_withcommon
+
+adc_slb_profile_ftp:
+  - slb_profile_ftp_add
+  - slb_profile_ftp_del
+  - slb_profile_ftp_edit
+  - slb_profile_ftp_get
+  - slb_profile_ftp_list
+  - slb_profile_ftp_list_withcommon
+
+adc_slb_profile_http:
+  - slb_profile_http_add
+  - slb_profile_http_del
+  - slb_profile_http_edit
+  - slb_profile_http_get
+  - slb_profile_http_list
+  - slb_profile_http_list_withcommon
+
+adc_slb_profile_http2:
+  - slb_profile_http2_add
+  - slb_profile_http2_del
+  - slb_profile_http2_edit
+  - slb_profile_http2_get
+  - slb_profile_http2_list
+  - slb_profile_http2_list_withcommon
+
+adc_slb_profile_http_hostswitch:
+  - slb_profile_http_hostswitch_add
+  - slb_profile_http_hostswitch_del
+
+adc_slb_profile_natlog:
+  - slb_profile_natlog_add
+  - slb_profile_natlog_del
+  - slb_profile_natlog_edit
+  - slb_profile_natlog_get
+  - slb_profile_natlog_list
+  - slb_profile_natlog_list_withcommon
+
+adc_slb_profile_request_log:
+  - slb_profile_request_log_add
+  - slb_profile_request_log_del
+  - slb_profile_request_log_edit
+  - slb_profile_request_log_get
+  - slb_profile_request_log_list
+  - slb_profile_request_log_list_withcommon
+
+adc_slb_profile_rtsp:
+  - slb_profile_rtsp_add
+  - slb_profile_rtsp_del
+  - slb_profile_rtsp_edit
+  - slb_profile_rtsp_get
+  - slb_profile_rtsp_list
+  - slb_profile_rtsp_list_withcommon
+
+adc_slb_profile_sip:
+  - slb_profile_sip_add
+  - slb_profile_sip_del
+  - slb_profile_sip_edit
+  - slb_profile_sip_get
+  - slb_profile_sip_list
+  - slb_profile_sip_list_withcommon
+
+adc_slb_profile_smtp:
+  - slb_profile_smtp_add
+  - slb_profile_smtp_del
+  - slb_profile_smtp_edit
+  - slb_profile_smtp_get
+  - slb_profile_smtp_list
+  - slb_profile_smtp_list_withcommon
+
+adc_slb_profile_tcp:
+  - slb_profile_tcp_add
+  - slb_profile_tcp_del
+  - slb_profile_tcp_edit
+  - slb_profile_tcp_get
+  - slb_profile_tcp_list
+  - slb_profile_tcp_list_withcommon
+
+adc_slb_profile_udp:
+  - slb_profile_udp_add
+  - slb_profile_udp_del
+  - slb_profile_udp_edit
+  - slb_profile_udp_get
+  - slb_profile_udp_list
+  - slb_profile_udp_list_withcommon
+
+adc_slb_profile_vs:
+  - slb_profile_vs_add
+  - slb_profile_vs_del
+  - slb_profile_vs_edit
+  - slb_profile_vs_get
+  - slb_profile_vs_list
+  - slb_profile_vs_list_withcommon
+
+adc_slb_ruletable:
+  - slb_ruletable_add
+  - slb_ruletable_add_entry
+  - slb_ruletable_del
+  - slb_ruletable_del_entry
+  - slb_ruletable_get
+  - slb_ruletable_list
+  - slb_ruletable_list_withcommon
+
+adc_slb_ruletable_dns:
+  - slb_ruletable_dns_add
+  - slb_ruletable_dns_del
+
+adc_slb_ruletable_file:
+  - slb_ruletable_file_upload
+
+adc_slb_ruletable_string:
+  - slb_ruletable_string_add
+  - slb_ruletable_string_del
+
+adc_slb_ssl_certificate:
+  - slb_ssl_certificate_add
+  - slb_ssl_certificate_del
+  - slb_ssl_certificate_list
+  - slb_ssl_certificate_list_withcommon
+  - slb_ssl_certificate_upload
+  - slb_ssl_crl_upload
+  - slb_ssl_key_upload
+  - slb_ssl_pfx_upload
+
+adc_slb_ssl_certkey_match:
+  - slb_ssl_certkey_match
+
+adc_slb_ssl_crl:
+  - slb_ssl_crl_del
+  - slb_ssl_crl_upload
+
+adc_slb_ssl_enckey_cfca_upload:
+  - slb_ssl_enckey_cfca_upload
+
+adc_slb_ssl_filtercert:
+  - slb_ssl_filtercert_list
+
+adc_slb_ssl_key:
+  - slb_ssl_key_del
+  - slb_ssl_key_upload
+
+adc_slb_sslclient:
+  - slb_sslclient_add
+  - slb_sslclient_del
+  - slb_sslclient_edit
+  - slb_sslclient_get
+  - slb_sslclient_list
+  - slb_sslclient_list_withcommon
+
+adc_slb_sslserver:
+  - slb_sslserver_add
+  - slb_sslserver_del
+  - slb_sslserver_edit
+  - slb_sslserver_get
+  - slb_sslserver_list
+  - slb_sslserver_list_withcommon
+
+adc_slb_stat:
+  - slb_node_stat_clear
+  - slb_node_stat_get
+  - slb_node_stat_list
+  - slb_pool_stat_clear
+  - slb_pool_stat_get
+  - slb_pool_stat_list
+  - slb_session_clear
+
+adc_slb_va:
+  - slb_va_add
+  - slb_va_del
+  - slb_va_edit
+  - slb_va_get
+  - slb_va_list
+  - slb_va_stat_get
+  - slb_va_stat_list
+
+adc_slb_va_vs:
+  - slb_va_vs_add
+  - slb_va_vs_del
+  - slb_va_vs_edit
+  - slb_va_vs_get
+  - slb_va_vs_stat_count_list
+  - slb_va_vs_stat_get
+
+adc_system_aaa:
+  - aaa_general_get
+  - aaa_general_set
+  - aaa_ldap_get
+  - aaa_ldap_set
+  - aaa_radius_get
+  - aaa_radius_set
+  - aaa_tacacs_get
+  - aaa_tacacs_set
+
+adc_system_banner:
+  - system_banner_get
+
+adc_system_client_lock:
+  - system_client_lock_get
+  - system_client_lock_list
+  - system_client_lock_set
+  - system_client_unlock
+
+adc_system_config_file:
+  - system_config_add
+  - system_config_apply
+  - system_config_backup
+  - system_config_del
+  - system_config_list
+  - system_config_restore
+
+adc_system_dns:
+  - system_dns_get
+  - system_dns_set
+
+adc_system_domain_table:
+  - system_domaintable_add
+  - system_domaintable_del
+  - system_domaintable_file_delete
+  - system_domaintable_file_list
+  - system_domaintable_file_upload
+  - system_domaintable_list
+
+adc_system_domaintable_file:
+  - system_domaintable_file_download
+  - system_domaintable_file_upload
+
+adc_system_global_config:
+  - global_connection_mirror_get
+  - global_connection_mirror_set
+  - global_path_persist_get
+  - global_path_persist_set
+  - global_slb_snat_interface_iprr_get
+  - global_slb_snat_interface_iprr_set
+  - global_slb_snat_on_vip_get
+  - global_slb_snat_on_vip_set
+  - slb_global_allow_promis_intf_vip_get
+  - slb_global_allow_promis_intf_vip_set
+  - slb_global_virtual_mac_get
+  - slb_global_virtual_mac_set
+  - slb_graceful_shutdown_get
+  - slb_graceful_shutdown_set
+  - system_rate_limit_icmp_get
+  - system_rate_limit_icmp_set
+  - system_tcp_syn_protect_get
+  - system_tcp_syn_protect_set
+  - system_vlan_keyed_connection_get
+  - system_vlan_keyed_connection_set
+
+adc_system_ha_vrrp:
+  - system_ha_vrrp_floating_ip_add
+  - system_ha_vrrp_force_offline_set
+  - system_ha_vrrp_global_get
+  - system_ha_vrrp_global_set
+  - system_ha_vrrp_group_add
+  - system_ha_vrrp_group_list
+  - system_ha_vrrp_heart_eth_add
+  - system_ha_vrrp_track_gateway_add
+
+adc_system_hostname:
+  - system_host_ipv4_get
+  - system_host_ipv4_set
+  - system_host_ipv6_get
+  - system_host_ipv6_set
+  - system_hostname_set
+
+adc_system_hosts:
+  - system_hosts_add
+  - system_hosts_del
+  - system_hosts_list
+
+adc_system_log_alarm:
+  - log_alarm_email_get
+  - log_alarm_email_set
+  - log_alarm_sms_get
+  - log_alarm_sms_set
+
+adc_system_log_config:
+  - log_config_audit_get
+  - log_config_audit_set
+  - log_config_dns_get
+  - log_config_dns_set
+  - log_config_nat_get
+  - log_config_nat_set
+  - log_config_service_get
+  - log_config_service_set
+
+adc_system_log_get:
+  - log_audit_clear
+  - log_audit_download
+  - log_audit_list
+  - log_coredump_download
+  - log_dns_clear
+  - log_dns_download
+  - log_dns_list
+  - log_nat_clear
+  - log_nat_download
+  - log_nat_list
+  - log_service_clear
+  - log_service_download
+  - log_service_list
+  - log_system_download
+
+adc_system_log_send:
+  - log_syslog_server_add
+  - log_syslog_server_del
+  - log_syslog_server_edit
+  - log_syslog_server_get
+  - log_syslog_server_list
+
+adc_system_ntp:
+  - system_ntp_add
+  - system_ntp_del
+  - system_ntp_edit
+  - system_ntp_get
+  - system_ntp_list
+
+adc_system_operations:
+  - system_action_reboot
+  - system_action_reload
+  - system_action_shutdown
+  - system_save_config
+
+adc_system_partition:
+  - system_partition_active
+  - system_partition_add
+  - system_partition_del
+  - system_partition_edit
+  - system_partition_get
+  - system_partition_list
+
+adc_system_ports:
+  - system_ports_get
+  - system_ports_set
+
+adc_system_security_banner:
+  - system_security_banner_get
+  - system_security_banner_set
+
+adc_system_smtp:
+  - system_smtp_get
+  - system_smtp_set
+
+adc_system_snmp:
+  - snmp_comm_item_add
+  - snmp_comm_item_del
+  - snmp_comm_item_list
+  - snmp_server_get
+  - snmp_server_set
+  - snmp_trap_get
+  - snmp_trap_item_add
+  - snmp_trap_item_del
+  - snmp_trap_item_list
+  - snmp_trap_set
+
+adc_system_snmp_v3:
+  - system_snmp_v3_group_add
+  - system_snmp_v3_group_del
+  - system_snmp_v3_group_edit
+  - system_snmp_v3_group_get
+  - system_snmp_v3_group_list
+  - system_snmp_v3_trap_add
+  - system_snmp_v3_trap_del
+  - system_snmp_v3_trap_edit
+  - system_snmp_v3_trap_get
+  - system_snmp_v3_trap_list
+  - system_snmp_v3_user_add
+  - system_snmp_v3_user_del
+  - system_snmp_v3_user_edit
+  - system_snmp_v3_user_get
+  - system_snmp_v3_user_list
+  - system_snmp_v3_view_add
+  - system_snmp_v3_view_del
+  - system_snmp_v3_view_edit
+  - system_snmp_v3_view_get
+  - system_snmp_v3_view_list
+
+adc_system_sys_cert:
+  - system_sys_cert_get
+  - system_sys_cert_relevance
+  - system_sys_csr_get
+  - system_sys_csr_list
+
+adc_system_sys_csr:
+  - system_sys_csr_add
+  - system_sys_csr_del
+
+adc_system_time:
+  - system_time_get
+  - system_time_set
+
+adc_system_timerange:
+  - system_timerange_add
+  - system_timerange_del
+  - system_timerange_edit
+  - system_timerange_get
+  - system_timerange_list
+
+adc_system_user:
+  - admin_cfg_get
+  - admin_cfg_set
+  - admin_user_add
+  - admin_user_del
+  - admin_user_edit
+  - admin_user_get
+  - admin_user_list
+  - admin_user_unlock
+  - system_password_set
+
+adc_system_web_cert:
+  - system_web_cert_apply
+  - system_web_cert_del
+  - system_web_cert_download
+  - system_web_cert_list
+  - system_web_cert_upload
+  - system_web_key_download
+  - system_web_key_upload
+
+adc_system_web_ciphers:
+  - system_web_ciphers_get
+  - system_web_ciphers_set
+
+adc_system_web_session:
+  - get_web_session_config
+  - get_web_session_limit
+  - set_web_session_config
+  - set_web_session_limit
+
+adc_vrrp_cfgsync_action_pull_push:
+  - vrrp_cfgsync_action_pull_push
+
+adc_vrrp_cfgsync_action_sync:
+  - vrrp_cfgsync_action_sync
+
+adc_vrrp_cfgsync_auto:
+  - vrrp_cfgsync_auto_get
+  - vrrp_cfgsync_auto_set
+
+adc_vrrp_cfgsync_flag:
+  - vrrp_cfgsync_flag_get
+
+adc_vrrp_cfgsync_notify:
+  - vrrp_cfgsync_notify_get
+  - vrrp_cfgsync_notify_set
+
+adc_vrrp_cfgsync_peer:
+  - vrrp_cfgsync_peer_add
+  - vrrp_cfgsync_peer_del
+  - vrrp_cfgsync_peer_edit
+  - vrrp_cfgsync_peer_get
+  - vrrp_cfgsync_peer_list
+
+adc_vrrp_floating_ip:
+  - vrrp_floating_ip_del
+  - vrrp_floating_ip_list
+
+adc_vrrp_group:
+  - vrrp_group_del
+  - vrrp_group_edit
+  - vrrp_group_get
+  - vrrp_group_stats
+
+adc_vrrp_heart_all:
+  - vrrp_heart_all_list
+  - vrrp_heart_all_statis
+
+adc_vrrp_heart_eth:
+  - vrrp_heart_eth_del
+  - vrrp_heart_eth_edit
+  - vrrp_heart_eth_list
+  - vrrp_heart_eth_statis
+
+adc_vrrp_heart_trunk:
+  - vrrp_heart_trunk_add
+  - vrrp_heart_trunk_del
+  - vrrp_heart_trunk_edit
+  - vrrp_heart_trunk_list
+  - vrrp_heart_trunk_statis
+
+adc_vrrp_l3_peer:
+  - vrrp_l3_peer_add
+  - vrrp_l3_peer_del
+  - vrrp_l3_peer_get
+  - vrrp_l3_peer_list
+
+adc_vrrp_l3peer_enable:
+  - vrrp_l3peer_enable_get
+  - vrrp_l3peer_enable_set
+
+adc_vrrp_manually_active:
+  - execute
+
+adc_vrrp_manually_standby:
+  - execute
+
+adc_vrrp_mgmt_peer:
+  - vrrp_mgmt_peer_add
+  - vrrp_mgmt_peer_del
+  - vrrp_mgmt_peer_get
+  - vrrp_mgmt_peer_list
+
+adc_vrrp_sync_module:
+  - vrrp_sync_module_get
+  - vrrp_sync_module_set
+
+adc_vrrp_track_gateway:
+  - vrrp_track_gateway_del
+  - vrrp_track_gateway_edit
+  - vrrp_track_gateway_list
+
+adc_vrrp_track_pool:
+  - vrrp_track_pool_add
+  - vrrp_track_pool_del
+  - vrrp_track_pool_edit
+  - vrrp_track_pool_list
+
+adc_vrrp_track_route:
+  - vrrp_track_route_add
+  - vrrp_track_route_del
+  - vrrp_track_route_edit
+  - vrrp_track_route_list
+
+adc_vrrp_track_vlan:
+  - vrrp_track_vlan_add
+  - vrrp_track_vlan_del
+  - vrrp_track_vlan_edit
+  - vrrp_track_vlan_list
+
+adc_waf_profile:
+  - waf_profile_add
+  - waf_profile_del
+  - waf_profile_edit
+  - waf_profile_get
+  - waf_profile_list
+  - waf_profile_list_withcommon
+
+adc_waf_rule:
+  - waf_rule_del
+  - waf_rule_download
+  - waf_rule_get
+  - waf_rule_list
+  - waf_rule_upload
+
+adc_waf_vserver:
+  - waf_vserver_clear
+  - waf_vserver_statis
+
+
+================================================================================
+JSON Format Mapping
+================================================================================
+
+{
+  "adc_base": []  // 没有找到main函数,
+  "adc_login": []  // 找到action参数但未匹配到choices或if-elif语句,
+  "adc_logout": []  // 找到action参数但未匹配到choices或if-elif语句,
+  "adc_network_acl_ipv4_ext": ['acl_ipv4_ext_desc_set', 'acl_ipv4_ext_get', 'acl_ipv4_ext_item_add', 'acl_ipv4_ext_item_del', 'acl_ipv4_ext_item_edit', 'acl_ipv4_ext_list'],
+  "adc_network_acl_ipv4_std": ['acl_ipv4_std_desc_set', 'acl_ipv4_std_get', 'acl_ipv4_std_item_add', 'acl_ipv4_std_item_del', 'acl_ipv4_std_item_edit', 'acl_ipv4_std_list'],
+  "adc_network_acl_ipv6": ['acl_ipv6_ext_desc_set', 'acl_ipv6_ext_get', 'acl_ipv6_ext_item_add', 'acl_ipv6_ext_item_del', 'acl_ipv6_ext_item_edit', 'acl_ipv6_ext_list'],
+  "adc_network_arp": ['arp_ipv4_add', 'arp_ipv4_clear', 'arp_ipv4_delete', 'arp_ipv4_edit', 'arp_ipv4_get', 'arp_ipv4_list', 'arp_ipv4_statistics', 'arp_ipv6_add', 'arp_ipv6_clear', 'arp_ipv6_delete', 'arp_ipv6_edit', 'arp_ipv6_get', 'arp_ipv6_list', 'arp_ipv6_statistics'],
+  "adc_network_bgp": ['bgp_neighbor_add', 'bgp_neighbor_delete', 'bgp_neighbor_list', 'bgp_network_add', 'bgp_network_delete', 'bgp_network_list', 'bgp_status_get', 'bgp_status_set'],
+  "adc_network_ddos": ['ddos_config_get', 'ddos_config_set'],
+  "adc_network_interface": ['interface_ethernet_edit', 'interface_ethernet_get', 'interface_ethernet_list', 'interface_ethernet_statistics_get', 'interface_mgmt_get', 'interface_mgmt_set', 'interface_trunk_edit', 'interface_trunk_get', 'interface_trunk_list', 'interface_ve_edit', 'interface_ve_get', 'interface_ve_list'],
+  "adc_network_lldp": ['lldp_config_get', 'lldp_config_set', 'lldp_neighbor_list'],
+  "adc_network_mode": ['network_mode_get', 'network_mode_set'],
+  "adc_network_nat_global": ['nat_global_get', 'nat_global_set'],
+  "adc_network_nat_map": ['nat_ipv6_map_add', 'nat_ipv6_map_delete', 'nat_ipv6_map_list', 'nat_map_add', 'nat_map_delete', 'nat_map_list'],
+  "adc_network_nat_network": ['nat_network_add', 'nat_network_delete', 'nat_network_edit', 'nat_network_get', 'nat_network_list'],
+  "adc_network_nat_policy": ['nat_policy_add', 'nat_policy_delete', 'nat_policy_edit', 'nat_policy_get', 'nat_policy_list'],
+  "adc_network_nat_pool": ['nat_pool_add', 'nat_pool_delete', 'nat_pool_edit', 'nat_pool_get', 'nat_pool_list'],
+  "adc_network_nat_pool_group": ['nat_pool_group_add', 'nat_pool_group_delete', 'nat_pool_group_edit', 'nat_pool_group_get', 'nat_pool_group_list'],
+  "adc_network_nat_pool_stats": ['nat_pool_stats_clear', 'nat_pool_stats_list'],
+  "adc_network_nat_static": ['nat_static_add', 'nat_static_delete', 'nat_static_edit', 'nat_static_get', 'nat_static_list', 'nat_static_statistics_clear', 'nat_static_statistics_get'],
+  "adc_network_nat_timeout": ['nat_timeout_get', 'nat_timeout_set'],
+  "adc_network_ospf": ['ospf_network_add', 'ospf_network_del', 'ospf_network_list', 'ospf_status_get', 'ospf_status_set'],
+  "adc_network_port_list_profile": ['port_list_profile_add', 'port_list_profile_del', 'port_list_profile_edit', 'port_list_profile_get', 'port_list_profile_item_add', 'port_list_profile_item_del', 'port_list_profile_list'],
+  "adc_network_route_static_ctrl_ipv4": ['route_static_ctrl_ipv4_add', 'route_static_ctrl_ipv4_del', 'route_static_ctrl_ipv4_edit', 'route_static_ctrl_ipv4_get', 'route_static_ctrl_ipv4_list'],
+  "adc_network_route_static_ctrl_ipv6": ['route_static_ctrl_ipv6_add', 'route_static_ctrl_ipv6_del', 'route_static_ctrl_ipv6_edit', 'route_static_ctrl_ipv6_get', 'route_static_ctrl_ipv6_list'],
+  "adc_network_route_static_ipv4": ['route_static_ipv4_add', 'route_static_ipv4_del', 'route_static_ipv4_edit', 'route_static_ipv4_get', 'route_static_ipv4_list'],
+  "adc_network_route_static_ipv6": ['route_static_ipv6_add', 'route_static_ipv6_del', 'route_static_ipv6_edit', 'route_static_ipv6_get', 'route_static_ipv6_list'],
+  "adc_network_route_static_mgmt_ipv4": ['route_static_mgmt_ipv4_add', 'route_static_mgmt_ipv4_delete', 'route_static_mgmt_ipv4_edit', 'route_static_mgmt_ipv4_get', 'route_static_mgmt_ipv4_list'],
+  "adc_network_route_static_mgmt_ipv6": ['route_static_mgmt_ipv6_add', 'route_static_mgmt_ipv6_delete', 'route_static_mgmt_ipv6_edit', 'route_static_mgmt_ipv6_get', 'route_static_mgmt_ipv6_list'],
+  "adc_network_syn_cookie": ['slb_syn_cookie_edit', 'slb_syn_cookie_get', 'slb_vs_syn_cookie_edit', 'slb_vs_syn_cookie_get'],
+  "adc_network_tc": ['network_tc_add', 'network_tc_del', 'network_tc_edit', 'network_tc_get', 'network_tc_global_get', 'network_tc_global_set', 'network_tc_list', 'network_tc_rule_add', 'network_tc_rule_del', 'network_tc_rule_edit', 'network_tc_rule_get', 'network_tc_rule_list'],
+  "adc_network_trunk": ['network_trunk_add', 'network_trunk_del', 'network_trunk_edit', 'network_trunk_get', 'network_trunk_list'],
+  "adc_network_vlan": ['network_vlan_add', 'network_vlan_del', 'network_vlan_edit', 'network_vlan_get', 'network_vlan_list'],
+  "adc_port_list_profile": ['port_list_profile_del'],
+  "adc_port_list_profile_item": ['port_list_profile_item_del'],
+  "adc_slb_bwlist": ['slb_bwlist_del', 'slb_bwlist_list', 'slb_bwlist_upload'],
+  "adc_slb_cache": ['slb_cache_add', 'slb_cache_del', 'slb_cache_edit', 'slb_cache_get', 'slb_cache_list', 'slb_cache_list_withcommon'],
+  "adc_slb_connmulti": ['slb_connmulti_add', 'slb_connmulti_del', 'slb_connmulti_edit', 'slb_connmulti_get', 'slb_connmulti_list', 'slb_connmulti_list_withcommon'],
+  "adc_slb_erule": ['slb_erule_content_add', 'slb_erule_del', 'slb_erule_list', 'slb_erule_list_withcommon', 'slb_erule_upload', 'slb_erulefiles_del', 'slb_erulefiles_list', 'slb_erulefiles_upload'],
+  "adc_slb_healthcheck": ['slb_healthcheck_add', 'slb_healthcheck_del', 'slb_healthcheck_edit', 'slb_healthcheck_get', 'slb_healthcheck_list', 'slb_healthcheck_postfile_del', 'slb_healthcheck_postfile_list', 'slb_healthcheck_postfile_upload', 'slb_healthcheck_script_del', 'slb_healthcheck_script_list', 'slb_healthcheck_script_upload'],
+  "adc_slb_healthtest": ['slb_healthtest_add', 'slb_healthtest_del', 'slb_healthtest_get', 'slb_healthtest_list'],
+  "adc_slb_node": ['slb_node_add', 'slb_node_del', 'slb_node_edit', 'slb_node_get', 'slb_node_list', 'slb_node_onoff', 'slb_node_port_add', 'slb_node_port_del', 'slb_node_port_edit', 'slb_node_port_onoff'],
+  "adc_slb_passive_health_check": ['slb_passive_health_check_add', 'slb_passive_health_check_edit', 'slb_passive_health_check_get', 'slb_passive_health_check_list', 'slb_passive_health_check_list_withcommon'],
+  "adc_slb_persist": ['slb_persist_cookie_add', 'slb_persist_cookie_del', 'slb_persist_cookie_edit', 'slb_persist_cookie_get', 'slb_persist_cookie_list', 'slb_persist_cookie_list_withcommon', 'slb_persist_dstip_add', 'slb_persist_dstip_del', 'slb_persist_dstip_edit', 'slb_persist_dstip_get', 'slb_persist_dstip_list', 'slb_persist_dstip_list_withcommon', 'slb_persist_srcip_add', 'slb_persist_srcip_del', 'slb_persist_srcip_edit', 'slb_persist_srcip_get', 'slb_persist_srcip_list', 'slb_persist_srcip_list_withcommon', 'slb_persist_sslid_add', 'slb_persist_sslid_del', 'slb_persist_sslid_edit', 'slb_persist_sslid_get', 'slb_persist_sslid_list', 'slb_persist_sslid_list_withcommon'],
+  "adc_slb_policy": ['slb_policy_add', 'slb_policy_del', 'slb_policy_edit', 'slb_policy_get', 'slb_policy_list', 'slb_policy_list_withcommon'],
+  "adc_slb_pool": ['slb_pool_add', 'slb_pool_del', 'slb_pool_edit', 'slb_pool_get', 'slb_pool_list', 'slb_pool_list_withcommon', 'slb_pool_member_add', 'slb_pool_member_del', 'slb_pool_member_edit', 'slb_pool_member_onoff'],
+  "adc_slb_profile": ['slb_profile_dns_list_withcommon', 'slb_profile_fastl5_del', 'slb_profile_fastl6_edit', 'slb_profile_fastl7_get', 'slb_profile_http_hostswitch_del', 'slb_profile_rtsp_list_withcommon', 'slb_profile_smtp_list_withcommon'],
+  "adc_slb_profile_dns": ['slb_profile_dns_add', 'slb_profile_dns_del', 'slb_profile_dns_edit', 'slb_profile_dns_get', 'slb_profile_dns_list', 'slb_profile_dns_list_withcommon'],
+  "adc_slb_profile_dnslog": ['slb_profile_dnslog_add', 'slb_profile_dnslog_del', 'slb_profile_dnslog_edit', 'slb_profile_dnslog_get', 'slb_profile_dnslog_list', 'slb_profile_dnslog_list_withcommon'],
+  "adc_slb_profile_fastl4": ['slb_profile_fastl4_add', 'slb_profile_fastl4_del', 'slb_profile_fastl4_edit', 'slb_profile_fastl4_get', 'slb_profile_fastl4_list', 'slb_profile_fastl4_list_withcommon'],
+  "adc_slb_profile_ftp": ['slb_profile_ftp_add', 'slb_profile_ftp_del', 'slb_profile_ftp_edit', 'slb_profile_ftp_get', 'slb_profile_ftp_list', 'slb_profile_ftp_list_withcommon'],
+  "adc_slb_profile_http": ['slb_profile_http_add', 'slb_profile_http_del', 'slb_profile_http_edit', 'slb_profile_http_get', 'slb_profile_http_list', 'slb_profile_http_list_withcommon'],
+  "adc_slb_profile_http2": ['slb_profile_http2_add', 'slb_profile_http2_del', 'slb_profile_http2_edit', 'slb_profile_http2_get', 'slb_profile_http2_list', 'slb_profile_http2_list_withcommon'],
+  "adc_slb_profile_http_hostswitch": ['slb_profile_http_hostswitch_add', 'slb_profile_http_hostswitch_del'],
+  "adc_slb_profile_natlog": ['slb_profile_natlog_add', 'slb_profile_natlog_del', 'slb_profile_natlog_edit', 'slb_profile_natlog_get', 'slb_profile_natlog_list', 'slb_profile_natlog_list_withcommon'],
+  "adc_slb_profile_request_log": ['slb_profile_request_log_add', 'slb_profile_request_log_del', 'slb_profile_request_log_edit', 'slb_profile_request_log_get', 'slb_profile_request_log_list', 'slb_profile_request_log_list_withcommon'],
+  "adc_slb_profile_rtsp": ['slb_profile_rtsp_add', 'slb_profile_rtsp_del', 'slb_profile_rtsp_edit', 'slb_profile_rtsp_get', 'slb_profile_rtsp_list', 'slb_profile_rtsp_list_withcommon'],
+  "adc_slb_profile_sip": ['slb_profile_sip_add', 'slb_profile_sip_del', 'slb_profile_sip_edit', 'slb_profile_sip_get', 'slb_profile_sip_list', 'slb_profile_sip_list_withcommon'],
+  "adc_slb_profile_smtp": ['slb_profile_smtp_add', 'slb_profile_smtp_del', 'slb_profile_smtp_edit', 'slb_profile_smtp_get', 'slb_profile_smtp_list', 'slb_profile_smtp_list_withcommon'],
+  "adc_slb_profile_tcp": ['slb_profile_tcp_add', 'slb_profile_tcp_del', 'slb_profile_tcp_edit', 'slb_profile_tcp_get', 'slb_profile_tcp_list', 'slb_profile_tcp_list_withcommon'],
+  "adc_slb_profile_udp": ['slb_profile_udp_add', 'slb_profile_udp_del', 'slb_profile_udp_edit', 'slb_profile_udp_get', 'slb_profile_udp_list', 'slb_profile_udp_list_withcommon'],
+  "adc_slb_profile_vs": ['slb_profile_vs_add', 'slb_profile_vs_del', 'slb_profile_vs_edit', 'slb_profile_vs_get', 'slb_profile_vs_list', 'slb_profile_vs_list_withcommon'],
+  "adc_slb_ruletable": ['slb_ruletable_add', 'slb_ruletable_add_entry', 'slb_ruletable_del', 'slb_ruletable_del_entry', 'slb_ruletable_get', 'slb_ruletable_list', 'slb_ruletable_list_withcommon'],
+  "adc_slb_ruletable_dns": ['slb_ruletable_dns_add', 'slb_ruletable_dns_del'],
+  "adc_slb_ruletable_file": ['slb_ruletable_file_upload'],
+  "adc_slb_ruletable_string": ['slb_ruletable_string_add', 'slb_ruletable_string_del'],
+  "adc_slb_ssl_certificate": ['slb_ssl_certificate_add', 'slb_ssl_certificate_del', 'slb_ssl_certificate_list', 'slb_ssl_certificate_list_withcommon', 'slb_ssl_certificate_upload', 'slb_ssl_crl_upload', 'slb_ssl_key_upload', 'slb_ssl_pfx_upload'],
+  "adc_slb_ssl_certkey_match": ['slb_ssl_certkey_match'],
+  "adc_slb_ssl_crl": ['slb_ssl_crl_del', 'slb_ssl_crl_upload'],
+  "adc_slb_ssl_enckey_cfca_upload": ['slb_ssl_enckey_cfca_upload'],
+  "adc_slb_ssl_filtercert": ['slb_ssl_filtercert_list'],
+  "adc_slb_ssl_key": ['slb_ssl_key_del', 'slb_ssl_key_upload'],
+  "adc_slb_sslclient": ['slb_sslclient_add', 'slb_sslclient_del', 'slb_sslclient_edit', 'slb_sslclient_get', 'slb_sslclient_list', 'slb_sslclient_list_withcommon'],
+  "adc_slb_sslserver": ['slb_sslserver_add', 'slb_sslserver_del', 'slb_sslserver_edit', 'slb_sslserver_get', 'slb_sslserver_list', 'slb_sslserver_list_withcommon'],
+  "adc_slb_stat": ['slb_node_stat_clear', 'slb_node_stat_get', 'slb_node_stat_list', 'slb_pool_stat_clear', 'slb_pool_stat_get', 'slb_pool_stat_list', 'slb_session_clear'],
+  "adc_slb_va": ['slb_va_add', 'slb_va_del', 'slb_va_edit', 'slb_va_get', 'slb_va_list', 'slb_va_stat_get', 'slb_va_stat_list'],
+  "adc_slb_va_vs": ['slb_va_vs_add', 'slb_va_vs_del', 'slb_va_vs_edit', 'slb_va_vs_get', 'slb_va_vs_stat_count_list', 'slb_va_vs_stat_get'],
+  "adc_system_aaa": ['aaa_general_get', 'aaa_general_set', 'aaa_ldap_get', 'aaa_ldap_set', 'aaa_radius_get', 'aaa_radius_set', 'aaa_tacacs_get', 'aaa_tacacs_set'],
+  "adc_system_banner": ['system_banner_get'],
+  "adc_system_client_lock": ['system_client_lock_get', 'system_client_lock_list', 'system_client_lock_set', 'system_client_unlock'],
+  "adc_system_config_file": ['system_config_add', 'system_config_apply', 'system_config_backup', 'system_config_del', 'system_config_list', 'system_config_restore'],
+  "adc_system_dns": ['system_dns_get', 'system_dns_set'],
+  "adc_system_domain_table": ['system_domaintable_add', 'system_domaintable_del', 'system_domaintable_file_delete', 'system_domaintable_file_list', 'system_domaintable_file_upload', 'system_domaintable_list'],
+  "adc_system_domaintable_file": ['system_domaintable_file_download', 'system_domaintable_file_upload'],
+  "adc_system_global_config": ['global_connection_mirror_get', 'global_connection_mirror_set', 'global_path_persist_get', 'global_path_persist_set', 'global_slb_snat_interface_iprr_get', 'global_slb_snat_interface_iprr_set', 'global_slb_snat_on_vip_get', 'global_slb_snat_on_vip_set', 'slb_global_allow_promis_intf_vip_get', 'slb_global_allow_promis_intf_vip_set', 'slb_global_virtual_mac_get', 'slb_global_virtual_mac_set', 'slb_graceful_shutdown_get', 'slb_graceful_shutdown_set', 'system_rate_limit_icmp_get', 'system_rate_limit_icmp_set', 'system_tcp_syn_protect_get', 'system_tcp_syn_protect_set', 'system_vlan_keyed_connection_get', 'system_vlan_keyed_connection_set'],
+  "adc_system_ha_vrrp": ['system_ha_vrrp_floating_ip_add', 'system_ha_vrrp_force_offline_set', 'system_ha_vrrp_global_get', 'system_ha_vrrp_global_set', 'system_ha_vrrp_group_add', 'system_ha_vrrp_group_list', 'system_ha_vrrp_heart_eth_add', 'system_ha_vrrp_track_gateway_add'],
+  "adc_system_hostname": ['system_host_ipv4_get', 'system_host_ipv4_set', 'system_host_ipv6_get', 'system_host_ipv6_set', 'system_hostname_set'],
+  "adc_system_hosts": ['system_hosts_add', 'system_hosts_del', 'system_hosts_list'],
+  "adc_system_log_alarm": ['log_alarm_email_get', 'log_alarm_email_set', 'log_alarm_sms_get', 'log_alarm_sms_set'],
+  "adc_system_log_config": ['log_config_audit_get', 'log_config_audit_set', 'log_config_dns_get', 'log_config_dns_set', 'log_config_nat_get', 'log_config_nat_set', 'log_config_service_get', 'log_config_service_set'],
+  "adc_system_log_get": ['log_audit_clear', 'log_audit_download', 'log_audit_list', 'log_coredump_download', 'log_dns_clear', 'log_dns_download', 'log_dns_list', 'log_nat_clear', 'log_nat_download', 'log_nat_list', 'log_service_clear', 'log_service_download', 'log_service_list', 'log_system_download'],
+  "adc_system_log_send": ['log_syslog_server_add', 'log_syslog_server_del', 'log_syslog_server_edit', 'log_syslog_server_get', 'log_syslog_server_list'],
+  "adc_system_ntp": ['system_ntp_add', 'system_ntp_del', 'system_ntp_edit', 'system_ntp_get', 'system_ntp_list'],
+  "adc_system_operations": ['system_action_reboot', 'system_action_reload', 'system_action_shutdown', 'system_save_config'],
+  "adc_system_partition": ['system_partition_active', 'system_partition_add', 'system_partition_del', 'system_partition_edit', 'system_partition_get', 'system_partition_list'],
+  "adc_system_ports": ['system_ports_get', 'system_ports_set'],
+  "adc_system_security_banner": ['system_security_banner_get', 'system_security_banner_set'],
+  "adc_system_smtp": ['system_smtp_get', 'system_smtp_set'],
+  "adc_system_snmp": ['snmp_comm_item_add', 'snmp_comm_item_del', 'snmp_comm_item_list', 'snmp_server_get', 'snmp_server_set', 'snmp_trap_get', 'snmp_trap_item_add', 'snmp_trap_item_del', 'snmp_trap_item_list', 'snmp_trap_set'],
+  "adc_system_snmp_v3": ['system_snmp_v3_group_add', 'system_snmp_v3_group_del', 'system_snmp_v3_group_edit', 'system_snmp_v3_group_get', 'system_snmp_v3_group_list', 'system_snmp_v3_trap_add', 'system_snmp_v3_trap_del', 'system_snmp_v3_trap_edit', 'system_snmp_v3_trap_get', 'system_snmp_v3_trap_list', 'system_snmp_v3_user_add', 'system_snmp_v3_user_del', 'system_snmp_v3_user_edit', 'system_snmp_v3_user_get', 'system_snmp_v3_user_list', 'system_snmp_v3_view_add', 'system_snmp_v3_view_del', 'system_snmp_v3_view_edit', 'system_snmp_v3_view_get', 'system_snmp_v3_view_list'],
+  "adc_system_sys_cert": ['system_sys_cert_get', 'system_sys_cert_relevance', 'system_sys_csr_get', 'system_sys_csr_list'],
+  "adc_system_sys_csr": ['system_sys_csr_add', 'system_sys_csr_del'],
+  "adc_system_time": ['system_time_get', 'system_time_set'],
+  "adc_system_timerange": ['system_timerange_add', 'system_timerange_del', 'system_timerange_edit', 'system_timerange_get', 'system_timerange_list'],
+  "adc_system_user": ['admin_cfg_get', 'admin_cfg_set', 'admin_user_add', 'admin_user_del', 'admin_user_edit', 'admin_user_get', 'admin_user_list', 'admin_user_unlock', 'system_password_set'],
+  "adc_system_web_cert": ['system_web_cert_apply', 'system_web_cert_del', 'system_web_cert_download', 'system_web_cert_list', 'system_web_cert_upload', 'system_web_key_download', 'system_web_key_upload'],
+  "adc_system_web_ciphers": ['system_web_ciphers_get', 'system_web_ciphers_set'],
+  "adc_system_web_session": ['get_web_session_config', 'get_web_session_limit', 'set_web_session_config', 'set_web_session_limit'],
+  "adc_vrrp_cfgsync_action_pull_push": ['vrrp_cfgsync_action_pull_push'],
+  "adc_vrrp_cfgsync_action_sync": ['vrrp_cfgsync_action_sync'],
+  "adc_vrrp_cfgsync_auto": ['vrrp_cfgsync_auto_get', 'vrrp_cfgsync_auto_set'],
+  "adc_vrrp_cfgsync_flag": ['vrrp_cfgsync_flag_get'],
+  "adc_vrrp_cfgsync_notify": ['vrrp_cfgsync_notify_get', 'vrrp_cfgsync_notify_set'],
+  "adc_vrrp_cfgsync_peer": ['vrrp_cfgsync_peer_add', 'vrrp_cfgsync_peer_del', 'vrrp_cfgsync_peer_edit', 'vrrp_cfgsync_peer_get', 'vrrp_cfgsync_peer_list'],
+  "adc_vrrp_floating_ip": ['vrrp_floating_ip_del', 'vrrp_floating_ip_list'],
+  "adc_vrrp_group": ['vrrp_group_del', 'vrrp_group_edit', 'vrrp_group_get', 'vrrp_group_stats'],
+  "adc_vrrp_heart_all": ['vrrp_heart_all_list', 'vrrp_heart_all_statis'],
+  "adc_vrrp_heart_eth": ['vrrp_heart_eth_del', 'vrrp_heart_eth_edit', 'vrrp_heart_eth_list', 'vrrp_heart_eth_statis'],
+  "adc_vrrp_heart_trunk": ['vrrp_heart_trunk_add', 'vrrp_heart_trunk_del', 'vrrp_heart_trunk_edit', 'vrrp_heart_trunk_list', 'vrrp_heart_trunk_statis'],
+  "adc_vrrp_l3_peer": ['vrrp_l3_peer_add', 'vrrp_l3_peer_del', 'vrrp_l3_peer_get', 'vrrp_l3_peer_list'],
+  "adc_vrrp_l3peer_enable": ['vrrp_l3peer_enable_get', 'vrrp_l3peer_enable_set'],
+  "adc_vrrp_manually_active": ['execute'],
+  "adc_vrrp_manually_standby": ['execute'],
+  "adc_vrrp_mgmt_peer": ['vrrp_mgmt_peer_add', 'vrrp_mgmt_peer_del', 'vrrp_mgmt_peer_get', 'vrrp_mgmt_peer_list'],
+  "adc_vrrp_sync_module": ['vrrp_sync_module_get', 'vrrp_sync_module_set'],
+  "adc_vrrp_track_gateway": ['vrrp_track_gateway_del', 'vrrp_track_gateway_edit', 'vrrp_track_gateway_list'],
+  "adc_vrrp_track_pool": ['vrrp_track_pool_add', 'vrrp_track_pool_del', 'vrrp_track_pool_edit', 'vrrp_track_pool_list'],
+  "adc_vrrp_track_route": ['vrrp_track_route_add', 'vrrp_track_route_del', 'vrrp_track_route_edit', 'vrrp_track_route_list'],
+  "adc_vrrp_track_vlan": ['vrrp_track_vlan_add', 'vrrp_track_vlan_del', 'vrrp_track_vlan_edit', 'vrrp_track_vlan_list'],
+  "adc_waf_profile": ['waf_profile_add', 'waf_profile_del', 'waf_profile_edit', 'waf_profile_get', 'waf_profile_list', 'waf_profile_list_withcommon'],
+  "adc_waf_rule": ['waf_rule_del', 'waf_rule_download', 'waf_rule_get', 'waf_rule_list', 'waf_rule_upload'],
+  "adc_waf_vserver": ['waf_vserver_clear', 'waf_vserver_statis']
+}
+
+================================================================================
+Markdown Table Format
+================================================================================
+
+| Module Name | Actions | Note |
+|-------------|----------|------|
+| adc_base | | 没有找到main函数 |
+| adc_login | | 找到action参数但未匹配到choices或if-elif语句 |
+| adc_logout | | 找到action参数但未匹配到choices或if-elif语句 |
+| adc_network_acl_ipv4_ext | acl_ipv4_ext_desc_set, acl_ipv4_ext_get, acl_ipv4_ext_item_add, acl_ipv4_ext_item_del, acl_ipv4_ext_item_edit, acl_ipv4_ext_list | |
+| adc_network_acl_ipv4_std | acl_ipv4_std_desc_set, acl_ipv4_std_get, acl_ipv4_std_item_add, acl_ipv4_std_item_del, acl_ipv4_std_item_edit, acl_ipv4_std_list | |
+| adc_network_acl_ipv6 | acl_ipv6_ext_desc_set, acl_ipv6_ext_get, acl_ipv6_ext_item_add, acl_ipv6_ext_item_del, acl_ipv6_ext_item_edit, acl_ipv6_ext_list | |
+| adc_network_arp | arp_ipv4_add, arp_ipv4_clear, arp_ipv4_delete, arp_ipv4_edit, arp_ipv4_get, arp_ipv4_list, arp_ipv4_statistics, arp_ipv6_add, arp_ipv6_clear, arp_ipv6_delete, arp_ipv6_edit, arp_ipv6_get, arp_ipv6_list, arp_ipv6_statistics | |
+| adc_network_bgp | bgp_neighbor_add, bgp_neighbor_delete, bgp_neighbor_list, bgp_network_add, bgp_network_delete, bgp_network_list, bgp_status_get, bgp_status_set | |
+| adc_network_ddos | ddos_config_get, ddos_config_set | |
+| adc_network_interface | interface_ethernet_edit, interface_ethernet_get, interface_ethernet_list, interface_ethernet_statistics_get, interface_mgmt_get, interface_mgmt_set, interface_trunk_edit, interface_trunk_get, interface_trunk_list, interface_ve_edit, interface_ve_get, interface_ve_list | |
+| adc_network_lldp | lldp_config_get, lldp_config_set, lldp_neighbor_list | |
+| adc_network_mode | network_mode_get, network_mode_set | |
+| adc_network_nat_global | nat_global_get, nat_global_set | |
+| adc_network_nat_map | nat_ipv6_map_add, nat_ipv6_map_delete, nat_ipv6_map_list, nat_map_add, nat_map_delete, nat_map_list | |
+| adc_network_nat_network | nat_network_add, nat_network_delete, nat_network_edit, nat_network_get, nat_network_list | |
+| adc_network_nat_policy | nat_policy_add, nat_policy_delete, nat_policy_edit, nat_policy_get, nat_policy_list | |
+| adc_network_nat_pool | nat_pool_add, nat_pool_delete, nat_pool_edit, nat_pool_get, nat_pool_list | |
+| adc_network_nat_pool_group | nat_pool_group_add, nat_pool_group_delete, nat_pool_group_edit, nat_pool_group_get, nat_pool_group_list | |
+| adc_network_nat_pool_stats | nat_pool_stats_clear, nat_pool_stats_list | |
+| adc_network_nat_static | nat_static_add, nat_static_delete, nat_static_edit, nat_static_get, nat_static_list, nat_static_statistics_clear, nat_static_statistics_get | |
+| adc_network_nat_timeout | nat_timeout_get, nat_timeout_set | |
+| adc_network_ospf | ospf_network_add, ospf_network_del, ospf_network_list, ospf_status_get, ospf_status_set | |
+| adc_network_port_list_profile | port_list_profile_add, port_list_profile_del, port_list_profile_edit, port_list_profile_get, port_list_profile_item_add, port_list_profile_item_del, port_list_profile_list | |
+| adc_network_route_static_ctrl_ipv4 | route_static_ctrl_ipv4_add, route_static_ctrl_ipv4_del, route_static_ctrl_ipv4_edit, route_static_ctrl_ipv4_get, route_static_ctrl_ipv4_list | |
+| adc_network_route_static_ctrl_ipv6 | route_static_ctrl_ipv6_add, route_static_ctrl_ipv6_del, route_static_ctrl_ipv6_edit, route_static_ctrl_ipv6_get, route_static_ctrl_ipv6_list | |
+| adc_network_route_static_ipv4 | route_static_ipv4_add, route_static_ipv4_del, route_static_ipv4_edit, route_static_ipv4_get, route_static_ipv4_list | |
+| adc_network_route_static_ipv6 | route_static_ipv6_add, route_static_ipv6_del, route_static_ipv6_edit, route_static_ipv6_get, route_static_ipv6_list | |
+| adc_network_route_static_mgmt_ipv4 | route_static_mgmt_ipv4_add, route_static_mgmt_ipv4_delete, route_static_mgmt_ipv4_edit, route_static_mgmt_ipv4_get, route_static_mgmt_ipv4_list | |
+| adc_network_route_static_mgmt_ipv6 | route_static_mgmt_ipv6_add, route_static_mgmt_ipv6_delete, route_static_mgmt_ipv6_edit, route_static_mgmt_ipv6_get, route_static_mgmt_ipv6_list | |
+| adc_network_syn_cookie | slb_syn_cookie_edit, slb_syn_cookie_get, slb_vs_syn_cookie_edit, slb_vs_syn_cookie_get | |
+| adc_network_tc | network_tc_add, network_tc_del, network_tc_edit, network_tc_get, network_tc_global_get, network_tc_global_set, network_tc_list, network_tc_rule_add, network_tc_rule_del, network_tc_rule_edit, network_tc_rule_get, network_tc_rule_list | |
+| adc_network_trunk | network_trunk_add, network_trunk_del, network_trunk_edit, network_trunk_get, network_trunk_list | |
+| adc_network_vlan | network_vlan_add, network_vlan_del, network_vlan_edit, network_vlan_get, network_vlan_list | |
+| adc_port_list_profile | port_list_profile_del | |
+| adc_port_list_profile_item | port_list_profile_item_del | |
+| adc_slb_bwlist | slb_bwlist_del, slb_bwlist_list, slb_bwlist_upload | |
+| adc_slb_cache | slb_cache_add, slb_cache_del, slb_cache_edit, slb_cache_get, slb_cache_list, slb_cache_list_withcommon | |
+| adc_slb_connmulti | slb_connmulti_add, slb_connmulti_del, slb_connmulti_edit, slb_connmulti_get, slb_connmulti_list, slb_connmulti_list_withcommon | |
+| adc_slb_erule | slb_erule_content_add, slb_erule_del, slb_erule_list, slb_erule_list_withcommon, slb_erule_upload, slb_erulefiles_del, slb_erulefiles_list, slb_erulefiles_upload | |
+| adc_slb_healthcheck | slb_healthcheck_add, slb_healthcheck_del, slb_healthcheck_edit, slb_healthcheck_get, slb_healthcheck_list, slb_healthcheck_postfile_del, slb_healthcheck_postfile_list, slb_healthcheck_postfile_upload, slb_healthcheck_script_del, slb_healthcheck_script_list, slb_healthcheck_script_upload | |
+| adc_slb_healthtest | slb_healthtest_add, slb_healthtest_del, slb_healthtest_get, slb_healthtest_list | |
+| adc_slb_node | slb_node_add, slb_node_del, slb_node_edit, slb_node_get, slb_node_list, slb_node_onoff, slb_node_port_add, slb_node_port_del, slb_node_port_edit, slb_node_port_onoff | |
+| adc_slb_passive_health_check | slb_passive_health_check_add, slb_passive_health_check_edit, slb_passive_health_check_get, slb_passive_health_check_list, slb_passive_health_check_list_withcommon | |
+| adc_slb_persist | slb_persist_cookie_add, slb_persist_cookie_del, slb_persist_cookie_edit, slb_persist_cookie_get, slb_persist_cookie_list, slb_persist_cookie_list_withcommon, slb_persist_dstip_add, slb_persist_dstip_del, slb_persist_dstip_edit, slb_persist_dstip_get, slb_persist_dstip_list, slb_persist_dstip_list_withcommon, slb_persist_srcip_add, slb_persist_srcip_del, slb_persist_srcip_edit, slb_persist_srcip_get, slb_persist_srcip_list, slb_persist_srcip_list_withcommon, slb_persist_sslid_add, slb_persist_sslid_del, slb_persist_sslid_edit, slb_persist_sslid_get, slb_persist_sslid_list, slb_persist_sslid_list_withcommon | |
+| adc_slb_policy | slb_policy_add, slb_policy_del, slb_policy_edit, slb_policy_get, slb_policy_list, slb_policy_list_withcommon | |
+| adc_slb_pool | slb_pool_add, slb_pool_del, slb_pool_edit, slb_pool_get, slb_pool_list, slb_pool_list_withcommon, slb_pool_member_add, slb_pool_member_del, slb_pool_member_edit, slb_pool_member_onoff | |
+| adc_slb_profile | slb_profile_dns_list_withcommon, slb_profile_fastl5_del, slb_profile_fastl6_edit, slb_profile_fastl7_get, slb_profile_http_hostswitch_del, slb_profile_rtsp_list_withcommon, slb_profile_smtp_list_withcommon | |
+| adc_slb_profile_dns | slb_profile_dns_add, slb_profile_dns_del, slb_profile_dns_edit, slb_profile_dns_get, slb_profile_dns_list, slb_profile_dns_list_withcommon | |
+| adc_slb_profile_dnslog | slb_profile_dnslog_add, slb_profile_dnslog_del, slb_profile_dnslog_edit, slb_profile_dnslog_get, slb_profile_dnslog_list, slb_profile_dnslog_list_withcommon | |
+| adc_slb_profile_fastl4 | slb_profile_fastl4_add, slb_profile_fastl4_del, slb_profile_fastl4_edit, slb_profile_fastl4_get, slb_profile_fastl4_list, slb_profile_fastl4_list_withcommon | |
+| adc_slb_profile_ftp | slb_profile_ftp_add, slb_profile_ftp_del, slb_profile_ftp_edit, slb_profile_ftp_get, slb_profile_ftp_list, slb_profile_ftp_list_withcommon | |
+| adc_slb_profile_http | slb_profile_http_add, slb_profile_http_del, slb_profile_http_edit, slb_profile_http_get, slb_profile_http_list, slb_profile_http_list_withcommon | |
+| adc_slb_profile_http2 | slb_profile_http2_add, slb_profile_http2_del, slb_profile_http2_edit, slb_profile_http2_get, slb_profile_http2_list, slb_profile_http2_list_withcommon | |
+| adc_slb_profile_http_hostswitch | slb_profile_http_hostswitch_add, slb_profile_http_hostswitch_del | |
+| adc_slb_profile_natlog | slb_profile_natlog_add, slb_profile_natlog_del, slb_profile_natlog_edit, slb_profile_natlog_get, slb_profile_natlog_list, slb_profile_natlog_list_withcommon | |
+| adc_slb_profile_request_log | slb_profile_request_log_add, slb_profile_request_log_del, slb_profile_request_log_edit, slb_profile_request_log_get, slb_profile_request_log_list, slb_profile_request_log_list_withcommon | |
+| adc_slb_profile_rtsp | slb_profile_rtsp_add, slb_profile_rtsp_del, slb_profile_rtsp_edit, slb_profile_rtsp_get, slb_profile_rtsp_list, slb_profile_rtsp_list_withcommon | |
+| adc_slb_profile_sip | slb_profile_sip_add, slb_profile_sip_del, slb_profile_sip_edit, slb_profile_sip_get, slb_profile_sip_list, slb_profile_sip_list_withcommon | |
+| adc_slb_profile_smtp | slb_profile_smtp_add, slb_profile_smtp_del, slb_profile_smtp_edit, slb_profile_smtp_get, slb_profile_smtp_list, slb_profile_smtp_list_withcommon | |
+| adc_slb_profile_tcp | slb_profile_tcp_add, slb_profile_tcp_del, slb_profile_tcp_edit, slb_profile_tcp_get, slb_profile_tcp_list, slb_profile_tcp_list_withcommon | |
+| adc_slb_profile_udp | slb_profile_udp_add, slb_profile_udp_del, slb_profile_udp_edit, slb_profile_udp_get, slb_profile_udp_list, slb_profile_udp_list_withcommon | |
+| adc_slb_profile_vs | slb_profile_vs_add, slb_profile_vs_del, slb_profile_vs_edit, slb_profile_vs_get, slb_profile_vs_list, slb_profile_vs_list_withcommon | |
+| adc_slb_ruletable | slb_ruletable_add, slb_ruletable_add_entry, slb_ruletable_del, slb_ruletable_del_entry, slb_ruletable_get, slb_ruletable_list, slb_ruletable_list_withcommon | |
+| adc_slb_ruletable_dns | slb_ruletable_dns_add, slb_ruletable_dns_del | |
+| adc_slb_ruletable_file | slb_ruletable_file_upload | |
+| adc_slb_ruletable_string | slb_ruletable_string_add, slb_ruletable_string_del | |
+| adc_slb_ssl_certificate | slb_ssl_certificate_add, slb_ssl_certificate_del, slb_ssl_certificate_list, slb_ssl_certificate_list_withcommon, slb_ssl_certificate_upload, slb_ssl_crl_upload, slb_ssl_key_upload, slb_ssl_pfx_upload | |
+| adc_slb_ssl_certkey_match | slb_ssl_certkey_match | |
+| adc_slb_ssl_crl | slb_ssl_crl_del, slb_ssl_crl_upload | |
+| adc_slb_ssl_enckey_cfca_upload | slb_ssl_enckey_cfca_upload | |
+| adc_slb_ssl_filtercert | slb_ssl_filtercert_list | |
+| adc_slb_ssl_key | slb_ssl_key_del, slb_ssl_key_upload | |
+| adc_slb_sslclient | slb_sslclient_add, slb_sslclient_del, slb_sslclient_edit, slb_sslclient_get, slb_sslclient_list, slb_sslclient_list_withcommon | |
+| adc_slb_sslserver | slb_sslserver_add, slb_sslserver_del, slb_sslserver_edit, slb_sslserver_get, slb_sslserver_list, slb_sslserver_list_withcommon | |
+| adc_slb_stat | slb_node_stat_clear, slb_node_stat_get, slb_node_stat_list, slb_pool_stat_clear, slb_pool_stat_get, slb_pool_stat_list, slb_session_clear | |
+| adc_slb_va | slb_va_add, slb_va_del, slb_va_edit, slb_va_get, slb_va_list, slb_va_stat_get, slb_va_stat_list | |
+| adc_slb_va_vs | slb_va_vs_add, slb_va_vs_del, slb_va_vs_edit, slb_va_vs_get, slb_va_vs_stat_count_list, slb_va_vs_stat_get | |
+| adc_system_aaa | aaa_general_get, aaa_general_set, aaa_ldap_get, aaa_ldap_set, aaa_radius_get, aaa_radius_set, aaa_tacacs_get, aaa_tacacs_set | |
+| adc_system_banner | system_banner_get | |
+| adc_system_client_lock | system_client_lock_get, system_client_lock_list, system_client_lock_set, system_client_unlock | |
+| adc_system_config_file | system_config_add, system_config_apply, system_config_backup, system_config_del, system_config_list, system_config_restore | |
+| adc_system_dns | system_dns_get, system_dns_set | |
+| adc_system_domain_table | system_domaintable_add, system_domaintable_del, system_domaintable_file_delete, system_domaintable_file_list, system_domaintable_file_upload, system_domaintable_list | |
+| adc_system_domaintable_file | system_domaintable_file_download, system_domaintable_file_upload | |
+| adc_system_global_config | global_connection_mirror_get, global_connection_mirror_set, global_path_persist_get, global_path_persist_set, global_slb_snat_interface_iprr_get, global_slb_snat_interface_iprr_set, global_slb_snat_on_vip_get, global_slb_snat_on_vip_set, slb_global_allow_promis_intf_vip_get, slb_global_allow_promis_intf_vip_set, slb_global_virtual_mac_get, slb_global_virtual_mac_set, slb_graceful_shutdown_get, slb_graceful_shutdown_set, system_rate_limit_icmp_get, system_rate_limit_icmp_set, system_tcp_syn_protect_get, system_tcp_syn_protect_set, system_vlan_keyed_connection_get, system_vlan_keyed_connection_set | |
+| adc_system_ha_vrrp | system_ha_vrrp_floating_ip_add, system_ha_vrrp_force_offline_set, system_ha_vrrp_global_get, system_ha_vrrp_global_set, system_ha_vrrp_group_add, system_ha_vrrp_group_list, system_ha_vrrp_heart_eth_add, system_ha_vrrp_track_gateway_add | |
+| adc_system_hostname | system_host_ipv4_get, system_host_ipv4_set, system_host_ipv6_get, system_host_ipv6_set, system_hostname_set | |
+| adc_system_hosts | system_hosts_add, system_hosts_del, system_hosts_list | |
+| adc_system_log_alarm | log_alarm_email_get, log_alarm_email_set, log_alarm_sms_get, log_alarm_sms_set | |
+| adc_system_log_config | log_config_audit_get, log_config_audit_set, log_config_dns_get, log_config_dns_set, log_config_nat_get, log_config_nat_set, log_config_service_get, log_config_service_set | |
+| adc_system_log_get | log_audit_clear, log_audit_download, log_audit_list, log_coredump_download, log_dns_clear, log_dns_download, log_dns_list, log_nat_clear, log_nat_download, log_nat_list, log_service_clear, log_service_download, log_service_list, log_system_download | |
+| adc_system_log_send | log_syslog_server_add, log_syslog_server_del, log_syslog_server_edit, log_syslog_server_get, log_syslog_server_list | |
+| adc_system_ntp | system_ntp_add, system_ntp_del, system_ntp_edit, system_ntp_get, system_ntp_list | |
+| adc_system_operations | system_action_reboot, system_action_reload, system_action_shutdown, system_save_config | |
+| adc_system_partition | system_partition_active, system_partition_add, system_partition_del, system_partition_edit, system_partition_get, system_partition_list | |
+| adc_system_ports | system_ports_get, system_ports_set | |
+| adc_system_security_banner | system_security_banner_get, system_security_banner_set | |
+| adc_system_smtp | system_smtp_get, system_smtp_set | |
+| adc_system_snmp | snmp_comm_item_add, snmp_comm_item_del, snmp_comm_item_list, snmp_server_get, snmp_server_set, snmp_trap_get, snmp_trap_item_add, snmp_trap_item_del, snmp_trap_item_list, snmp_trap_set | |
+| adc_system_snmp_v3 | system_snmp_v3_group_add, system_snmp_v3_group_del, system_snmp_v3_group_edit, system_snmp_v3_group_get, system_snmp_v3_group_list, system_snmp_v3_trap_add, system_snmp_v3_trap_del, system_snmp_v3_trap_edit, system_snmp_v3_trap_get, system_snmp_v3_trap_list, system_snmp_v3_user_add, system_snmp_v3_user_del, system_snmp_v3_user_edit, system_snmp_v3_user_get, system_snmp_v3_user_list, system_snmp_v3_view_add, system_snmp_v3_view_del, system_snmp_v3_view_edit, system_snmp_v3_view_get, system_snmp_v3_view_list | |
+| adc_system_sys_cert | system_sys_cert_get, system_sys_cert_relevance, system_sys_csr_get, system_sys_csr_list | |
+| adc_system_sys_csr | system_sys_csr_add, system_sys_csr_del | |
+| adc_system_time | system_time_get, system_time_set | |
+| adc_system_timerange | system_timerange_add, system_timerange_del, system_timerange_edit, system_timerange_get, system_timerange_list | |
+| adc_system_user | admin_cfg_get, admin_cfg_set, admin_user_add, admin_user_del, admin_user_edit, admin_user_get, admin_user_list, admin_user_unlock, system_password_set | |
+| adc_system_web_cert | system_web_cert_apply, system_web_cert_del, system_web_cert_download, system_web_cert_list, system_web_cert_upload, system_web_key_download, system_web_key_upload | |
+| adc_system_web_ciphers | system_web_ciphers_get, system_web_ciphers_set | |
+| adc_system_web_session | get_web_session_config, get_web_session_limit, set_web_session_config, set_web_session_limit | |
+| adc_vrrp_cfgsync_action_pull_push | vrrp_cfgsync_action_pull_push | |
+| adc_vrrp_cfgsync_action_sync | vrrp_cfgsync_action_sync | |
+| adc_vrrp_cfgsync_auto | vrrp_cfgsync_auto_get, vrrp_cfgsync_auto_set | |
+| adc_vrrp_cfgsync_flag | vrrp_cfgsync_flag_get | |
+| adc_vrrp_cfgsync_notify | vrrp_cfgsync_notify_get, vrrp_cfgsync_notify_set | |
+| adc_vrrp_cfgsync_peer | vrrp_cfgsync_peer_add, vrrp_cfgsync_peer_del, vrrp_cfgsync_peer_edit, vrrp_cfgsync_peer_get, vrrp_cfgsync_peer_list | |
+| adc_vrrp_floating_ip | vrrp_floating_ip_del, vrrp_floating_ip_list | |
+| adc_vrrp_group | vrrp_group_del, vrrp_group_edit, vrrp_group_get, vrrp_group_stats | |
+| adc_vrrp_heart_all | vrrp_heart_all_list, vrrp_heart_all_statis | |
+| adc_vrrp_heart_eth | vrrp_heart_eth_del, vrrp_heart_eth_edit, vrrp_heart_eth_list, vrrp_heart_eth_statis | |
+| adc_vrrp_heart_trunk | vrrp_heart_trunk_add, vrrp_heart_trunk_del, vrrp_heart_trunk_edit, vrrp_heart_trunk_list, vrrp_heart_trunk_statis | |
+| adc_vrrp_l3_peer | vrrp_l3_peer_add, vrrp_l3_peer_del, vrrp_l3_peer_get, vrrp_l3_peer_list | |
+| adc_vrrp_l3peer_enable | vrrp_l3peer_enable_get, vrrp_l3peer_enable_set | |
+| adc_vrrp_manually_active | execute | |
+| adc_vrrp_manually_standby | execute | |
+| adc_vrrp_mgmt_peer | vrrp_mgmt_peer_add, vrrp_mgmt_peer_del, vrrp_mgmt_peer_get, vrrp_mgmt_peer_list | |
+| adc_vrrp_sync_module | vrrp_sync_module_get, vrrp_sync_module_set | |
+| adc_vrrp_track_gateway | vrrp_track_gateway_del, vrrp_track_gateway_edit, vrrp_track_gateway_list | |
+| adc_vrrp_track_pool | vrrp_track_pool_add, vrrp_track_pool_del, vrrp_track_pool_edit, vrrp_track_pool_list | |
+| adc_vrrp_track_route | vrrp_track_route_add, vrrp_track_route_del, vrrp_track_route_edit, vrrp_track_route_list | |
+| adc_vrrp_track_vlan | vrrp_track_vlan_add, vrrp_track_vlan_del, vrrp_track_vlan_edit, vrrp_track_vlan_list | |
+| adc_waf_profile | waf_profile_add, waf_profile_del, waf_profile_edit, waf_profile_get, waf_profile_list, waf_profile_list_withcommon | |
+| adc_waf_rule | waf_rule_del, waf_rule_download, waf_rule_get, waf_rule_list, waf_rule_upload | |
+| adc_waf_vserver | waf_vserver_clear, waf_vserver_statis | |
+
+================================================================================
+Modules Need Manual Check
+================================================================================
+
+- adc_base: 没有找到main函数
+- adc_login: 找到action参数但未匹配到choices或if-elif语句
+- adc_logout: 找到action参数但未匹配到choices或if-elif语句
