@@ -447,8 +447,7 @@ def main():
             'log_config_nat_get', 'log_config_nat_set',
             'log_config_dns_get', 'log_config_dns_set']),
         # 业务日志配置参数
-        level=dict(type='int', required=False,
-                   choices=[0, 1, 2, 3, 4, 5, 6, 7]),
+        level=dict(type='str', required=False),
         size=dict(type='int', required=False),
         # 审计/NAT/DNS日志配置参数
         disable=dict(type='int', required=False, choices=[0, 1])

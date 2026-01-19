@@ -133,7 +133,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'system_dns_get', 'system_dns_set']),
+            'system_dns_get', 'system_dns_v2_set']),
         # DNS参数
         domain=dict(type='str', required=False),
         dns_server=dict(type='str', required=False)

@@ -24,6 +24,51 @@ import sys
 # ADC API响应解析函数
 
 
+def slb_pool_names_list(module):
+    """获取服务池名称列表"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.names.list" % (ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 对于获取列表操作，直接返回响应数据，不判断success
+        if response_data:
+            try:
+                parsed_data = json.loads(response_data)
+                # 检查是否有错误信息
+                if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                    module.fail_json(msg="获取服务池名称列表失败", response=parsed_data)
+                else:
+                    module.exit_json(changed=False, pool_names=parsed_data)
+            except Exception as e:
+                module.fail_json(msg="解析响应失败: %s" % str(e))
+        else:
+            module.fail_json(msg="未收到有效响应")
+
+    except Exception as e:
+        module.fail_json(msg="获取服务池名称列表失败: %s" % str(e))
+
+
 def slb_pool_list(module):
     """获取服务池列表"""
     ip = module.params['ip']
@@ -671,7 +716,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'slb_pool_list', 'slb_pool_list_withcommon', 'slb_pool_get', 'slb_pool_add', 'slb_pool_edit', 'slb_pool_del', 'slb_pool_member_add', 'slb_pool_member_del', 'slb_pool_member_edit', 'slb_pool_member_onoff']),
+                    'slb_pool_names_list', 'slb_pool_list', 'slb_pool_list_withcommon', 'slb_pool_get', 'slb_pool_add', 'slb_pool_edit', 'slb_pool_del', 'slb_pool_member_add', 'slb_pool_member_del', 'slb_pool_member_edit', 'slb_pool_member_onoff']),
         # 服务池参数
         name=dict(type='str', required=False),
         protocol=dict(type='int', required=False),
@@ -707,7 +752,9 @@ def main():
     if hasattr(action, '__str__'):
         action = str(action)
 
-    if action == 'slb_pool_list':
+    if action == 'slb_pool_names_list':
+        slb_pool_names_list(module)
+    elif action == 'slb_pool_list':
         slb_pool_list(module)
     elif action == 'slb_pool_list_withcommon':
         slb_pool_list_withcommon(module)

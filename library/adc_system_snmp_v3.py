@@ -16,7 +16,9 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
     get_param_if_exists,
     create_adc_module_args,
     adc_response_to_ansible_result,
-    format_adc_response_for_ansible
+    format_adc_response_for_ansible,
+    json_loads_preserve_order,
+    json_dumps_preserve_order
 )
 import json
 import sys
@@ -121,15 +123,26 @@ def snmp_server_v3_view_list(module):
     except Exception as e:
         module.fail_json(msg="获取SNMPv3视图列表失败: %s" % str(e))
 
-    # 对于获取列表操作，直接返回响应数据
+    # 对于获取列表操作，使用OrderedDict来保持顺序
     if response_data:
         try:
+            # 解析JSON
             parsed_data = json.loads(response_data)
             # 检查是否有错误信息
-            if 'errmsg' in parsed_data and parsed_data['errmsg']:
+            if isinstance(parsed_data, dict) and 'errmsg' in parsed_data and parsed_data['errmsg']:
                 module.fail_json(msg="获取SNMPv3视图列表失败", response=parsed_data)
             else:
-                module.exit_json(changed=False, views=parsed_data)
+                # 创建 OrderedDict 来保持顺序
+                try:
+                    from collections import OrderedDict
+                    result = OrderedDict()
+                    result['changed'] = False
+                    result['views'] = parsed_data
+                    # 使用 **result 解包，保持字段顺序
+                    module.exit_json(**result)
+                except ImportError:
+                    # Python 2.7+
+                    module.exit_json(changed=False, views=parsed_data)
         except Exception as e:
             module.fail_json(msg="解析响应失败: %s" % str(e))
     else:

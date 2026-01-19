@@ -327,14 +327,26 @@ def system_domaintable_file_upload(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 使用通用响应解析函数
+        # 解析响应数据
         if response_data:
-            success, result_dict = format_adc_response_for_ansible(
-                response_data, "上传域名表文件", True)
-            if success:
-                module.exit_json(**result_dict)
-            else:
-                module.fail_json(**result_dict)
+            try:
+                parsed_data = json.loads(response_data)
+                # 检查是否是成功响应格式 {"msg": "Upload OK.", "success": true}
+                if parsed_data.get('success') is True and 'Upload OK' in parsed_data.get('msg', ''):
+                    module.exit_json(changed=True, response=parsed_data, msg='上传域名表文件成功')
+                # 检查标准错误格式
+                elif 'errcode' in parsed_data and parsed_data['errcode']:
+                    module.fail_json(msg='上传域名表文件失败', error=parsed_data, response=parsed_data)
+                else:
+                    # 使用通用响应解析函数作为后备
+                    success, result_dict = format_adc_response_for_ansible(
+                        response_data, "上传域名表文件", True)
+                    if success:
+                        module.exit_json(**result_dict)
+                    else:
+                        module.fail_json(**result_dict)
+            except ValueError as e:
+                module.fail_json(msg="响应数据解析失败: %s, 原始响应: %s" % (str(e), response_data))
         else:
             module.fail_json(msg="未收到有效响应")
     except Exception as e:

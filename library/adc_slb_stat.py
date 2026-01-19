@@ -111,17 +111,19 @@ def adc_slb_node_stat_get(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 解析响应
-        result = json.loads(response_data)
-        
-        # 检查响应状态
-        if result.get('status') == 'success' or 'name' in result:
-            module.exit_json(changed=False, node_stat=result)
-        else:
-            module.fail_json(msg="获取节点统计详情失败: " + result.get('message', '未知错误'))
-
     except Exception as e:
         module.fail_json(msg="获取节点统计详情请求失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取节点统计详情", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
 
 
 def adc_slb_node_stat_clear(module):
@@ -138,7 +140,7 @@ def adc_slb_node_stat_clear(module):
     try:
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
-            # Python 3
+            # Python3
             import urllib.request as urllib_request
             req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
@@ -151,17 +153,19 @@ def adc_slb_node_stat_clear(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 解析响应
-        result = json.loads(response_data)
-
-        # 检查响应状态
-        if result.get('status') == 'success':
-            module.exit_json(changed=True, msg="节点统计清除成功", result=result)
-        else:
-            module.fail_json(msg="节点统计清除失败: " + result.get('message', '未知错误'))
-
     except Exception as e:
         module.fail_json(msg="清除节点统计请求失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "清除节点统计", True, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
 
 
 def adc_slb_pool_stat_list(module):
@@ -251,17 +255,19 @@ def adc_slb_pool_stat_get(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 解析响应
-        result = json.loads(response_data)
-
-        # 检查响应状态
-        if result.get('status') == 'success':
-            module.exit_json(changed=False, pool_stat=result)
-        else:
-            module.fail_json(msg="获取服务池统计详情失败: " + result.get('message', '未知错误'))
-
     except Exception as e:
         module.fail_json(msg="获取服务池统计详情请求失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取服务池统计详情", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
 
 
 def adc_slb_pool_stat_clear(module):
@@ -291,17 +297,22 @@ def adc_slb_pool_stat_clear(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 解析响应
-        result = json.loads(response_data)
-
-        # 检查响应状态
-        if result.get('status') == 'success':
-            module.exit_json(changed=True, msg="服务池统计清除成功", result=result)
-        else:
-            module.fail_json(msg="服务池统计清除失败: " + result.get('message', '未知错误'))
-
     except Exception as e:
         module.fail_json(msg="清除服务池统计请求失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "清除服务池统计", True, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+
 
 
 def adc_slb_session_clear(module):

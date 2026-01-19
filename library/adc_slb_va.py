@@ -474,17 +474,19 @@ def adc_slb_va_stat_get(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 解析响应
-        result = json.loads(response_data)
-
-        # 检查响应状态
-        if result.get('status') == 'success':
-            module.exit_json(changed=False, va_stat=result)
-        else:
-            module.fail_json(msg="获取虚拟应用统计详情失败: " + result.get('message', '未知错误'))
-
     except Exception as e:
         module.fail_json(msg="获取虚拟应用统计详情请求失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取虚拟应用统计详情", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
 
 
 

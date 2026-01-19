@@ -64,17 +64,19 @@ def slb_passive_health_check_add(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 解析响应
-        result = json.loads(response_data)
-
-        # 检查响应状态
-        if result.get('status') == 'success':
-            module.exit_json(changed=True, msg="被动健康检查添加成功", result=result)
-        else:
-            module.fail_json(msg="被动健康检查添加失败: " + result.get('message', '未知错误'))
-
     except Exception as e:
         module.fail_json(msg="添加被动健康检查请求失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "添加被动健康检查", True, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
 
 
 def slb_passive_health_check_list(module):
@@ -104,22 +106,19 @@ def slb_passive_health_check_list(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 对于获取列表操作，直接返回响应数据，不判断success
-        if response_data:
-            try:
-                parsed_data = json.loads(response_data)
-                # 检查是否有错误信息
-                if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                    module.fail_json(msg="获取被动健康检查列表失败", response=parsed_data)
-                else:
-                    module.exit_json(changed=False, passive_health_checks=parsed_data)
-            except Exception as e:
-                module.fail_json(msg="解析响应失败: %s" % str(e))
-        else:
-            module.fail_json(msg="未收到有效响应")
-
     except Exception as e:
         module.fail_json(msg="获取被动健康检查列表失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取被动健康检查列表", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
 
 
 def slb_passive_health_check_get(module):
@@ -162,17 +161,19 @@ def slb_passive_health_check_get(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 解析响应
-        result = json.loads(response_data)
-
-        # 检查响应状态
-        if result.get('status') == 'success' or 'name' in result:
-            module.exit_json(changed=False, passive_health_check=result)
-        else:
-            module.fail_json(msg="获取被动健康检查详情失败: " + result.get('message', '未知错误'))
-
     except Exception as e:
         module.fail_json(msg="获取被动健康检查详情请求失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取被动健康检查详情", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
 
 
 def slb_passive_health_check_edit(module):
@@ -215,17 +216,19 @@ def slb_passive_health_check_edit(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 解析响应
-        result = json.loads(response_data)
-
-        # 检查响应状态
-        if result.get('status') == 'success':
-            module.exit_json(changed=True, msg="被动健康检查编辑成功", result=result)
-        else:
-            module.fail_json(msg="被动健康检查编辑失败: " + result.get('message', '未知错误'))
-
     except Exception as e:
         module.fail_json(msg="编辑被动健康检查请求失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "编辑被动健康检查", True, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
 
 
 def slb_passive_health_check_list_withcommon(module):
@@ -255,22 +258,19 @@ def slb_passive_health_check_list_withcommon(module):
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
-        # 对于获取列表操作，直接返回响应数据，不判断success
-        if response_data:
-            try:
-                parsed_data = json.loads(response_data)
-                # 检查是否有错误信息
-                if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                    module.fail_json(msg="获取被动健康检查列表失败", response=parsed_data)
-                else:
-                    module.exit_json(changed=False, passive_health_checks=parsed_data)
-            except Exception as e:
-                module.fail_json(msg="解析响应失败: %s" % str(e))
-        else:
-            module.fail_json(msg="未收到有效响应")
-
     except Exception as e:
         module.fail_json(msg="获取被动健康检查列表失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取被动健康检查列表", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
 
 
 def main():

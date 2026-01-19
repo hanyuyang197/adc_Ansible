@@ -6,7 +6,54 @@ ADC 通用工具函数
 """
 
 import json
+import sys
 __metaclass__ = type
+
+
+def json_loads_preserve_order(json_str):
+    """
+    保持字段顺序的 JSON 解析函数
+
+    Python 3.7+ 的 dict 默认保持插入顺序，可以直接使用
+    Python 2 使用 OrderedDict
+
+    Args:
+        json_str: JSON 格式的字符串
+
+    Returns:
+        dict/list: 解析后的数据，保持原始字段顺序
+    """
+    try:
+        if sys.version_info[0] >= 3 and sys.version_info[1] >= 7:
+            # Python 3.7+ dict 保持插入顺序
+            return json.loads(json_str)
+        else:
+            # Python 2 或 Python 3.6 及以下，使用 OrderedDict
+            try:
+                from collections import OrderedDict
+                return json.loads(json_str, object_pairs_hook=OrderedDict)
+            except ImportError:
+                return json.loads(json_str)
+    except (ValueError, TypeError) as e:
+        raise ValueError("JSON解析失败: %s" % str(e))
+
+
+def json_dumps_preserve_order(obj):
+    """
+    保持字段顺序的 JSON 序列化函数
+
+    Args:
+        obj: 要序列化的对象
+
+    Returns:
+        str: JSON 格式的字符串
+    """
+    try:
+        # ensure_ascii=False 保留中文等非ASCII字符
+        # sort_keys=False 保持字段顺序（Python 3.7+）
+        return json.dumps(obj, ensure_ascii=False, sort_keys=False)
+    except (ValueError, TypeError) as e:
+        raise ValueError("JSON序列化失败: %s" % str(e))
 
 
 def send_request(url, post_data=None):
@@ -490,7 +537,7 @@ def adc_response_to_ansible_result(response, changed=True):
     }
 
 
-def format_adc_response_for_ansible(response_data, action="", changed_default=True):
+def format_adc_response_for_ansible(response_data, action="", changed_default=True, check_status=True):
     """
     格式化ADC响应为Ansible模块返回格式
 
@@ -498,6 +545,7 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
         response_data (str/dict): API响应数据
         action (str): 执行的操作名称
         changed_default (bool): 默认的changed状态
+        check_status (bool): 是否检查status字段，如果为False则只检查errmsg/errcode
 
     Returns:
         tuple: (success, result_dict)
@@ -528,16 +576,36 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
         result['errmsg'] = parsed_data.get('errmsg', '')
 
         # 判断操作是否成功
-        if result['result'].lower() == 'success':
-            result['success'] = True
-        else:
-            # 处理幂等性问题 - 检查错误信息中是否包含"已存在"等表示已存在的关键词
-            errmsg = result['errmsg'].lower() if isinstance(
-                result['errmsg'], str) else str(result['errmsg']).lower()
-            if any(keyword in errmsg for keyword in ['已存在', 'already exists', 'already exist', 'exists']):
-                # 幂等性处理：如果是因为已存在而导致的"失败"，实际上算成功
+        if check_status:
+            # 检查status字段模式（适用于add/edit/delete等操作）
+            if result['result'].lower() == 'success':
                 result['success'] = True
-                result['result'] = 'success (already exists)'
+            else:
+                # 对于查询类操作（get/list），如果有errmsg且不为空才算失败
+                errmsg = result['errmsg']
+                if errmsg and str(errmsg).strip():
+                    # 有错误信息，检查是否是幂等性错误
+                    errmsg_lower = errmsg.lower() if isinstance(errmsg, str) else str(errmsg).lower()
+                    if any(keyword in errmsg_lower for keyword in ['已存在', 'already exists']):
+                        # 幂等性处理：如果是因为已存在而导致的"失败"，实际上算成功
+                        result['success'] = True
+                        result['result'] = 'success (already exists)'
+                    else:
+                        # 真实的错误
+                        result['success'] = False
+                else:
+                    # 没有错误信息，即使result字段不是'success'也算成功（可能是直接返回数据）
+                    result['success'] = True
+        else:
+            # 只检查errmsg/errcode模式（适用于stat.clear等操作）
+            errmsg = result['errmsg']
+            errcode = result['errcode']
+            # 如果没有errmsg或errcode就是成功的
+            if (not errmsg or not str(errmsg).strip()) and (not errcode or not str(errcode).strip()):
+                result['success'] = True
+            else:
+                # 有errmsg或errcode，算失败
+                result['success'] = False
 
     except ValueError as e:  # 使用ValueError兼容Python 2/3，因为Python 2.7没有JSONDecodeError
         result['errmsg'] = "JSON解析失败: %s" % str(e)
@@ -574,3 +642,4 @@ def format_adc_response_for_ansible(response_data, action="", changed_default=Tr
             'response': result['data']
         }
         return False, result_dict
+

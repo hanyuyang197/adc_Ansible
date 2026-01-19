@@ -21,30 +21,22 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
 import json
 import sys
 
-# ADC API响应解析函数
-
 def slb_node_list(module):
     """获取节点列表 (slb.node.list)"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.list" % (
-        ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.list" % (ip, authkey)
 
-    # 初始化响应数据
     response_data = ""
 
     try:
-        # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
-            # Python 3
             import urllib.request as urllib_request
             req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
             import urllib2 as urllib_request
             req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
@@ -54,11 +46,9 @@ def slb_node_list(module):
     except Exception as e:
         module.fail_json(msg="获取节点列表失败: %s" % str(e))
 
-    # 对于获取列表操作，直接返回响应数据，不判断success
     if response_data:
         try:
             parsed_data = json.loads(response_data)
-            # 检查是否有错误信息
             if 'errmsg' in parsed_data and parsed_data['errmsg']:
                 module.fail_json(msg="获取节点列表失败", response=parsed_data)
             else:
@@ -73,53 +63,36 @@ def slb_node_get(module):
     """获取节点详情 (slb.node.get)"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    name = module.params.get('name', '')
 
-    # 检查必需参数
     if not name:
         module.fail_json(msg="获取节点详情需要提供name参数")
 
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.get" % (
-        ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.get" % (ip, authkey)
 
-    # 构造请求数据
-    node_data = {
-        "name": name
-    }
-
-    # 转换为JSON格式
+    node_data = {"name": name}
     post_data = json.dumps(node_data)
-
-    # 初始化响应数据
     response_data = ""
 
     try:
-        # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
-            # Python 3
             import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
             import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
     except Exception as e:
         module.fail_json(msg="获取节点详情失败: %s" % str(e))
 
-    # 对于获取详情操作，直接返回响应数据，不判断success
     if response_data:
         try:
             parsed_data = json.loads(response_data)
-            # 检查是否有错误信息
             if 'errmsg' in parsed_data and parsed_data['errmsg']:
                 module.fail_json(msg="获取节点详情失败", response=parsed_data)
             else:
@@ -135,16 +108,10 @@ def slb_node_add(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
 
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.add" % (
-        ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.add" % (ip, authkey)
 
-    # 构造节点数据 - 只包含在YAML中明确定义的参数
-    node_data = {
-        "node": {}
-    }
+    node_data = {"node": {}}
 
-    # 定义可选参数列表
     optional_params = [
         'tc_name', 'graceful_time', 'graceful_delete', 'graceful_disable', 'graceful_persist',
         'name', 'host', 'domain_ip_version', 'weight', 'healthcheck', 'upnum', 'status',
@@ -154,42 +121,31 @@ def slb_node_add(module):
         'request_rate_limit', 'ports'
     ]
 
-    # 添加基本参数
     for param in optional_params:
         if param in module.params and module.params[param] is not None:
             node_data['node'][param] = module.params[param]
 
-    # 转换为JSON格式
     post_data = json.dumps(node_data)
-
-    # 初始化响应数据
     response_data = ""
 
     try:
-        # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
-            # Python 3
             import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
             import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
     except Exception as e:
         module.fail_json(msg="添加节点失败: %s" % str(e))
 
-    # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "添加节点", True)
+        success, result_dict = format_adc_response_for_ansible(response_data, "添加节点", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -202,22 +158,15 @@ def slb_node_edit(module):
     """编辑节点"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    name = module.params.get('name', '')
 
-    # 检查必需参数
     if not name:
         module.fail_json(msg="编辑节点需要提供name参数")
 
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.edit" % (
-        ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.edit" % (ip, authkey)
 
-    # 构造节点数据 - 使用与add_node相同的参数处理方式
-    node_data = {
-        "node": {}
-    }
+    node_data = {"node": {"name": name}}
 
-    # 定义可选参数列表（与add_node保持一致）
     optional_params = [
         'tc_name', 'graceful_time', 'graceful_delete', 'graceful_disable', 'graceful_persist',
         'host', 'domain_ip_version', 'weight', 'healthcheck', 'upnum', 'status',
@@ -227,45 +176,31 @@ def slb_node_edit(module):
         'request_rate_limit', 'ports'
     ]
 
-    # 添加name参数（必需）
-    node_data['node']['name'] = name
-
-    # 添加可选参数
     for param in optional_params:
         if param in module.params and module.params[param] is not None:
             node_data['node'][param] = module.params[param]
 
-    # 转换为JSON格式
     post_data = json.dumps(node_data)
-
-    # 初始化响应数据
     response_data = ""
 
     try:
-        # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
-            # Python 3
             import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
             import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
     except Exception as e:
         module.fail_json(msg="编辑节点失败: %s" % str(e))
 
-    # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "编辑节点", True)
+        success, result_dict = format_adc_response_for_ansible(response_data, "编辑节点", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -278,287 +213,56 @@ def slb_node_del(module):
     """删除节点"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
+    name = module.params.get('name', '')
 
-    # 检查必需参数
     if not name:
         module.fail_json(msg="删除节点需要提供name参数")
 
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.del" % (
-        ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.del" % (ip, authkey)
 
-    # 构造节点数据
-    node_data = {
-        "name": name
-    }
-
-    # 转换为JSON格式
+    node_data = {"name": name}
     post_data = json.dumps(node_data)
-
-    # 初始化响应数据
     response_data = ""
 
     try:
-        # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
-            # Python 3
             import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
             import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
     except Exception as e:
         module.fail_json(msg="删除节点失败: %s" % str(e))
 
-    # 使用通用响应解析函数
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "删除节点", True)
+        success, result_dict = format_adc_response_for_ansible(response_data, "删除节点", True)
         if success:
             module.exit_json(**result_dict)
         else:
             module.fail_json(**result_dict)
     else:
         module.fail_json(msg="未收到有效响应")
-
-
-def slb_node_port_add(module):
-    """添加节点端口"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
-
-    # 检查必需参数
-    if not name:
-        module.fail_json(msg="添加节点端口需要提供name参数")
-
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.add" % (
-        ip, authkey)
-
-    # 获取端口参数
-    port_params = {}
-    port_fields = [
-        'port_number', 'protocol', 'status', 'weight', 'graceful_time',
-        'graceful_delete', 'graceful_disable', 'graceful_persist',
-        'conn_limit', 'phm_profile', 'healthcheck', 'upnum', 'nat_strategy'
-    ]
-
-    for field in port_fields:
-        param_name = field.replace('.', '_')
-        if param_name in module.params and module.params[param_name] is not None:
-            port_params[field.replace('port_', '')] = module.params[param_name]
-
-    # 构造节点端口数据
-    node_data = {
-        "name": name,
-        "port": port_params
-    }
-
-    # 转换为JSON格式
-    post_data = json.dumps(node_data)
-
-    # 初始化响应数据
-    response_data = ""
-
-    try:
-        # 根据Python版本处理编码
-        if sys.version_info[0] >= 3:
-            # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read().decode('utf-8')
-        else:
-            # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read()
-
-    except Exception as e:
-        module.fail_json(msg="添加节点端口失败: %s" % str(e))
-
-    # 使用通用响应解析函数
-    if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "添加节点端口", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
-    else:
-        module.fail_json(msg="未收到有效响应")
-
-
-def slb_node_port_edit(module):
-    """编辑节点端口"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
-
-    # 检查必需参数
-    if not name:
-        module.fail_json(msg="编辑节点端口需要提供name参数")
-
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.edit" % (
-        ip, authkey)
-
-    # 获取端口参数
-    port_params = {}
-    port_fields = [
-        'port_number', 'protocol', 'status', 'weight', 'graceful_time',
-        'graceful_delete', 'graceful_disable', 'graceful_persist',
-        'conn_limit', 'phm_profile', 'healthcheck', 'upnum', 'nat_strategy'
-    ]
-
-    for field in port_fields:
-        param_name = field.replace('.', '_')
-        if param_name in module.params and module.params[param_name] is not None:
-            port_params[field.replace('port_', '')] = module.params[param_name]
-
-    # 构造节点端口数据
-    node_data = {
-        "name": name,
-        "port": port_params
-    }
-
-    # 转换为JSON格式
-    post_data = json.dumps(node_data)
-
-    # 初始化响应数据
-    response_data = ""
-
-    try:
-        # 根据Python版本处理编码
-        if sys.version_info[0] >= 3:
-            # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read().decode('utf-8')
-        else:
-            # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read()
-
-    except Exception as e:
-        module.fail_json(msg="编辑节点端口失败: %s" % str(e))
-
-    # 使用通用响应解析函数
-    if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "编辑节点端口", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
-    else:
-        module.fail_json(msg="未收到有效响应")
-
-
-def slb_node_port_del(module):
-    """删除节点端口"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
-
-    # 检查必需参数
-    if not name:
-        module.fail_json(msg="删除节点端口需要提供name参数")
-
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.del" % (
-        ip, authkey)
-
-    # 获取端口参数
-    port_params = {}
-    port_fields = ['port_number', 'protocol']
-
-    for field in port_fields:
-        param_name = field.replace('.', '_')
-        if param_name in module.params and module.params[param_name] is not None:
-            port_params[field.replace('port_', '')] = module.params[param_name]
-
-    # 构造节点端口数据
-    node_data = {
-        "name": name,
-        "port": port_params
-    }
-
-    # 转换为JSON格式
-    post_data = json.dumps(node_data)
-
-    # 初始化响应数据
-    response_data = ""
-
-    try:
-        # 根据Python版本处理编码
-        if sys.version_info[0] >= 3:
-            # Python 3
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read().decode('utf-8')
-        else:
-            # Python 2
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read()
-
-    except Exception as e:
-        module.fail_json(msg="删除节点端口失败: %s" % str(e))
-
-    # 使用通用响应解析函数
-    if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "删除节点端口", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
-    else:
-        module.fail_json(msg="未收到有效响应")
-
 
 
 def slb_node_onoff(module):
     """节点启用/禁用"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
-    host = module.params['host'] if 'host' in module.params else ""
-    status = module.params['status'] if 'status' in module.params else 1
+    name = module.params.get('name', '')
+    host = module.params.get('host', '')
+    status = module.params.get('status', 1)
 
     if not name:
         module.fail_json(msg="节点启用/禁用需要提供name参数")
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.onoff" % (ip, authkey)
 
-    # 按照API文档格式构造请求数据
     request_data = {
         "node": {
             "name": name,
@@ -574,94 +278,32 @@ def slb_node_onoff(module):
         if sys.version_info[0] >= 3:
             import urllib.request as urllib_request
             post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, data=post_data, headers={'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
     except Exception as e:
         module.fail_json(msg="节点启用/禁用失败: %s" % str(e))
 
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "节点启用/禁用", True)
+        success, result_dict = format_adc_response_for_ansible(response_data, "节点启用/禁用", True)
         if success:
             module.exit_json(**result_dict)
         else:
             module.fail_json(**result_dict)
     else:
         module.fail_json(msg="未收到有效响应")
-
-
-def slb_node_port_onoff(module):
-    """节点端口启用/禁用"""
-    ip = module.params['ip']
-    authkey = module.params['authkey']
-    name = module.params['name'] if 'name' in module.params else ""
-    port_number = module.params['port'] if 'port' in module.params else 0
-    protocol = module.params['port_protocol'] if 'port_protocol' in module.params else 0
-    status = module.params['port_status'] if 'port_status' in module.params else 1
-
-    if not name:
-        module.fail_json(msg="节点端口启用/禁用需要提供name参数")
-
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.node.port.onoff" % (ip, authkey)
-
-    # 按照API文档格式构造请求数据
-    request_data = {
-        "name": name,
-        "port": {
-            "port_number": port_number,
-            "protocol": protocol,
-            "status": status
-        }
-    }
-
-    post_data = json.dumps(request_data)
-    response_data = ""
-
-    try:
-        if sys.version_info[0] >= 3:
-            import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read().decode('utf-8')
-        else:
-            import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
-            response = urllib_request.urlopen(req)
-            response_data = response.read()
-    except Exception as e:
-        module.fail_json(msg="节点端口启用/禁用失败: %s" % str(e))
-
-    if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "节点端口启用/禁用", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
-    else:
-        module.fail_json(msg="未收到有效响应")
-
-
 
 
 def main():
-    # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['slb_node_list', 'slb_node_get', 'slb_node_add', 'slb_node_edit', 'slb_node_del', 'slb_node_port_add', 'slb_node_port_edit', 'slb_node_port_del', 'slb_node_onoff', 'slb_node_port_onoff']),
-        # add_node/edit_node参数
+        action=dict(type='str', required=True, choices=['slb_node_list', 'slb_node_get', 'slb_node_add', 'slb_node_edit', 'slb_node_del', 'slb_node_onoff']),
         tc_name=dict(type='str', required=False),
         graceful_time=dict(type='int', required=False),
         graceful_delete=dict(type='int', required=False),
@@ -689,35 +331,15 @@ def main():
         slow_start_tail=dict(type='int', required=False),
         request_rate_limit=dict(type='int', required=False),
         ports=dict(type='list', required=False),
-        # add_node_port/edit_node_port/delete_node_port参数
-        port_port_number=dict(type='int', required=False),
-        port_protocol=dict(type='int', required=False),
-        port_status=dict(type='int', required=False),
-        port_weight=dict(type='int', required=False),
-        port_graceful_time=dict(type='int', required=False),
-        port_graceful_delete=dict(type='int', required=False),
-        port_graceful_disable=dict(type='int', required=False),
-        port_graceful_persist=dict(type='int', required=False),
-        port_conn_limit=dict(type='int', required=False),
-        port_phm_profile=dict(type='str', required=False),
-        port_healthcheck=dict(type='str', required=False),
-        port_upnum=dict(type='int', required=False),
-        port_nat_strategy=dict(type='str', required=False),
-        # node_onoff参数
         enable=dict(type='bool', required=False),
-        # node_port_onoff参数
-        port=dict(type='int', required=False)
     )
 
-    # 创建AnsibleModule实例
     module = AnsibleModule(
         argument_spec=module_args,
         supports_check_mode=False
     )
 
-    # 根据action执行相应操作
     action = module.params['action'] if 'action' in module.params else ''
-    # 为了解决静态检查工具的问题，我们进行类型转换
     if hasattr(action, '__str__'):
         action = str(action)
 
@@ -731,19 +353,8 @@ def main():
         slb_node_edit(module)
     elif action == 'slb_node_del':
         slb_node_del(module)
-    elif action == 'slb_node_port_add':
-        slb_node_port_add(module)
-    elif action == 'slb_node_port_edit':
-        slb_node_port_edit(module)
-    elif action == 'slb_node_port_del':
-        slb_node_port_del(module)
     elif action == 'slb_node_onoff':
         slb_node_onoff(module)
-    elif action == 'slb_node_port_onoff':
-        slb_node_port_onoff(module)
-
-
-
 
 
 if __name__ == '__main__':

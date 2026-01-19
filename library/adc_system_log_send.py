@@ -121,14 +121,38 @@ def log_syslog_server_list(module):
     except Exception as e:
         module.fail_json(msg="获取syslog服务器列表失败: %s" % str(e))
 
-    # 使用通用响应解析函数
+    # 解析响应数据
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "获取syslog服务器列表", False)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
+        try:
+            parsed_data = json.loads(response_data)
+
+            # 检查响应中的错误信息
+            def check_error(obj):
+                """递归检查对象中是否包含有效的errmsg"""
+                if isinstance(obj, dict):
+                    errmsg = obj.get('errmsg', '')
+                    if errmsg and str(errmsg).strip():
+                        return True, errmsg
+                    # 递归检查嵌套对象
+                    for v in obj.values():
+                        err = check_error(v)
+                        if err[0]:
+                            return True, err[1]
+                elif isinstance(obj, list):
+                    for item in obj:
+                        err = check_error(item)
+                        if err[0]:
+                            return True, err[1]
+                return False, None
+
+            has_error, errmsg = check_error(parsed_data)
+            if has_error:
+                module.fail_json(msg="获取syslog服务器列表失败", errmsg=errmsg, response=parsed_data)
+            else:
+                # 没有错误，直接返回原始响应
+                module.exit_json(changed=False, response=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
     else:
         module.fail_json(msg="未收到有效响应")
 
@@ -170,14 +194,38 @@ def log_syslog_server_get(module):
     except Exception as e:
         module.fail_json(msg="获取syslog服务器失败: %s" % str(e))
 
-    # 使用通用响应解析函数
+    # 解析响应数据
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "获取syslog服务器", False)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
+        try:
+            parsed_data = json.loads(response_data)
+
+            # 检查响应中的错误信息
+            def check_error(obj):
+                """递归检查对象中是否包含有效的errmsg"""
+                if isinstance(obj, dict):
+                    errmsg = obj.get('errmsg', '')
+                    if errmsg and str(errmsg).strip():
+                        return True, errmsg
+                    # 递归检查嵌套对象
+                    for v in obj.values():
+                        err = check_error(v)
+                        if err[0]:
+                            return True, err[1]
+                elif isinstance(obj, list):
+                    for item in obj:
+                        err = check_error(item)
+                        if err[0]:
+                            return True, err[1]
+                return False, None
+
+            has_error, errmsg = check_error(parsed_data)
+            if has_error:
+                module.fail_json(msg="获取syslog服务器列表失败", errmsg=errmsg, response=parsed_data)
+            else:
+                # 没有错误，直接返回原始响应
+                module.exit_json(changed=False, response=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
     else:
         module.fail_json(msg="未收到有效响应")
 
