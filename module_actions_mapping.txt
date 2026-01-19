@@ -5,7 +5,7 @@ ADC Ansible Modules - Actions Mapping
 总模块数: 132
 有action的模块数: 129
 需要人工检查的模块数: 3
-总action数: 666
+总action数: 678
 
 adc_base:
   [需要人工检查] 没有找到main函数

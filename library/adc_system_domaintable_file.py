@@ -123,12 +123,12 @@ def system_domaintable_file_download(module):
     """下载域名表文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    file_name = module.params['file_name']
     dest_path = module.params['dest_path']
 
     # 构造请求URL - 包含name参数
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.domaintable.file.download&name=%s" % (
-        ip, authkey, name)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.domaintable.file.download&file_name=%s" % (
+        ip, authkey, file_name)
 
     try:
         # 根据Python版本处理请求
