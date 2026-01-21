@@ -921,6 +921,18 @@ adc_vrrp_track_vlan:
   - vrrp_track_vlan_edit
   - vrrp_track_vlan_list
 
+adc_vrrp_track_ethernet:
+  - vrrp_track_ethernet_add
+  - vrrp_track_ethernet_del
+  - vrrp_track_ethernet_edit
+  - vrrp_track_ethernet_list
+
+adc_vrrp_track_trunk:
+  - vrrp_track_trunk_add
+  - vrrp_track_trunk_del
+  - vrrp_track_trunk_edit
+  - vrrp_track_trunk_list
+
 adc_waf_profile:
   - waf_profile_add
   - waf_profile_del
@@ -1075,6 +1087,8 @@ JSON Format Mapping
   "adc_vrrp_track_pool": ['vrrp_track_pool_add', 'vrrp_track_pool_del', 'vrrp_track_pool_edit', 'vrrp_track_pool_list'],
   "adc_vrrp_track_route": ['vrrp_track_route_add', 'vrrp_track_route_del', 'vrrp_track_route_edit', 'vrrp_track_route_list'],
   "adc_vrrp_track_vlan": ['vrrp_track_vlan_add', 'vrrp_track_vlan_del', 'vrrp_track_vlan_edit', 'vrrp_track_vlan_list'],
+  "adc_vrrp_track_ethernet": ['vrrp_track_ethernet_add', 'vrrp_track_ethernet_del', 'vrrp_track_ethernet_edit', 'vrrp_track_ethernet_list'],
+  "adc_vrrp_track_trunk": ['vrrp_track_trunk_add', 'vrrp_track_trunk_del', 'vrrp_track_trunk_edit', 'vrrp_track_trunk_list'],
   "adc_waf_profile": ['waf_profile_add', 'waf_profile_del', 'waf_profile_edit', 'waf_profile_get', 'waf_profile_list', 'waf_profile_list_withcommon'],
   "adc_waf_rule": ['waf_rule_del', 'waf_rule_download', 'waf_rule_get', 'waf_rule_list', 'waf_rule_upload'],
   "adc_waf_vserver": ['waf_vserver_clear', 'waf_vserver_statis']
@@ -1215,6 +1229,8 @@ Markdown Table Format
 | adc_vrrp_track_pool | vrrp_track_pool_add, vrrp_track_pool_del, vrrp_track_pool_edit, vrrp_track_pool_list | |
 | adc_vrrp_track_route | vrrp_track_route_add, vrrp_track_route_del, vrrp_track_route_edit, vrrp_track_route_list | |
 | adc_vrrp_track_vlan | vrrp_track_vlan_add, vrrp_track_vlan_del, vrrp_track_vlan_edit, vrrp_track_vlan_list | |
+| adc_vrrp_track_ethernet | vrrp_track_ethernet_add, vrrp_track_ethernet_del, vrrp_track_ethernet_edit, vrrp_track_ethernet_list | |
+| adc_vrrp_track_trunk | vrrp_track_trunk_add, vrrp_track_trunk_del, vrrp_track_trunk_edit, vrrp_track_trunk_list | |
 | adc_waf_profile | waf_profile_add, waf_profile_del, waf_profile_edit, waf_profile_get, waf_profile_list, waf_profile_list_withcommon | |
 | adc_waf_rule | waf_rule_del, waf_rule_download, waf_rule_get, waf_rule_list, waf_rule_upload | |
 | adc_waf_vserver | waf_vserver_clear, waf_vserver_statis | |

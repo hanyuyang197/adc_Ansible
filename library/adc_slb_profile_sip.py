@@ -251,9 +251,8 @@ def slb_profile_sip_add(module):
     ]
 
     for param in optional_params:
-        if module.params[param] is not None:
+        if param in module.params and module.params[param] is not None:
             profile_data[param] = module.params[param]
-
     # 发送POST请求
     result = send_request(url, profile_data, method='POST')
     return result
@@ -294,7 +293,7 @@ def slb_profile_sip_edit(module):
     ]
 
     for param in optional_params:
-        if module.params[param] is not None:
+        if param in module.params and module.params[param] is not None:
             profile_data[param] = module.params[param]
 
     # 发送POST请求

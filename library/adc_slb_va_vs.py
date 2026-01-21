@@ -497,10 +497,10 @@ def slb_va_vs_stat_get(module):
     except Exception as e:
         module.fail_json(msg="获取虚拟服务状态失败: %s" % str(e))
 
-    # 使用通用响应解析函数
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
     if response_data:
         success, result_dict = format_adc_response_for_ansible(
-            response_data, "获取虚拟服务状态", False)
+            response_data, "获取虚拟服务状态", False, check_status=False)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -540,10 +540,10 @@ def slb_va_vs_stat_count_list(module):
     except Exception as e:
         module.fail_json(msg="获取虚拟服务状态汇总失败: %s" % str(e))
 
-    # 使用通用响应解析函数
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
     if response_data:
         success, result_dict = format_adc_response_for_ansible(
-            response_data, "获取虚拟服务状态汇总", False)
+            response_data, "获取虚拟服务状态汇总", False, check_status=False)
         if success:
             module.exit_json(**result_dict)
         else:

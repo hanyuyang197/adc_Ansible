@@ -42,7 +42,7 @@ def define_module_args():
         # RTSP模板参数
         name=dict(type='str', required=False),
         description=dict(type='str', required=False, default=""),
-        uri_switch=dict(type='slb_profile_rtsp_list', required=False, default=[])
+        uri_switch=dict(type='list', required=False, default=[])
     )
 
 # 发送HTTP请求

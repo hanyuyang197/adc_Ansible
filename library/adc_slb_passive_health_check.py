@@ -231,6 +231,63 @@ def slb_passive_health_check_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def slb_passive_health_check_del(module):
+    """删除被动健康检查"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params.get('name')
+
+    # 检查必需参数
+    if not name:
+        module.fail_json(msg="删除被动健康检查需要提供name参数")
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.del" % (ip, authkey)
+
+    # 构造请求数据
+    healthcheck_data = {
+        "name": name
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(healthcheck_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, data=post_data.encode('utf-8'), method='POST')
+            req.add_header('Content-Type', 'application/json')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data)
+            req.add_header('Content-Type', 'application/json')
+            req.get_method = lambda: 'POST'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="删除被动健康检查请求失败: %s" % str(e))
+
+    # 使用通用响应解析函数 - 只检查errmsg/errcode，不检查status
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "删除被动健康检查", True, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
 def slb_passive_health_check_list_withcommon(module):
     """获取被动健康检查列表（包含common和本分区）"""
     ip = module.params['ip']
@@ -309,6 +366,8 @@ def main():
         slb_passive_health_check_get(module)
     elif action == 'slb_passive_health_check_edit':
         slb_passive_health_check_edit(module)
+    elif action == 'slb_passive_health_check_del':
+        slb_passive_health_check_del(module)
 
 
 if __name__ == '__main__':
