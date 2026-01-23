@@ -468,8 +468,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'bgp_network_list', 'bgp_network_add', 'bgp_network_delete',
-            'bgp_neighbor_list', 'bgp_neighbor_add', 'bgp_neighbor_delete',
+            'bgp_network_list', 'bgp_network_add', 'bgp_network_del',
+            'bgp_neighbor_list', 'bgp_neighbor_add', 'bgp_neighbor_del',
             'bgp_status_get', 'bgp_status_set']),
         # BGP参数
         network=dict(type='str', required=False),
@@ -493,13 +493,13 @@ def main():
         bgp_network_list(module)
     elif action == 'bgp_network_add':
         bgp_network_add(module)
-    elif action == 'bgp_network_delete':
+    elif action == 'bgp_network_del':
         bgp_network_del(module)
     elif action == 'bgp_neighbor_list':
         bgp_neighbor_list(module)
     elif action == 'bgp_neighbor_add':
         bgp_neighbor_add(module)
-    elif action == 'bgp_neighbor_delete':
+    elif action == 'bgp_neighbor_del':
         bgp_neighbor_del(module)
     elif action == 'bgp_status_get':
         bgp_status_get(module)

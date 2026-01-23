@@ -327,7 +327,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'nat_policy_list', 'nat_policy_get', 'nat_policy_add', 'nat_policy_edit', 'nat_policy_delete']),
+            'nat_policy_list', 'nat_policy_get', 'nat_policy_add', 'nat_policy_edit', 'nat_policy_del']),
         # NAT策略参数
         name=dict(type='str', required=False),
         acl=dict(type='int', required=False),
@@ -352,7 +352,7 @@ def main():
         nat_policy_add(module)
     elif action == 'nat_policy_edit':
         nat_policy_edit(module)
-    elif action == 'nat_policy_delete':
+    elif action == 'nat_policy_del':
         nat_policy_del(module)
 
 

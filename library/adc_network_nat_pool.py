@@ -349,7 +349,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'nat_pool_list', 'nat_pool_get', 'nat_pool_add', 'nat_pool_edit', 'nat_pool_delete']),
+            'nat_pool_list', 'nat_pool_get', 'nat_pool_add', 'nat_pool_edit', 'nat_pool_del']),
         # NAT地址池参数
         name=dict(type='str', required=False),
         ip_start=dict(type='str', required=False),
@@ -377,7 +377,7 @@ def main():
         nat_pool_add(module)
     elif action == 'nat_pool_edit':
         nat_pool_edit(module)
-    elif action == 'nat_pool_delete':
+    elif action == 'nat_pool_del':
         nat_pool_del(module)
 
 

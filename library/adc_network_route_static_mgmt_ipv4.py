@@ -271,7 +271,7 @@ def route_static_mgmt_ipv4_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def route_static_mgmt_ipv4_delete(module):
+def route_static_mgmt_ipv4_del(module):
     """删除IPv4静态管理路由"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -339,7 +339,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'route_static_mgmt_ipv4_list', 'route_static_mgmt_ipv4_get', 'route_static_mgmt_ipv4_add', 'route_static_mgmt_ipv4_edit', 'route_static_mgmt_ipv4_delete']),
+            'route_static_mgmt_ipv4_list', 'route_static_mgmt_ipv4_get', 'route_static_mgmt_ipv4_add', 'route_static_mgmt_ipv4_edit', 'route_static_mgmt_ipv4_del']),
         # IPv4静态管理路由参数
         destination=dict(type='str', required=False),
         netmask=dict(type='str', required=False),
@@ -365,8 +365,8 @@ def main():
         route_static_mgmt_ipv4_add(module)
     elif action == 'route_static_mgmt_ipv4_edit':
         route_static_mgmt_ipv4_edit(module)
-    elif action == 'route_static_mgmt_ipv4_delete':
-        route_static_mgmt_ipv4_delete(module)
+    elif action == 'route_static_mgmt_ipv4_del':
+        route_static_mgmt_ipv4_del(module)
 
 
 if __name__ == '__main__':

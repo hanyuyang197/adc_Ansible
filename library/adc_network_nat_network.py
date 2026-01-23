@@ -340,7 +340,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'nat_network_list', 'nat_network_get', 'nat_network_add', 'nat_network_edit', 'nat_network_delete']),
+            'nat_network_list', 'nat_network_get', 'nat_network_add', 'nat_network_edit', 'nat_network_del']),
         # 网络NAT参数
         name=dict(type='str', required=False),
         origin_ip=dict(type='str', required=False),
@@ -368,7 +368,7 @@ def main():
         nat_network_add(module)
     elif action == 'nat_network_edit':
         nat_network_edit(module)
-    elif action == 'nat_network_delete':
+    elif action == 'nat_network_del':
         nat_network_del(module)
 
 

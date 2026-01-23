@@ -826,9 +826,9 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'arp_ipv4_list', 'arp_ipv4_get', 'arp_ipv4_add', 'arp_ipv4_edit', 'arp_ipv4_delete',
+            'arp_ipv4_list', 'arp_ipv4_get', 'arp_ipv4_add', 'arp_ipv4_edit', 'arp_ipv4_del',
             'arp_ipv4_statistics', 'arp_ipv4_clear',
-            'arp_ipv6_list', 'arp_ipv6_get', 'arp_ipv6_add', 'arp_ipv6_edit', 'arp_ipv6_delete',
+            'arp_ipv6_list', 'arp_ipv6_get', 'arp_ipv6_add', 'arp_ipv6_edit', 'arp_ipv6_del',
             'arp_ipv6_statistics', 'arp_ipv6_clear']),
         # ARP参数
         ip_addr=dict(type='str', required=False),
@@ -856,7 +856,7 @@ def main():
         arp_ipv4_add(module)
     elif action == 'arp_ipv4_edit':
         arp_ipv4_edit(module)
-    elif action == 'arp_ipv4_delete':
+    elif action == 'arp_ipv4_del':
         arp_ipv4_del(module)
     elif action == 'arp_ipv4_statistics':
         arp_ipv4_statis(module)
@@ -870,7 +870,7 @@ def main():
         arp_ipv6_add(module)
     elif action == 'arp_ipv6_edit':
         arp_ipv6_edit(module)
-    elif action == 'arp_ipv6_delete':
+    elif action == 'arp_ipv6_del':
         arp_ipv6_del(module)
     elif action == 'arp_ipv6_statistics':
         arp_ipv6_statis(module)

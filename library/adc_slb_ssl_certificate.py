@@ -37,16 +37,16 @@ import mimetypes
 def create_form_data(fields, files=None):
     """创建multipart/form-data格式的数据"""
     BOUNDARY = '----adcformdataformdata'
-    CRLF = '\r\n'
+    CRLF = b'\r\n'
     form_data = []
 
     # 添加普通字段
     for field_name, field_value in fields.items():
-        form_data.append('--' + BOUNDARY)
+        form_data.append(('--' + BOUNDARY).encode('utf-8'))
         form_data.append(
-            'Content-Disposition: form-data; name="%s"' % field_name)
-        form_data.append('')
-        form_data.append(str(field_value))
+            ('Content-Disposition: form-data; name="%s"' % field_name).encode('utf-8'))
+        form_data.append(b'')
+        form_data.append(str(field_value).encode('utf-8'))
 
     # 添加文件字段
     if files:
@@ -55,15 +55,16 @@ def create_form_data(fields, files=None):
             content = file_info['content']
             content_type = file_info.get(
                 'content_type', 'application/octet-stream')
-            form_data.append('--' + BOUNDARY)
+            form_data.append(('--' + BOUNDARY).encode('utf-8'))
             form_data.append(
-                'Content-Disposition: form-data; name="%s"; filename="%s"' % (file_name, filename))
-            form_data.append('Content-Type: %s' % content_type)
-            form_data.append('')
+                ('Content-Disposition: form-data; name="%s"; filename="%s"' % (file_name, filename)).encode('utf-8'))
+            form_data.append(('Content-Type: %s' % content_type).encode('utf-8'))
+            form_data.append(b'')
+            # 内容已经是字节类型，直接使用
             form_data.append(content)
 
-    form_data.append('--' + BOUNDARY + '--')
-    form_data.append('')
+    form_data.append(('--' + BOUNDARY + '--').encode('utf-8'))
+    form_data.append(b'')
     body = CRLF.join(form_data)
     return body, BOUNDARY
 
@@ -73,24 +74,22 @@ def slb_ssl_certificate_upload(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     file_path = module.params['file_path']
-    cert_name = module.params.get('cert_name')
+    name = module.params.get('name')
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
         module.fail_json(msg="证书文件不存在: %s" % file_path)
 
-    # 读取文件内容
+    # 读取文件内容（二进制模式）
     with open(file_path, 'rb') as f:
-        file_content = f.read().decode('utf-8')
+        file_content = f.read()
 
-    # 构造表单数据
-    fields = {
-        'authkey': authkey
-    }
+    # 构造表单数据 - 只包含文件，不包含authkey（authkey已在URL中）
+    fields = {}
 
     files = {
         'file': {
-            'filename': os.path.basename(file_path) if not cert_name else cert_name,
+            'filename': os.path.basename(file_path) if not name else name,
             'content': file_content,
             'content_type': 'application/x-x509-ca-cert'
         }
@@ -104,7 +103,7 @@ def slb_ssl_certificate_upload(module):
     try:
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
-            req = urllib_request.Request(url, data=body.encode('utf-8'))
+            req = urllib_request.Request(url, data=body)
             req.add_header(
                 'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
             response = urllib_request.urlopen(req)
@@ -330,24 +329,22 @@ def slb_ssl_key_upload(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     file_path = module.params['file_path']
-    key_name = module.params.get('key_name')
+    name = module.params.get('name')
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
         module.fail_json(msg="私钥文件不存在: %s" % file_path)
 
-    # 读取文件内容
+    # 读取文件内容（二进制模式）
     with open(file_path, 'rb') as f:
-        file_content = f.read().decode('utf-8')
+        file_content = f.read()
 
-    # 构造表单数据
-    fields = {
-        'authkey': authkey
-    }
+    # 构造表单数据 - 只包含文件，不包含authkey（authkey已在URL中）
+    fields = {}
 
     files = {
         'file': {
-            'filename': os.path.basename(file_path) if not key_name else key_name,
+            'filename': os.path.basename(file_path) if not name else name,
             'content': file_content,
             'content_type': 'application/x-pem-key'
         }
@@ -355,13 +352,13 @@ def slb_ssl_key_upload(module):
 
     body, boundary = create_form_data(fields, files)
 
-    # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?action=slb.ssl.key.upload" % ip
+    # 构造请求URL - 添加authkey参数
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.key.upload" % (ip, authkey)
 
     try:
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
-            req = urllib_request.Request(url, data=body.encode('utf-8'))
+            req = urllib_request.Request(url, data=body)
             req.add_header(
                 'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
             response = urllib_request.urlopen(req)
@@ -393,24 +390,22 @@ def slb_ssl_crl_upload(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     file_path = module.params['file_path']
-    crl_name = module.params.get('crl_name')
+    name = module.params.get('name')
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
         module.fail_json(msg="CRL文件不存在: %s" % file_path)
 
-    # 读取文件内容
+    # 读取文件内容（二进制模式）
     with open(file_path, 'rb') as f:
-        file_content = f.read().decode('utf-8')
+        file_content = f.read()
 
-    # 构造表单数据
-    fields = {
-        'authkey': authkey
-    }
+    # 构造表单数据 - 只包含文件，不包含authkey（authkey已在URL中）
+    fields = {}
 
     files = {
         'file': {
-            'filename': os.path.basename(file_path) if not crl_name else crl_name,
+            'filename': os.path.basename(file_path) if not name else name,
             'content': file_content,
             'content_type': 'application/x-pkcs7-crl'
         }
@@ -418,13 +413,13 @@ def slb_ssl_crl_upload(module):
 
     body, boundary = create_form_data(fields, files)
 
-    # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?action=slb.ssl.crl.upload" % ip
+    # 构造请求URL - 添加authkey参数
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.crl.upload" % (ip, authkey)
 
     try:
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
-            req = urllib_request.Request(url, data=body.encode('utf-8'))
+            req = urllib_request.Request(url, data=body)
             req.add_header(
                 'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
             response = urllib_request.urlopen(req)
@@ -456,21 +451,19 @@ def slb_ssl_pfx_upload(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     file_path = module.params['file_path']
-    pfx_name = module.params.get('pfx_name')
+    name = module.params.get('name')
     password = module.params.get('password')
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
         module.fail_json(msg="PFX文件不存在: %s" % file_path)
 
-    # 读取文件内容
+    # 读取文件内容（二进制模式）
     with open(file_path, 'rb') as f:
-        file_content = f.read().decode('utf-8')
+        file_content = f.read()
 
-    # 构造表单数据
-    fields = {
-        'authkey': authkey
-    }
+    # 构造表单数据 - 只包含密码（如果有），不包含authkey（authkey已在URL中）
+    fields = {}
     
     # 如果有密码，添加到字段中
     if password:
@@ -478,7 +471,7 @@ def slb_ssl_pfx_upload(module):
 
     files = {
         'file': {
-            'filename': os.path.basename(file_path) if not pfx_name else pfx_name,
+            'filename': os.path.basename(file_path) if not name else name,
             'content': file_content,
             'content_type': 'application/x-pkcs12'
         }
@@ -486,13 +479,13 @@ def slb_ssl_pfx_upload(module):
 
     body, boundary = create_form_data(fields, files)
 
-    # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?action=slb.ssl.pfx.upload" % ip
+    # 构造请求URL - 添加authkey参数
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.pfx.upload" % (ip, authkey)
 
     try:
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
-            req = urllib_request.Request(url, data=body.encode('utf-8'))
+            req = urllib_request.Request(url, data=body)
             req.add_header(
                 'Content-Type', 'multipart/form-data; boundary=%s' % boundary)
             response = urllib_request.urlopen(req)
@@ -529,10 +522,6 @@ def main():
                     'slb_ssl_certificate_list', 'slb_ssl_certificate_list_withcommon',
                     'slb_ssl_certificate_del', 'slb_ssl_pfx_upload', 'slb_ssl_key_upload', 'slb_ssl_crl_upload']),
         name=dict(type='str', required=False),
-        cert_name=dict(type='str', required=False),
-        key_name=dict(type='str', required=False),
-        crl_name=dict(type='str', required=False),
-        pfx_name=dict(type='str', required=False),
         file_path=dict(type='str', required=False),
         common_name=dict(type='str', required=False),
         type=dict(type='int', required=False),

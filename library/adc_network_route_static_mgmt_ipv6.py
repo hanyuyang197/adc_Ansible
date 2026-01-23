@@ -270,7 +270,7 @@ def route_static_mgmt_ipv6_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def route_static_mgmt_ipv6_delete(module):
+def route_static_mgmt_ipv6_del(module):
     """删除IPv6静态管理路由"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -339,7 +339,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'route_static_mgmt_ipv6_list', 'route_static_mgmt_ipv6_get', 'route_static_mgmt_ipv6_add', 'route_static_mgmt_ipv6_edit', 'route_static_mgmt_ipv6_delete']),
+            'route_static_mgmt_ipv6_list', 'route_static_mgmt_ipv6_get', 'route_static_mgmt_ipv6_add', 'route_static_mgmt_ipv6_edit', 'route_static_mgmt_ipv6_del']),
         # IPv6静态管理路由参数
         destination=dict(type='str', required=False),
         prefix_len=dict(type='int', required=False),
@@ -364,8 +364,8 @@ def main():
         route_static_mgmt_ipv6_add(module)
     elif action == 'route_static_mgmt_ipv6_edit':
         route_static_mgmt_ipv6_edit(module)
-    elif action == 'route_static_mgmt_ipv6_delete':
-        route_static_mgmt_ipv6_delete(module)
+    elif action == 'route_static_mgmt_ipv6_del':
+        route_static_mgmt_ipv6_del(module)
 
 
 if __name__ == '__main__':

@@ -55,27 +55,22 @@ def slb_ssl_enckey_cfca_upload(module):
 
         # 创建multipart/form-data格式的请求体
         boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
-        body = []
-        body.append('--' + boundary)
-        body.append('Content-Disposition: form-data; name="file"; filename="%s"' %
-                    os.path.basename(file_path))
-        body.append('Content-Type: application/octet-stream')
-        body.append('')
-        if sys.version_info[0] >= 3:
-            body.append(file_content.decode('latin-1')
-                        if isinstance(file_content, bytes) else file_content)
-        else:
-            body.append(file_content)
-        body.append('--' + boundary + '--')
-        body.append('')
-
-        # 将body转换为bytes
-        if sys.version_info[0] >= 3:
-            body_str = '\r\n'.join(body)
-            body_bytes = body_str.encode('latin-1')
-        else:
-            body_str = '\r\n'.join(body)
-            body_bytes = body_str
+        CRLF = b'\r\n'
+        body_parts = []
+        
+        # 添加文件字段
+        body_parts.append(('--' + boundary).encode('utf-8'))
+        body_parts.append(('Content-Disposition: form-data; name="file"; filename="%s"' %
+                    os.path.basename(file_path)).encode('utf-8'))
+        body_parts.append(b'Content-Type: application/octet-stream')
+        body_parts.append(b'')
+        # 内容已经是字节类型，直接使用
+        body_parts.append(file_content)
+        body_parts.append(('--' + boundary + '--').encode('utf-8'))
+        body_parts.append(b'')
+        
+        # 合并所有部分
+        body_bytes = CRLF.join(body_parts)
 
         # 构建URL参数
         url_params = "authkey=%s&action=slb.ssl.enckey.cfca.upload&sign_file_name=%s" % (

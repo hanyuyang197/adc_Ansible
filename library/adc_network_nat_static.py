@@ -421,7 +421,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'nat_static_list', 'nat_static_get', 'nat_static_add', 'nat_static_edit', 'nat_static_delete',
+            'nat_static_list', 'nat_static_get', 'nat_static_add', 'nat_static_edit', 'nat_static_del',
             'nat_static_statistics_get', 'nat_static_statistics_clear']),
         # 静态NAT参数
         id=dict(type='int', required=False),
@@ -447,7 +447,7 @@ def main():
         nat_static_add(module)
     elif action == 'nat_static_edit':
         nat_static_edit(module)
-    elif action == 'nat_static_delete':
+    elif action == 'nat_static_del':
         nat_static_del(module)
     elif action == 'nat_static_statistics_get':
         nat_static_statistics_get(module)
