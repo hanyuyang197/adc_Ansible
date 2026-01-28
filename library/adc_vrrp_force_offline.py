@@ -22,25 +22,21 @@ import json
 import sys
 
 
-def vrrp_sync_module_set(module):
-    """编辑vrrp同步模块"""
+def vrrp_force_offline_set(module):
+    """设置VRRP强制下线"""
     device_ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.sync.module.set" % (
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.force_offline.set" % (
         device_ip, authkey)
 
     # 构造请求数据
-    request_data = {
-        "ip": device_ip,
-        "authkey": authkey
-    }
+    request_data = {}
 
-    # 定义可选参数列表（根据API具体需求调整）
+    # 定义可选参数列表
     optional_params = [
-        'module', 'description', 'status', 'config', 'setting', 'value', 'enable', 'name', 'port'
-        # 根据具体API需求添加更多参数
+        'group_id', 'force_offline', 'all_partitions'
     ]
 
     # 添加可选参数
@@ -73,12 +69,12 @@ def vrrp_sync_module_set(module):
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="编辑vrrp同步模块失败: %s" % str(e))
+        module.fail_json(msg="设置VRRP强制下线失败: %s" % str(e))
 
     # 使用通用响应解析函数
     if response_data:
         success, result_dict = format_adc_response_for_ansible(
-            response_data, "编辑vrrp同步模块", True)
+            response_data, "设置VRRP强制下线", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -87,14 +83,14 @@ def vrrp_sync_module_set(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def vrrp_sync_module_get(module):
-    """获取vrrp同步模块配置"""
-    ip = module.params['ip']
+def vrrp_force_offline_get(module):
+    """获取VRRP强制下线状态"""
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.sync.module.get" % (
-        ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.force_offline.get" % (
+        device_ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -116,15 +112,15 @@ def vrrp_sync_module_get(module):
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="获取vrrp同步模块配置失败: %s" % str(e))
+        module.fail_json(msg="获取VRRP强制下线状态失败: %s" % str(e))
 
     # 对于获取操作，直接返回响应数据
     if response_data:
         try:
             parsed_data = json.loads(response_data)
             # 检查是否有错误信息
-            if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取vrrp同步模块配置失败", response=parsed_data)
+            if isinstance(parsed_data, dict) and 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取VRRP强制下线状态失败", response=parsed_data)
             else:
                 module.exit_json(changed=False, config=parsed_data)
         except Exception as e:
@@ -138,16 +134,10 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['vrrp_sync_module_set', 'vrrp_sync_module_get']),
-        module=dict(type='str', required=False),
-        description=dict(type='str', required=False),
-        status=dict(type='str', required=False),
-        config=dict(type='dict', required=False),
-        setting=dict(type='dict', required=False),
-        value=dict(type='str', required=False),
-        enable=dict(type='bool', required=False),
-        name=dict(type='str', required=False),
-        port=dict(type='int', required=False)
+        action=dict(type='str', required=True, choices=['vrrp_force_offline_set', 'vrrp_force_offline_get']),
+        group_id=dict(type='int', required=False),
+        force_offline=dict(type='int', required=False),
+        all_partitions=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -159,10 +149,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'vrrp_sync_module_set':
-        vrrp_sync_module_set(module)
-    elif action == 'vrrp_sync_module_get':
-        vrrp_sync_module_get(module)
+    if action == 'vrrp_force_offline_set':
+        vrrp_force_offline_set(module)
+    elif action == 'vrrp_force_offline_get':
+        vrrp_force_offline_get(module)
 
 
 if __name__ == '__main__':

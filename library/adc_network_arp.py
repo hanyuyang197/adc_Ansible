@@ -858,7 +858,7 @@ def main():
         arp_ipv4_edit(module)
     elif action == 'arp_ipv4_del':
         arp_ipv4_del(module)
-    elif action == 'arp_ipv4_statistics':
+    elif action == 'arp_ipv4_statis':
         arp_ipv4_statis(module)
     elif action == 'arp_ipv4_clear':
         arp_ipv4_clear(module)
@@ -872,7 +872,7 @@ def main():
         arp_ipv6_edit(module)
     elif action == 'arp_ipv6_del':
         arp_ipv6_del(module)
-    elif action == 'arp_ipv6_statistics':
+    elif action == 'arp_ipv6_statis':
         arp_ipv6_statis(module)
     elif action == 'arp_ipv6_clear':
         arp_ipv6_clear(module)

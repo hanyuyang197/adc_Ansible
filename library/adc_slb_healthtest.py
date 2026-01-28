@@ -70,17 +70,27 @@ def slb_healthtest_add(module):
     """添加健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    
+    # 检查必需参数
+    name = module.params.get('name')
+    ip_addr = module.params.get('ip_addr')
+    if not name or not ip_addr:
+        module.fail_json(msg="添加健康检查需要提供name和ip_addr参数")
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthtest.add" % (ip, authkey)
 
-    # 构造请求数据 - 只包含非None的参数
-    healthtest_data = {}
-    optional_params = ['name', 'type', 'interval', 'timeout', 'retry', 'port', 'send', 'receive']
-
-    for param in optional_params:
-        if module.params.get(param) is not None:
-            healthtest_data[param] = module.params[param]
+    # 构造请求数据
+    healthtest_data = {
+        "name": name,
+        "ip": ip_addr
+    }
+    
+    # 添加可选参数
+    if module.params.get('count') is not None:
+        healthtest_data['count'] = module.params['count']
+    if module.params.get('port') is not None:
+        healthtest_data['port'] = module.params['port']
 
     # 转换为JSON格式
     post_data = json.dumps(healthtest_data)
@@ -125,17 +135,27 @@ def slb_healthtest_get(module):
     """获取健康检查详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    
+    # 检查必需参数
+    name = module.params.get('name')
+    ip_addr = module.params.get('ip_addr')
+    if not name or not ip_addr:
+        module.fail_json(msg="获取健康检查详情需要提供name和ip_addr参数")
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthtest.get" % (ip, authkey)
 
-    # 构造请求数据 - 只包含非None的参数
-    healthtest_data = {}
-    optional_params = ['name']
-
-    for param in optional_params:
-        if module.params.get(param) is not None:
-            healthtest_data[param] = module.params[param]
+    # 构造请求数据
+    healthtest_data = {
+        "name": name,
+        "ip": ip_addr
+    }
+    
+    # 添加可选参数
+    if module.params.get('count') is not None:
+        healthtest_data['count'] = module.params['count']
+    if module.params.get('port') is not None:
+        healthtest_data['port'] = module.params['port']
 
     # 转换为JSON格式
     post_data = json.dumps(healthtest_data)
@@ -180,17 +200,27 @@ def slb_healthtest_del(module):
     """删除健康检查"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    
+    # 检查必需参数
+    name = module.params.get('name')
+    ip_addr = module.params.get('ip_addr')
+    if not name or not ip_addr:
+        module.fail_json(msg="删除健康检查需要提供name和ip_addr参数")
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.healthtest.del" % (ip, authkey)
 
-    # 构造请求数据 - 只包含非None的参数
-    healthtest_data = {}
-    optional_params = ['name']
-
-    for param in optional_params:
-        if module.params.get(param) is not None:
-            healthtest_data[param] = module.params[param]
+    # 构造请求数据
+    healthtest_data = {
+        "name": name,
+        "ip": ip_addr
+    }
+    
+    # 添加可选参数
+    if module.params.get('count') is not None:
+        healthtest_data['count'] = module.params['count']
+    if module.params.get('port') is not None:
+        healthtest_data['port'] = module.params['port']
 
     # 转换为JSON格式
     post_data = json.dumps(healthtest_data)
@@ -239,13 +269,9 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True),
         name=dict(type='str', required=False),
-        type=dict(type='str', required=False),
-        interval=dict(type='int', required=False),
-        timeout=dict(type='int', required=False),
-        retry=dict(type='int', required=False),
-        port=dict(type='int', required=False),
-        send=dict(type='str', required=False),
-        receive=dict(type='str', required=False)
+        ip_addr=dict(type='str', required=False),
+        count=dict(type='int', required=False),
+        port=dict(type='int', required=False)
     )
 
     # 创建模块

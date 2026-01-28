@@ -133,37 +133,64 @@ def acl_ipv6_ext_get(module):
 
 def acl_ipv6_ext_item_add(module):
     """添加IPv6访问列表条目"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     acl_name = module.params['name'] if 'name' in module.params else ""
     seq_num = module.params['seq_num'] if 'seq_num' in module.params else ""
+    sequence = module.params['sequence'] if 'sequence' in module.params else ""
 
-    # 检查必需参数
-    if not acl_name or not seq_num:
-        module.fail_json(msg="添加IPv6访问列表条目需要提供name和seq_num参数")
+    # 检查必需参数，支持 seq_num 或 sequence
+    if not acl_name:
+        module.fail_json(msg="添加IPv6访问列表条目需要提供name参数")
+    if not seq_num and not sequence:
+        module.fail_json(msg="添加IPv6访问列表条目需要提供seq_num或sequence参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=acl.ipv6.ext.item.add" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造ACL条目数据 - 只包含在YAML中明确定义的参数
+    # 构造ACL条目数据 - 使用API要求的字段名
     acl_data = {
         "name": acl_name,
-        "seq_num": seq_num
+        "sequence": sequence if sequence else seq_num
     }
 
-    # 定义可选参数列表
-    optional_params = [
-        'acl_action', 'src_addr', 'src_prefix', 'dst_addr', 'dst_prefix',
-        'protocol', 'src_port_op', 'src_port1', 'src_port2',
-        'dst_port_op', 'dst_port1', 'dst_port2', 'icmp_type', 'icmp_code',
-        'dscp', 'fragment', 'log', 'time_range'
-    ]
+    # 参数映射：模块参数名 -> API字段名
+    param_mapping = {
+        'acl_action': 'acl_action',
+        'src_addr': 'src_ip',
+        'src_ip': 'src_ip',
+        'src_prefix': 'src_mask',
+        'src_mask': 'src_mask',
+        'dst_addr': 'dst_ip',
+        'dst_ip': 'dst_ip',
+        'dst_prefix': 'dst_mask',
+        'dst_mask': 'dst_mask',
+        'protocol': 'protocol',
+        'src_port_op': None,  # API 不使用这个字段
+        'src_port1': 'src_port_min',
+        'src_port_min': 'src_port_min',
+        'src_port2': 'src_port_max',
+        'src_port_max': 'src_port_max',
+        'dst_port_op': None,  # API 不使用这个字段
+        'dst_port1': 'dst_port_min',
+        'dst_port_min': 'dst_port_min',
+        'dst_port2': 'dst_port_max',
+        'dst_port_max': 'dst_port_max',
+        'icmp_type': None,  # IPv6 API 不使用这个字段
+        'icmp_code': None,  # IPv6 API 不使用这个字段
+        'dscp': 'dscp',
+        'fragment': None,  # IPv6 API 使用 ip_fragments
+        'ip_fragments': 'ip_fragments',
+        'log': None,  # API 不使用这个字段
+        'time_range': None,  # API 不使用这个字段
+        'hits': 'hits'
+    }
 
-    # 添加可选参数
-    for param in optional_params:
-        if param in module.params and module.params[param] is not None:
-            acl_data[param] = module.params[param]
+    # 添加可选参数，使用映射后的字段名
+    for param, api_field in param_mapping.items():
+        if param in module.params and module.params[param] is not None and api_field is not None:
+            acl_data[api_field] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(acl_data)
@@ -206,62 +233,64 @@ def acl_ipv6_ext_item_add(module):
 
 def acl_ipv6_ext_item_edit(module):
     """编辑IPv6访问列表条目"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     acl_name = module.params['name'] if 'name' in module.params else ""
     seq_num = module.params['seq_num'] if 'seq_num' in module.params else ""
+    sequence = module.params['sequence'] if 'sequence' in module.params else ""
 
-    # 检查必需参数
-    if not acl_name or not seq_num:
-        module.fail_json(msg="编辑IPv6访问列表条目需要提供name和seq_num参数")
+    # 检查必需参数，支持 seq_num 或 sequence
+    if not acl_name:
+        module.fail_json(msg="编辑IPv6访问列表条目需要提供name参数")
+    if not seq_num and not sequence:
+        module.fail_json(msg="编辑IPv6访问列表条目需要提供seq_num或sequence参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=acl.ipv6.ext.item.edit" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造ACL条目数据
+    # 构造ACL条目数据 - 使用API要求的字段名
     acl_data = {
         "name": acl_name,
-        "seq_num": seq_num
+        "sequence": sequence if sequence else seq_num
     }
 
-    # 添加可选参数
-    if 'acl_action' in module.params and module.params['acl_action'] is not None:
-        acl_data['action'] = module.params['acl_action']
-    if 'src_addr' in module.params and module.params['src_addr'] is not None:
-        acl_data['src_addr'] = module.params['src_addr']
-    if 'src_prefix' in module.params and module.params['src_prefix'] is not None:
-        acl_data['src_prefix'] = module.params['src_prefix']
-    if 'dst_addr' in module.params and module.params['dst_addr'] is not None:
-        acl_data['dst_addr'] = module.params['dst_addr']
-    if 'dst_prefix' in module.params and module.params['dst_prefix'] is not None:
-        acl_data['dst_prefix'] = module.params['dst_prefix']
-    if 'protocol' in module.params and module.params['protocol'] is not None:
-        acl_data['protocol'] = module.params['protocol']
-    if 'src_port_op' in module.params and module.params['src_port_op'] is not None:
-        acl_data['src_port_op'] = module.params['src_port_op']
-    if 'src_port1' in module.params and module.params['src_port1'] is not None:
-        acl_data['src_port1'] = module.params['src_port1']
-    if 'src_port2' in module.params and module.params['src_port2'] is not None:
-        acl_data['src_port2'] = module.params['src_port2']
-    if 'dst_port_op' in module.params and module.params['dst_port_op'] is not None:
-        acl_data['dst_port_op'] = module.params['dst_port_op']
-    if 'dst_port1' in module.params and module.params['dst_port1'] is not None:
-        acl_data['dst_port1'] = module.params['dst_port1']
-    if 'dst_port2' in module.params and module.params['dst_port2'] is not None:
-        acl_data['dst_port2'] = module.params['dst_port2']
-    if 'icmp_type' in module.params and module.params['icmp_type'] is not None:
-        acl_data['icmp_type'] = module.params['icmp_type']
-    if 'icmp_code' in module.params and module.params['icmp_code'] is not None:
-        acl_data['icmp_code'] = module.params['icmp_code']
-    if 'dscp' in module.params and module.params['dscp'] is not None:
-        acl_data['dscp'] = module.params['dscp']
-    if 'fragment' in module.params and module.params['fragment'] is not None:
-        acl_data['fragment'] = module.params['fragment']
-    if 'log' in module.params and module.params['log'] is not None:
-        acl_data['log'] = module.params['log']
-    if 'time_range' in module.params and module.params['time_range'] is not None:
-        acl_data['time_range'] = module.params['time_range']
+    # 参数映射：模块参数名 -> API字段名
+    param_mapping = {
+        'acl_action': 'acl_action',
+        'src_addr': 'src_ip',
+        'src_ip': 'src_ip',
+        'src_prefix': 'src_mask',
+        'src_mask': 'src_mask',
+        'dst_addr': 'dst_ip',
+        'dst_ip': 'dst_ip',
+        'dst_prefix': 'dst_mask',
+        'dst_mask': 'dst_mask',
+        'protocol': 'protocol',
+        'src_port_op': None,  # API 不使用这个字段
+        'src_port1': 'src_port_min',
+        'src_port_min': 'src_port_min',
+        'src_port2': 'src_port_max',
+        'src_port_max': 'src_port_max',
+        'dst_port_op': None,  # API 不使用这个字段
+        'dst_port1': 'dst_port_min',
+        'dst_port_min': 'dst_port_min',
+        'dst_port2': 'dst_port_max',
+        'dst_port_max': 'dst_port_max',
+        'icmp_type': None,  # IPv6 API 不使用这个字段
+        'icmp_code': None,  # IPv6 API 不使用这个字段
+        'dscp': 'dscp',
+        'fragment': None,  # IPv6 API 使用 ip_fragments
+        'ip_fragments': 'ip_fragments',
+        'log': None,  # API 不使用这个字段
+        'time_range': None,  # API 不使用这个字段
+        'hits': 'hits'
+    }
+
+    # 添加可选参数，使用映射后的字段名
+    for param, api_field in param_mapping.items():
+        if param in module.params and module.params[param] is not None and api_field is not None:
+            acl_data[api_field] = module.params[param]
 
     # 转换为JSON格式
     post_data = json.dumps(acl_data)
@@ -436,24 +465,35 @@ def main():
         # ACL参数
         name=dict(type='str', required=False),
         seq_num=dict(type='int', required=False),
+        sequence=dict(type='int', required=False),
         acl_action=dict(type='str', required=False),
         src_addr=dict(type='str', required=False),
+        src_ip=dict(type='str', required=False),
         src_prefix=dict(type='int', required=False),
+        src_mask=dict(type='int', required=False),
         dst_addr=dict(type='str', required=False),
+        dst_ip=dict(type='str', required=False),
         dst_prefix=dict(type='int', required=False),
+        dst_mask=dict(type='int', required=False),
         protocol=dict(type='str', required=False),
         src_port_op=dict(type='str', required=False),
         src_port1=dict(type='int', required=False),
+        src_port_min=dict(type='int', required=False),
         src_port2=dict(type='int', required=False),
+        src_port_max=dict(type='int', required=False),
         dst_port_op=dict(type='str', required=False),
         dst_port1=dict(type='int', required=False),
+        dst_port_min=dict(type='int', required=False),
         dst_port2=dict(type='int', required=False),
+        dst_port_max=dict(type='int', required=False),
         icmp_type=dict(type='int', required=False),
         icmp_code=dict(type='int', required=False),
         dscp=dict(type='int', required=False),
         fragment=dict(type='str', required=False),
+        ip_fragments=dict(type='int', required=False),
         log=dict(type='int', required=False),
         time_range=dict(type='str', required=False),
+        hits=dict(type='str', required=False),
         description=dict(type='str', required=False)
     )
 

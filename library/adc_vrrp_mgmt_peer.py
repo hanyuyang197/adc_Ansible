@@ -82,7 +82,7 @@ def vrrp_mgmt_peer_add(module):
 
     # 构造请求数据
     request_data = {
-        "ip": ip,
+        "device_ip": ip,
         "authkey": authkey,
         "name": name,
         "ip": ip_addr
@@ -139,7 +139,7 @@ def vrrp_mgmt_peer_get(module):
 
     # 构造请求数据
     request_data = {
-        "ip": ip,
+        "device_ip": ip,
         "authkey": authkey,
         "name": name
     }
@@ -195,7 +195,7 @@ def vrrp_mgmt_peer_del(module):
 
     # 构造请求数据
     request_data = {
-        "ip": ip,
+        "device_ip": ip,
         "authkey": authkey,
         "name": name
     }

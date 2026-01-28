@@ -133,7 +133,7 @@ def adc_system_timerange_get(module):
 
 def adc_system_timerange_add(module):
     """添加时间范围"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
 
@@ -143,14 +143,22 @@ def adc_system_timerange_add(module):
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.timerange.add" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造时间范围数据
+    # 构造时间范围数据 - 使用API要求的字段名
     timerange_data = {
         "name": name
     }
 
-    # 添加可选参数
+    # 添加 API 必需和可选参数
+    if 'type' in module.params and module.params['type'] is not None:
+        timerange_data['type'] = module.params['type']
+    if 'day_list' in module.params and module.params['day_list'] is not None:
+        timerange_data['day_list'] = module.params['day_list']
+    if 'time_list' in module.params and module.params['time_list'] is not None:
+        timerange_data['time_list'] = module.params['time_list']
+
+    # 添加可选参数（向后兼容）
     if 'description' in module.params and module.params['description'] is not None:
         timerange_data['description'] = module.params['description']
     if 'start_time' in module.params and module.params['start_time'] is not None:
@@ -201,7 +209,7 @@ def adc_system_timerange_add(module):
 
 def adc_system_timerange_edit(module):
     """编辑时间范围"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
 
@@ -211,14 +219,22 @@ def adc_system_timerange_edit(module):
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.timerange.edit" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造时间范围数据
+    # 构造时间范围数据 - 使用API要求的字段名
     timerange_data = {
         "name": name
     }
 
-    # 添加可选参数
+    # 添加 API 必需和可选参数
+    if 'type' in module.params and module.params['type'] is not None:
+        timerange_data['type'] = module.params['type']
+    if 'day_list' in module.params and module.params['day_list'] is not None:
+        timerange_data['day_list'] = module.params['day_list']
+    if 'time_list' in module.params and module.params['time_list'] is not None:
+        timerange_data['time_list'] = module.params['time_list']
+
+    # 添加可选参数（向后兼容）
     if 'description' in module.params and module.params['description'] is not None:
         timerange_data['description'] = module.params['description']
     if 'start_time' in module.params and module.params['start_time'] is not None:
@@ -337,7 +353,11 @@ def main():
         description=dict(type='str', required=False),
         start_time=dict(type='str', required=False),
         end_time=dict(type='str', required=False),
-        week_days=dict(type='list', required=False)
+        week_days=dict(type='list', required=False),
+        # API 参数
+        type=dict(type='int', required=False),
+        day_list=dict(type='list', required=False),
+        time_list=dict(type='list', required=False)
     )
 
     # 创建AnsibleModule实例

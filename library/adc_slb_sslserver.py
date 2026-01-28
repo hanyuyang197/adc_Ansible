@@ -124,7 +124,19 @@ def send_request(url, data=None, method='GET'):
             req = urllib_request.Request(url)
 
         response = urllib_request.urlopen(req)
-        result = json.loads(response.read())
+        response_data = response.read()
+
+        # 正确处理响应数据的编码
+        if isinstance(response_data, bytes):
+            # 尝试UTF-8解码，如果失败则使用latin1作为后备
+            try:
+                response_text = response_data.decode('utf-8')
+            except UnicodeDecodeError:
+                response_text = response_data.decode('latin1')
+        else:
+            response_text = response_data
+
+        result = json.loads(response_text)
 
         # 标准化响应格式
         # 成功响应保持原样
@@ -206,7 +218,10 @@ def slb_sslserver_add(module):
     }
 
     # Only include parameters that are explicitly defined in YAML
-    optional_params = ['cert', 'key']
+    optional_params = [
+        'cert', 'key', 'password', 'ca_cert', 'ecert', 'ekey', 'epassword',
+        'sni_switch', 'sni_name', 'ssl_version', 'cipher_suite', 'description', 'sign_cipher'
+    ]
 
     for param in optional_params:
         if module.params[param] is not None:
@@ -236,7 +251,10 @@ def slb_sslserver_edit(module):
     }
 
     # Only include parameters that are explicitly defined in YAML
-    optional_params = ['cert', 'key']
+    optional_params = [
+        'cert', 'key', 'password', 'ca_cert', 'ecert', 'ekey', 'epassword',
+        'sni_switch', 'sni_name', 'ssl_version', 'cipher_suite', 'description', 'sign_cipher'
+    ]
 
     for param in optional_params:
         if module.params[param] is not None:
@@ -282,6 +300,17 @@ def main():
             name=dict(type='str', required=False),
             cert=dict(type='str', required=False),
             key=dict(type='str', required=False, no_log=True),
+            password=dict(type='str', required=False, no_log=True),
+            ca_cert=dict(type='str', required=False),
+            ecert=dict(type='str', required=False),
+            ekey=dict(type='str', required=False, no_log=True),
+            epassword=dict(type='str', required=False, no_log=True),
+            sni_switch=dict(type='int', required=False, choices=[0, 1]),
+            sni_name=dict(type='str', required=False),
+            ssl_version=dict(type='int', required=False, choices=[0, 1, 2, 3, 5, 6]),
+            cipher_suite=dict(type='list', required=False, elements='str'),
+            description=dict(type='str', required=False),
+            sign_cipher=dict(type='list', required=False, elements='str'),
         ),
         supports_check_mode=False
     )
@@ -310,9 +339,18 @@ def main():
             # 成功响应
             module.exit_json(changed=True, result=result)
         elif 'errcode' in result and result['errcode']:
-            # 错误响应
-            module.fail_json(msg="操作失败: %s" %
-                             result.get('errmsg', '未知错误'), result=result)
+            # 错误响应 - 确保errmsg是unicode字符串（处理Python 2.7编码问题）
+            errmsg = result.get('errmsg', '未知错误')
+            if isinstance(errmsg, str):
+                try:
+                    # 尝试将字节字符串解码为unicode（Python 2.7）
+                    errmsg = errmsg.decode('utf-8')
+                except:
+                    try:
+                        errmsg = errmsg.decode('latin1')
+                    except:
+                        pass
+            module.fail_json(msg="操作失败: %s" % errmsg, result=result)
         else:
             # 查询类API直接返回数据
             module.exit_json(changed=False, result=result)

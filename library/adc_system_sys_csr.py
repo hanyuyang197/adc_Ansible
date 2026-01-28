@@ -48,6 +48,11 @@ def adc_system_sys_csr_add(module):
         'md_type', 'padding_type', 'ecc_group', 'subjectaltname'
     ]
 
+    # 验证 subjectaltname 参数类型
+    if 'subjectaltname' in module.params and module.params['subjectaltname'] is not None:
+        if not isinstance(module.params['subjectaltname'], dict):
+            module.fail_json(msg="subjectaltname 参数必须是字典类型，例如: {'san_type_dns': ['www.example.com']}")
+
     # 添加可选参数
     for param in optional_params:
         if get_param_if_exists(module, param) is not None:
@@ -141,12 +146,120 @@ def adc_system_sys_csr_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def adc_system_sys_csr_get(module):
+    """获取CSR证书"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    name = module.params['name']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.sys.csr.get" % (ip, authkey)
+
+    # 构造请求数据
+    request_data = {
+        "ip": ip,
+        "authkey": authkey,
+        "name": name
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(request_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取CSR证书失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取CSR证书", True, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def adc_system_sys_csr_list(module):
+    """获取CSR证书列表"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.sys.csr.list" % (ip, authkey)
+
+    # 构造请求数据
+    request_data = {
+        "ip": ip,
+        "authkey": authkey
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(request_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取CSR证书列表失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取CSR证书列表", True, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
 def main():
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['system_sys_csr_add', 'system_sys_csr_del']),
+        action=dict(type='str', required=True, choices=['system_sys_csr_add', 'system_sys_csr_del', 'system_sys_csr_get', 'system_sys_csr_list']),
         name=dict(type='str', required=False),
         common_name=dict(type='str', required=False),
         type=dict(type='int', required=False),
@@ -162,7 +275,7 @@ def main():
         md_type=dict(type='int', required=False),
         padding_type=dict(type='str', required=False),
         ecc_group=dict(type='str', required=False),
-        subjectaltname=dict(type='dict', required=False),
+        subjectaltname=dict(type='dict', required=False),  # 必须是字典，例如: {'san_type_dns': ['www.example.com']}
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
         config=dict(type='dict', required=False),
@@ -182,6 +295,10 @@ def main():
         adc_system_sys_csr_add(module)
     elif module.params['action'] == 'system_sys_csr_del':
         adc_system_sys_csr_del(module)
+    elif module.params['action'] == 'system_sys_csr_get':
+        adc_system_sys_csr_get(module)
+    elif module.params['action'] == 'system_sys_csr_list':
+        adc_system_sys_csr_list(module)
 
 
 if __name__ == '__main__':

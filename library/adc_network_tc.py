@@ -179,21 +179,22 @@ def network_tc_list(module):
 
 def network_tc_get(module):
     """获取TC条目详情"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
+    tc_name = module.params['tc_name'] if 'tc_name' in module.params else ""
 
     # 检查必需参数
-    if not name:
-        module.fail_json(msg="获取TC条目详情需要提供name参数")
+    if not name and not tc_name:
+        module.fail_json(msg="获取TC条目详情需要提供name或tc_name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.tc.get" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造请求数据
+    # 构造请求数据 - 使用API要求的tc_name参数
     entry_data = {
-        "name": name
+        "tc_name": tc_name if tc_name else name
     }
 
     # 转换为JSON格式
@@ -240,28 +241,32 @@ def network_tc_get(module):
 
 def network_tc_add(module):
     """添加TC条目"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
+    tc_name = module.params['tc_name'] if 'tc_name' in module.params else ""
+    fw_bandwidth = module.params['fw_bandwidth'] if 'fw_bandwidth' in module.params else ""
+    rev_bandwidth = module.params['rev_bandwidth'] if 'rev_bandwidth' in module.params else ""
 
     # 检查必需参数
-    if not name:
-        module.fail_json(msg="添加TC条目需要提供name参数")
+    tc_name_final = tc_name if tc_name else name
+    if not tc_name_final:
+        module.fail_json(msg="添加TC条目需要提供name或tc_name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.tc.add" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造TC条目数据
+    # 构造TC条目数据 - 使用API要求的参数名
     entry_data = {
-        "name": name
+        "tc_name": tc_name_final
     }
 
     # 添加可选参数
-    if 'description' in module.params and module.params['description'] is not None:
-        entry_data['description'] = module.params['description']
-    if 'bandwidth' in module.params and module.params['bandwidth'] is not None:
-        entry_data['bandwidth'] = module.params['bandwidth']
+    if fw_bandwidth != "":
+        entry_data['fw_bandwidth'] = fw_bandwidth
+    if rev_bandwidth != "":
+        entry_data['rev_bandwidth'] = rev_bandwidth
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -304,28 +309,32 @@ def network_tc_add(module):
 
 def network_tc_edit(module):
     """编辑TC条目"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
+    tc_name = module.params['tc_name'] if 'tc_name' in module.params else ""
+    fw_bandwidth = module.params['fw_bandwidth'] if 'fw_bandwidth' in module.params else ""
+    rev_bandwidth = module.params['rev_bandwidth'] if 'rev_bandwidth' in module.params else ""
 
     # 检查必需参数
-    if not name:
-        module.fail_json(msg="编辑TC条目需要提供name参数")
+    tc_name_final = tc_name if tc_name else name
+    if not tc_name_final:
+        module.fail_json(msg="编辑TC条目需要提供name或tc_name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.tc.edit" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造TC条目数据
+    # 构造TC条目数据 - 使用API要求的参数名
     entry_data = {
-        "name": name
+        "tc_name": tc_name_final
     }
 
     # 添加可选参数
-    if 'description' in module.params and module.params['description'] is not None:
-        entry_data['description'] = module.params['description']
-    if 'bandwidth' in module.params and module.params['bandwidth'] is not None:
-        entry_data['bandwidth'] = module.params['bandwidth']
+    if fw_bandwidth != "":
+        entry_data['fw_bandwidth'] = fw_bandwidth
+    if rev_bandwidth != "":
+        entry_data['rev_bandwidth'] = rev_bandwidth
 
     # 转换为JSON格式
     post_data = json.dumps(entry_data)
@@ -368,21 +377,23 @@ def network_tc_edit(module):
 
 def network_tc_del(module):
     """删除TC条目"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
+    tc_name = module.params['tc_name'] if 'tc_name' in module.params else ""
 
     # 检查必需参数
-    if not name:
-        module.fail_json(msg="删除TC条目需要提供name参数")
+    tc_name_final = tc_name if tc_name else name
+    if not tc_name_final:
+        module.fail_json(msg="删除TC条目需要提供name或tc_name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.tc.del" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造请求数据
+    # 构造请求数据 - 使用API要求的参数名
     entry_data = {
-        "name": name
+        "tc_name": tc_name_final
     }
 
     # 转换为JSON格式
@@ -487,23 +498,25 @@ def network_tc_rule_list(module):
 
 def network_tc_rule_get(module):
     """获取TC规则详情"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     tc_name = module.params['tc_name'] if 'tc_name' in module.params else ""
     rule_id = module.params['rule_id'] if 'rule_id' in module.params else ""
+    rule_name = module.params['rule_name'] if 'rule_name' in module.params else ""
 
     # 检查必需参数
-    if not tc_name or not rule_id:
-        module.fail_json(msg="获取TC规则详情需要提供tc_name和rule_id参数")
+    rule_name_final = rule_name if rule_name else rule_id
+    if not tc_name or not rule_name_final:
+        module.fail_json(msg="获取TC规则详情需要提供tc_name和rule_name(或rule_id)参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.tc.rule.get" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造请求数据
+    # 构造请求数据 - 使用API要求的参数名
     rule_data = {
         "tc_name": tc_name,
-        "rule_id": rule_id
+        "rule_name": rule_name_final
     }
 
     # 转换为JSON格式
@@ -550,36 +563,46 @@ def network_tc_rule_get(module):
 
 def network_tc_rule_add(module):
     """添加TC规则"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     tc_name = module.params['tc_name'] if 'tc_name' in module.params else ""
     rule_id = module.params['rule_id'] if 'rule_id' in module.params else ""
+    rule_name = module.params['rule_name'] if 'rule_name' in module.params else ""
+    fw_bandwidth = module.params['fw_bandwidth'] if 'fw_bandwidth' in module.params else ""
+    rev_bandwidth = module.params['rev_bandwidth'] if 'rev_bandwidth' in module.params else ""
+    acl = module.params['acl'] if 'acl' in module.params else ""
+    acl_name = module.params['acl_name'] if 'acl_name' in module.params else ""
+    basename = module.params['basename'] if 'basename' in module.params else ""
+    pos = module.params['pos'] if 'pos' in module.params else ""
 
     # 检查必需参数
-    if not tc_name or not rule_id:
-        module.fail_json(msg="添加TC规则需要提供tc_name和rule_id参数")
+    rule_name_final = rule_name if rule_name else rule_id
+    if not tc_name or not rule_name_final:
+        module.fail_json(msg="添加TC规则需要提供tc_name和rule_name(或rule_id)参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.tc.rule.add" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造TC规则数据
+    # 构造TC规则数据 - 使用API要求的参数名
     rule_data = {
         "tc_name": tc_name,
-        "rule_id": rule_id
+        "rule_name": rule_name_final
     }
 
     # 添加可选参数
-    if 'source_ip' in module.params and module.params['source_ip'] is not None:
-        rule_data['source_ip'] = module.params['source_ip']
-    if 'destination_ip' in module.params and module.params['destination_ip'] is not None:
-        rule_data['destination_ip'] = module.params['destination_ip']
-    if 'protocol' in module.params and module.params['protocol'] is not None:
-        rule_data['protocol'] = module.params['protocol']
-    if 'source_port' in module.params and module.params['source_port'] is not None:
-        rule_data['source_port'] = module.params['source_port']
-    if 'destination_port' in module.params and module.params['destination_port'] is not None:
-        rule_data['destination_port'] = module.params['destination_port']
+    if fw_bandwidth != "":
+        rule_data['fw_bandwidth'] = fw_bandwidth
+    if rev_bandwidth != "":
+        rule_data['rev_bandwidth'] = rev_bandwidth
+    if acl != "":
+        rule_data['acl'] = acl
+    if acl_name != "":
+        rule_data['acl_name'] = acl_name
+    if basename != "":
+        rule_data['basename'] = basename
+    if pos != "":
+        rule_data['pos'] = pos
 
     # 转换为JSON格式
     post_data = json.dumps(rule_data)
@@ -622,36 +645,46 @@ def network_tc_rule_add(module):
 
 def network_tc_rule_edit(module):
     """编辑TC规则"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     tc_name = module.params['tc_name'] if 'tc_name' in module.params else ""
     rule_id = module.params['rule_id'] if 'rule_id' in module.params else ""
+    rule_name = module.params['rule_name'] if 'rule_name' in module.params else ""
+    fw_bandwidth = module.params['fw_bandwidth'] if 'fw_bandwidth' in module.params else ""
+    rev_bandwidth = module.params['rev_bandwidth'] if 'rev_bandwidth' in module.params else ""
+    acl = module.params['acl'] if 'acl' in module.params else ""
+    acl_name = module.params['acl_name'] if 'acl_name' in module.params else ""
+    basename = module.params['basename'] if 'basename' in module.params else ""
+    pos = module.params['pos'] if 'pos' in module.params else ""
 
     # 检查必需参数
-    if not tc_name or not rule_id:
-        module.fail_json(msg="编辑TC规则需要提供tc_name和rule_id参数")
+    rule_name_final = rule_name if rule_name else rule_id
+    if not tc_name or not rule_name_final:
+        module.fail_json(msg="编辑TC规则需要提供tc_name和rule_name(或rule_id)参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.tc.rule.edit" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造TC规则数据
+    # 构造TC规则数据 - 使用API要求的参数名
     rule_data = {
         "tc_name": tc_name,
-        "rule_id": rule_id
+        "rule_name": rule_name_final
     }
 
     # 添加可选参数
-    if 'source_ip' in module.params and module.params['source_ip'] is not None:
-        rule_data['source_ip'] = module.params['source_ip']
-    if 'destination_ip' in module.params and module.params['destination_ip'] is not None:
-        rule_data['destination_ip'] = module.params['destination_ip']
-    if 'protocol' in module.params and module.params['protocol'] is not None:
-        rule_data['protocol'] = module.params['protocol']
-    if 'source_port' in module.params and module.params['source_port'] is not None:
-        rule_data['source_port'] = module.params['source_port']
-    if 'destination_port' in module.params and module.params['destination_port'] is not None:
-        rule_data['destination_port'] = module.params['destination_port']
+    if fw_bandwidth != "":
+        rule_data['fw_bandwidth'] = fw_bandwidth
+    if rev_bandwidth != "":
+        rule_data['rev_bandwidth'] = rev_bandwidth
+    if acl != "":
+        rule_data['acl'] = acl
+    if acl_name != "":
+        rule_data['acl_name'] = acl_name
+    if basename != "":
+        rule_data['basename'] = basename
+    if pos != "":
+        rule_data['pos'] = pos
 
     # 转换为JSON格式
     post_data = json.dumps(rule_data)
@@ -694,23 +727,25 @@ def network_tc_rule_edit(module):
 
 def network_tc_rule_del(module):
     """删除TC规则"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     tc_name = module.params['tc_name'] if 'tc_name' in module.params else ""
     rule_id = module.params['rule_id'] if 'rule_id' in module.params else ""
+    rule_name = module.params['rule_name'] if 'rule_name' in module.params else ""
 
     # 检查必需参数
-    if not tc_name or not rule_id:
-        module.fail_json(msg="删除TC规则需要提供tc_name和rule_id参数")
+    rule_name_final = rule_name if rule_name else rule_id
+    if not tc_name or not rule_name_final:
+        module.fail_json(msg="删除TC规则需要提供tc_name和rule_name(或rule_id)参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.tc.rule.del" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造请求数据
+    # 构造请求数据 - 使用API要求的参数名
     rule_data = {
         "tc_name": tc_name,
-        "rule_id": rule_id
+        "rule_name": rule_name_final
     }
 
     # 转换为JSON格式
@@ -765,6 +800,13 @@ def main():
         name=dict(type='str', required=False),
         tc_name=dict(type='str', required=False),
         rule_id=dict(type='str', required=False),
+        rule_name=dict(type='str', required=False),
+        fw_bandwidth=dict(type='int', required=False),
+        rev_bandwidth=dict(type='int', required=False),
+        acl=dict(type='int', required=False),
+        acl_name=dict(type='str', required=False),
+        basename=dict(type='str', required=False),
+        pos=dict(type='int', required=False),
         description=dict(type='str', required=False),
         bandwidth=dict(type='int', required=False),
         source_ip=dict(type='str', required=False),

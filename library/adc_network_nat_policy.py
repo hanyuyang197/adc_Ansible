@@ -138,10 +138,11 @@ def nat_policy_add(module):
     name = module.params['name'] if 'name' in module.params else ""
     acl = module.params['acl'] if 'acl' in module.params else ""
     nat_pool = module.params['nat_pool'] if 'nat_pool' in module.params else ""
+    pool_bind_list = module.params['pool_bind_list'] if 'pool_bind_list' in module.params else []
 
     # 检查必需参数
-    if not name or not acl or not nat_pool:
-        module.fail_json(msg="添加NAT策略需要提供name、acl和nat_pool参数")
+    if not name:
+        module.fail_json(msg="添加NAT策略需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.policy.add" % (
@@ -149,12 +150,16 @@ def nat_policy_add(module):
 
     # 构造NAT策略数据
     policy_data = {
-        "name": name,
-        "acl": acl,
-        "nat_pool": nat_pool
+        "name": name
     }
 
     # 添加可选参数
+    if acl is not None:
+        policy_data['acl'] = acl
+    if nat_pool is not None:
+        policy_data['nat_pool'] = nat_pool
+    if pool_bind_list is not None and pool_bind_list:
+        policy_data['pool_bind_list'] = pool_bind_list
     if 'description' in module.params and module.params['description'] is not None:
         policy_data['description'] = module.params['description']
 
@@ -221,6 +226,8 @@ def nat_policy_edit(module):
         policy_data['acl'] = module.params['acl']
     if 'nat_pool' in module.params and module.params['nat_pool'] is not None:
         policy_data['nat_pool'] = module.params['nat_pool']
+    if 'pool_bind_list' in module.params and module.params['pool_bind_list'] is not None:
+        policy_data['pool_bind_list'] = module.params['pool_bind_list']
     if 'description' in module.params and module.params['description'] is not None:
         policy_data['description'] = module.params['description']
 
@@ -330,8 +337,9 @@ def main():
             'nat_policy_list', 'nat_policy_get', 'nat_policy_add', 'nat_policy_edit', 'nat_policy_del']),
         # NAT策略参数
         name=dict(type='str', required=False),
-        acl=dict(type='int', required=False),
+        acl=dict(required=False),  # 支持int和str类型
         nat_pool=dict(type='str', required=False),
+        pool_bind_list=dict(type='list', required=False, elements='dict'),
         description=dict(type='str', required=False)
     )
 

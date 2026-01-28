@@ -33,10 +33,15 @@ def slb_persist_cookie_list(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(changed=False, cookie_persist_list=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取cookie连接保持列表", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="cookie连接保持列表获取失败: %s" % str(e))
+        module.fail_json(msg="获取cookie连接保持列表失败: %s" % str(e))
 
 
 def slb_persist_cookie_get(module):
@@ -59,10 +64,15 @@ def slb_persist_cookie_get(module):
 
     try:
         response_data = send_request(url, post_data)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(changed=False, cookie_persist_data=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取cookie连接保持详情", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="cookie连接保持获取失败: %s" % str(e))
+        module.fail_json(msg="获取cookie连接保持详情失败: %s" % str(e))
 
 
 def slb_persist_cookie_add(module):
@@ -82,14 +92,34 @@ def slb_persist_cookie_add(module):
     }
 
     # 添加可选参数
-    if module.params['enable'] is not None:
-        persist_data['enable'] = module.params['enable']
-    if module.params['cookie_name'] is not None:
+    if module.params.get('expire_enable') is not None:
+        persist_data['expire_enable'] = module.params['expire_enable']
+    if module.params.get('expire') is not None:
+        persist_data['expire'] = module.params['expire']
+    if module.params.get('method') is not None:
+        persist_data['method'] = module.params['method']
+    if module.params.get('encrypt') is not None:
+        persist_data['encrypt'] = module.params['encrypt']
+    if module.params.get('encrypt_password') is not None:
+        persist_data['encrypt_password'] = module.params['encrypt_password']
+    if module.params.get('http_only') is not None:
+        persist_data['http_only'] = module.params['http_only']
+    if module.params.get('secure') is not None:
+        persist_data['secure'] = module.params['secure']
+    if module.params.get('cookie_name') is not None:
         persist_data['cookie_name'] = module.params['cookie_name']
-    if module.params['timeout'] is not None:
-        persist_data['timeout'] = module.params['timeout']
-    if module.params['desc_persist'] is not None:
-        persist_data['desc_persist'] = module.params['desc_persist']
+    if module.params.get('domain') is not None:
+        persist_data['domain'] = module.params['domain']
+    if module.params.get('path') is not None:
+        persist_data['path'] = module.params['path']
+    if module.params.get('type') is not None:
+        persist_data['type'] = module.params['type']
+    if module.params.get('insert') is not None:
+        persist_data['insert'] = module.params['insert']
+    if module.params.get('ignore_connlimit') is not None:
+        persist_data['ignore_connlimit'] = module.params['ignore_connlimit']
+    if module.params.get('description') is not None:
+        persist_data['description'] = module.params['description']
 
     post_data = json.dumps(persist_data)
 
@@ -122,14 +152,34 @@ def slb_persist_cookie_edit(module):
     }
 
     # 添加可选参数
-    if module.params['enable'] is not None:
-        persist_data['enable'] = module.params['enable']
-    if module.params['cookie_name'] is not None:
+    if module.params.get('expire_enable') is not None:
+        persist_data['expire_enable'] = module.params['expire_enable']
+    if module.params.get('expire') is not None:
+        persist_data['expire'] = module.params['expire']
+    if module.params.get('method') is not None:
+        persist_data['method'] = module.params['method']
+    if module.params.get('encrypt') is not None:
+        persist_data['encrypt'] = module.params['encrypt']
+    if module.params.get('encrypt_password') is not None:
+        persist_data['encrypt_password'] = module.params['encrypt_password']
+    if module.params.get('http_only') is not None:
+        persist_data['http_only'] = module.params['http_only']
+    if module.params.get('secure') is not None:
+        persist_data['secure'] = module.params['secure']
+    if module.params.get('cookie_name') is not None:
         persist_data['cookie_name'] = module.params['cookie_name']
-    if module.params['timeout'] is not None:
-        persist_data['timeout'] = module.params['timeout']
-    if module.params['desc_persist'] is not None:
-        persist_data['desc_persist'] = module.params['desc_persist']
+    if module.params.get('domain') is not None:
+        persist_data['domain'] = module.params['domain']
+    if module.params.get('path') is not None:
+        persist_data['path'] = module.params['path']
+    if module.params.get('type') is not None:
+        persist_data['type'] = module.params['type']
+    if module.params.get('insert') is not None:
+        persist_data['insert'] = module.params['insert']
+    if module.params.get('ignore_connlimit') is not None:
+        persist_data['ignore_connlimit'] = module.params['ignore_connlimit']
+    if module.params.get('description') is not None:
+        persist_data['description'] = module.params['description']
 
     post_data = json.dumps(persist_data)
 
@@ -175,7 +225,7 @@ def slb_persist_cookie_del(module):
         module.fail_json(msg="cookie连接保持删除失败: %s" % str(e))
 
 
-def slb_persist_cookie_list(module):
+def slb_persist_cookie_list_withcommon(module):
     """获取 common 和本分区 cookie 连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -185,11 +235,15 @@ def slb_persist_cookie_list(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(
-            chchanged=False, cookie_persist_list_withcommon=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取common和本分区cookie连接保持列表", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="获取 common 和本分区 cookie 连接保持列表失败: %s" % str(e))
+        module.fail_json(msg="获取common和本分区cookie连接保持列表失败: %s" % str(e))
 
 
 def slb_persist_srcip_list(module):
@@ -202,10 +256,15 @@ def slb_persist_srcip_list(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(changed=False, srcip_persist_list=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取源地址连接保持列表", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="源地址连接保持列表获取失败: %s" % str(e))
+        module.fail_json(msg="获取源地址连接保持列表失败: %s" % str(e))
 
 
 def slb_persist_srcip_get(module):
@@ -228,10 +287,15 @@ def slb_persist_srcip_get(module):
 
     try:
         response_data = send_request(url, post_data)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(chchanged=False, srcip_persist_data=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取源地址连接保持详情", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="源地址连接保持获取失败: %s" % str(e))
+        module.fail_json(msg="获取源地址连接保持详情失败: %s" % str(e))
 
 
 def slb_persist_srcip_add(module):
@@ -251,14 +315,22 @@ def slb_persist_srcip_add(module):
     }
 
     # 添加可选参数
-    if module.params['enable'] is not None:
-        persist_data['enable'] = module.params['enable']
-    if module.params['timeout'] is not None:
+    if module.params.get('type') is not None:
+        persist_data['type'] = module.params['type']
+    if module.params.get('timeout') is not None:
         persist_data['timeout'] = module.params['timeout']
-    if module.params['mask'] is not None:
-        persist_data['mask'] = module.params['mask']
-    if module.params['desc_persist'] is not None:
-        persist_data['desc_persist'] = module.params['desc_persist']
+    if module.params.get('ignore_connlimit') is not None:
+        persist_data['ignore_connlimit'] = module.params['ignore_connlimit']
+    if module.params.get('with_port') is not None:
+        persist_data['with_port'] = module.params['with_port']
+    if module.params.get('netmask') is not None:
+        persist_data['netmask'] = module.params['netmask']
+    if module.params.get('ipv6masklen') is not None:
+        persist_data['ipv6masklen'] = module.params['ipv6masklen']
+    if module.params.get('conn_mirror') is not None:
+        persist_data['conn_mirror'] = module.params['conn_mirror']
+    if module.params.get('description') is not None:
+        persist_data['description'] = module.params['description']
 
     post_data = json.dumps(persist_data)
 
@@ -291,14 +363,22 @@ def slb_persist_srcip_edit(module):
     }
 
     # 添加可选参数
-    if module.params['enable'] is not None:
-        persist_data['enable'] = module.params['enable']
-    if module.params['timeout'] is not None:
+    if module.params.get('type') is not None:
+        persist_data['type'] = module.params['type']
+    if module.params.get('timeout') is not None:
         persist_data['timeout'] = module.params['timeout']
-    if module.params['mask'] is not None:
-        persist_data['mask'] = module.params['mask']
-    if module.params['desc_persist'] is not None:
-        persist_data['desc_persist'] = module.params['desc_persist']
+    if module.params.get('ignore_connlimit') is not None:
+        persist_data['ignore_connlimit'] = module.params['ignore_connlimit']
+    if module.params.get('with_port') is not None:
+        persist_data['with_port'] = module.params['with_port']
+    if module.params.get('netmask') is not None:
+        persist_data['netmask'] = module.params['netmask']
+    if module.params.get('ipv6masklen') is not None:
+        persist_data['ipv6masklen'] = module.params['ipv6masklen']
+    if module.params.get('conn_mirror') is not None:
+        persist_data['conn_mirror'] = module.params['conn_mirror']
+    if module.params.get('description') is not None:
+        persist_data['description'] = module.params['description']
 
     post_data = json.dumps(persist_data)
 
@@ -344,7 +424,7 @@ def slb_persist_srcip_del(module):
         module.fail_json(msg="源地址连接保持删除失败: %s" % str(e))
 
 
-def slb_persist_srcip_list(module):
+def slb_persist_srcip_list_withcommon(module):
     """获取 common 和本分区源地址连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -354,11 +434,15 @@ def slb_persist_srcip_list(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(
-            chchanged=False, srcip_persist_list_withcommon=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取common和本分区源地址连接保持列表", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="获取 common 和本分区源地址连接保持列表失败: %s" % str(e))
+        module.fail_json(msg="获取common和本分区源地址连接保持列表失败: %s" % str(e))
 
 
 def slb_persist_dstip_list(module):
@@ -371,10 +455,15 @@ def slb_persist_dstip_list(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(chchanged=False, dstip_persist_list=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取目的地址连接保持列表", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="目的地址连接保持列表获取失败: %s" % str(e))
+        module.fail_json(msg="获取目的地址连接保持列表失败: %s" % str(e))
 
 
 def slb_persist_dstip_get(module):
@@ -397,10 +486,15 @@ def slb_persist_dstip_get(module):
 
     try:
         response_data = send_request(url, post_data)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(chchanged=False, dstip_persist_data=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取目的地址连接保持详情", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="目的地址连接保持获取失败: %s" % str(e))
+        module.fail_json(msg="获取目的地址连接保持详情失败: %s" % str(e))
 
 
 def slb_persist_dstip_add(module):
@@ -420,14 +514,20 @@ def slb_persist_dstip_add(module):
     }
 
     # 添加可选参数
-    if module.params['enable'] is not None:
-        persist_data['enable'] = module.params['enable']
-    if module.params['timeout'] is not None:
+    if module.params.get('type') is not None:
+        persist_data['type'] = module.params['type']
+    if module.params.get('timeout') is not None:
         persist_data['timeout'] = module.params['timeout']
-    if module.params['mask'] is not None:
-        persist_data['mask'] = module.params['mask']
-    if module.params['desc_persist'] is not None:
-        persist_data['desc_persist'] = module.params['desc_persist']
+    if module.params.get('ignore_connlimit') is not None:
+        persist_data['ignore_connlimit'] = module.params['ignore_connlimit']
+    if module.params.get('netmask') is not None:
+        persist_data['netmask'] = module.params['netmask']
+    if module.params.get('ipv6masklen') is not None:
+        persist_data['ipv6masklen'] = module.params['ipv6masklen']
+    if module.params.get('conn_mirror') is not None:
+        persist_data['conn_mirror'] = module.params['conn_mirror']
+    if module.params.get('description') is not None:
+        persist_data['description'] = module.params['description']
 
     post_data = json.dumps(persist_data)
 
@@ -460,14 +560,20 @@ def slb_persist_dstip_edit(module):
     }
 
     # 添加可选参数
-    if module.params['enable'] is not None:
-        persist_data['enable'] = module.params['enable']
-    if module.params['timeout'] is not None:
+    if module.params.get('type') is not None:
+        persist_data['type'] = module.params['type']
+    if module.params.get('timeout') is not None:
         persist_data['timeout'] = module.params['timeout']
-    if module.params['mask'] is not None:
-        persist_data['mask'] = module.params['mask']
-    if module.params['desc_persist'] is not None:
-        persist_data['desc_persist'] = module.params['desc_persist']
+    if module.params.get('ignore_connlimit') is not None:
+        persist_data['ignore_connlimit'] = module.params['ignore_connlimit']
+    if module.params.get('netmask') is not None:
+        persist_data['netmask'] = module.params['netmask']
+    if module.params.get('ipv6masklen') is not None:
+        persist_data['ipv6masklen'] = module.params['ipv6masklen']
+    if module.params.get('conn_mirror') is not None:
+        persist_data['conn_mirror'] = module.params['conn_mirror']
+    if module.params.get('description') is not None:
+        persist_data['description'] = module.params['description']
 
     post_data = json.dumps(persist_data)
 
@@ -513,7 +619,7 @@ def slb_persist_dstip_del(module):
         module.fail_json(msg="目的地址连接保持删除失败: %s" % str(e))
 
 
-def slb_persist_dstip_list(module):
+def slb_persist_dstip_list_withcommon(module):
     """获取 common 和本分区目的地址连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -523,11 +629,15 @@ def slb_persist_dstip_list(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(
-            chchanged=False, dstip_persist_list_withcommon=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取common和本分区目的地址连接保持列表", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="获取 common 和本分区目的地址连接保持列表失败: %s" % str(e))
+        module.fail_json(msg="获取common和本分区目的地址连接保持列表失败: %s" % str(e))
 
 
 def slb_persist_sslid_list(module):
@@ -540,10 +650,15 @@ def slb_persist_sslid_list(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(chchanged=False, sslid_persist_list=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取ssl地址连接保持列表", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="ssl地址连接保持列表获取失败: %s" % str(e))
+        module.fail_json(msg="获取ssl地址连接保持列表失败: %s" % str(e))
 
 
 def slb_persist_sslid_get(module):
@@ -566,10 +681,15 @@ def slb_persist_sslid_get(module):
 
     try:
         response_data = send_request(url, post_data)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(chchanged=False, sslid_persist_data=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取ssl地址连接保持详情", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="ssl地址连接保持获取失败: %s" % str(e))
+        module.fail_json(msg="获取ssl地址连接保持详情失败: %s" % str(e))
 
 
 def slb_persist_sslid_add(module):
@@ -589,12 +709,14 @@ def slb_persist_sslid_add(module):
     }
 
     # 添加可选参数
-    if module.params['enable'] is not None:
-        persist_data['enable'] = module.params['enable']
-    if module.params['timeout'] is not None:
+    if module.params.get('timeout') is not None:
         persist_data['timeout'] = module.params['timeout']
-    if module.params['desc_persist'] is not None:
-        persist_data['desc_persist'] = module.params['desc_persist']
+    if module.params.get('ignore_connlimit') is not None:
+        persist_data['ignore_connlimit'] = module.params['ignore_connlimit']
+    if module.params.get('conn_mirror') is not None:
+        persist_data['conn_mirror'] = module.params['conn_mirror']
+    if module.params.get('description') is not None:
+        persist_data['description'] = module.params['description']
 
     post_data = json.dumps(persist_data)
 
@@ -627,12 +749,14 @@ def slb_persist_sslid_edit(module):
     }
 
     # 添加可选参数
-    if module.params['enable'] is not None:
-        persist_data['enable'] = module.params['enable']
-    if module.params['timeout'] is not None:
+    if module.params.get('timeout') is not None:
         persist_data['timeout'] = module.params['timeout']
-    if module.params['desc_persist'] is not None:
-        persist_data['desc_persist'] = module.params['desc_persist']
+    if module.params.get('ignore_connlimit') is not None:
+        persist_data['ignore_connlimit'] = module.params['ignore_connlimit']
+    if module.params.get('conn_mirror') is not None:
+        persist_data['conn_mirror'] = module.params['conn_mirror']
+    if module.params.get('description') is not None:
+        persist_data['description'] = module.params['description']
 
     post_data = json.dumps(persist_data)
 
@@ -678,7 +802,7 @@ def slb_persist_sslid_del(module):
         module.fail_json(msg="ssl地址连接保持删除失败: %s" % str(e))
 
 
-def slb_persist_sslid_list(module):
+def slb_persist_sslid_list_withcommon(module):
     """获取 common 和本分区 ssl 地址连接保持列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -688,11 +812,15 @@ def slb_persist_sslid_list(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(
-            chchanged=False, sslid_persist_list_withcommon=response_data)
+        # 使用通用响应解析函数
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取common和本分区ssl地址连接保持列表", False, check_status=False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
-        module.fail_json(msg="获取 common 和本分区 ssl 地址连接保持列表失败: %s" % str(e))
+        module.fail_json(msg="获取common和本分区ssl地址连接保持列表失败: %s" % str(e))
 
 
 def main():
@@ -710,13 +838,29 @@ def main():
             'slb_persist_sslid_list', 'slb_persist_sslid_get', 'slb_persist_sslid_add',
             'slb_persist_sslid_edit', 'slb_persist_sslid_del', 'slb_persist_sslid_list_withcommon'
         ]),
-        # 连接保持参数
+        # 连接保持通用参数
         name=dict(type='str', required=False),
-        enable=dict(type='int', required=False, choices=[0, 1]),
-        cookie_name=dict(type='str', required=False),
+        description=dict(type='str', required=False),
         timeout=dict(type='int', required=False),
-        mask=dict(type='str', required=False),
-        desc_persist=dict(type='str', required=False)
+        ignore_connlimit=dict(type='int', required=False, choices=[0, 1]),
+        conn_mirror=dict(type='int', required=False, choices=[0, 1]),
+        # Cookie 连接保持特有参数
+        expire_enable=dict(type='int', required=False, choices=[0, 1]),
+        expire=dict(type='int', required=False),
+        method=dict(type='int', required=False, choices=[0, 1, 2]),
+        encrypt=dict(type='int', required=False, choices=[0, 1, 2]),
+        encrypt_password=dict(type='str', required=False),
+        http_only=dict(type='int', required=False, choices=[0, 1]),
+        secure=dict(type='int', required=False, choices=[0, 1]),
+        cookie_name=dict(type='str', required=False),
+        domain=dict(type='str', required=False),
+        path=dict(type='str', required=False),
+        insert=dict(type='int', required=False, choices=[0, 1]),
+        type=dict(type='int', required=False, choices=[0, 1, 2, 3]),
+        # 源/目的 IP 连接保持特有参数
+        with_port=dict(type='int', required=False, choices=[0, 1]),
+        netmask=dict(type='str', required=False),
+        ipv6masklen=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例

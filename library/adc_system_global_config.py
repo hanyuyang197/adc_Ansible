@@ -16,7 +16,8 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
     get_param_if_exists,
     create_adc_module_args,
     adc_response_to_ansible_result,
-    format_adc_response_for_ansible
+    format_adc_response_for_ansible,
+    send_request
 )
 import json
 import sys

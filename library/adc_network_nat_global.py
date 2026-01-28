@@ -74,8 +74,13 @@ def nat_global_set(module):
     """设置NAT全局配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable'] if 'enable' in module.params else ""
-    mode = module.params['mode'] if 'mode' in module.params else ""
+    pptp_alg = module.params['pptp_alg'] if 'pptp_alg' in module.params else None
+    port_enable = module.params['port_enable'] if 'port_enable' in module.params else None
+    gw_enable = module.params['gw_enable'] if 'gw_enable' in module.params else None
+    nat_pool_log = module.params['nat_pool_log'] if 'nat_pool_log' in module.params else None
+    nat_pool_log_warn_th = module.params['nat_pool_log_warn_th'] if 'nat_pool_log_warn_th' in module.params else None
+    nat_pool_log_warn_cth = module.params['nat_pool_log_warn_cth'] if 'nat_pool_log_warn_cth' in module.params else None
+    nat_pool_log_warn_period = module.params['nat_pool_log_warn_period'] if 'nat_pool_log_warn_period' in module.params else None
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.global.set" % (
@@ -85,10 +90,20 @@ def nat_global_set(module):
     global_data = {}
 
     # 添加可选参数
-    if enable:
-        global_data['enable'] = enable
-    if mode:
-        global_data['mode'] = mode
+    if pptp_alg is not None:
+        global_data['pptp_alg'] = pptp_alg
+    if port_enable is not None:
+        global_data['port_enable'] = port_enable
+    if gw_enable is not None:
+        global_data['gw_enable'] = gw_enable
+    if nat_pool_log is not None:
+        global_data['nat_pool_log'] = nat_pool_log
+    if nat_pool_log_warn_th is not None:
+        global_data['nat_pool_log_warn_th'] = nat_pool_log_warn_th
+    if nat_pool_log_warn_cth is not None:
+        global_data['nat_pool_log_warn_cth'] = nat_pool_log_warn_cth
+    if nat_pool_log_warn_period is not None:
+        global_data['nat_pool_log_warn_period'] = nat_pool_log_warn_period
 
     # 转换为JSON格式
     post_data = json.dumps(global_data)
@@ -137,8 +152,13 @@ def main():
         action=dict(type='str', required=True, choices=[
             'nat_global_get', 'nat_global_set']),
         # NAT全局配置参数
-        enable=dict(type='int', required=False),
-        mode=dict(type='int', required=False)
+        pptp_alg=dict(type='int', required=False),
+        port_enable=dict(type='int', required=False),
+        gw_enable=dict(type='int', required=False),
+        nat_pool_log=dict(type='int', required=False),
+        nat_pool_log_warn_th=dict(type='int', required=False),
+        nat_pool_log_warn_cth=dict(type='int', required=False),
+        nat_pool_log_warn_period=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例

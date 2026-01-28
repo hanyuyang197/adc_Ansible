@@ -72,20 +72,29 @@ def lldp_config_get(module):
 
 def lldp_config_set(module):
     """设置LLDP配置"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable'] if 'enable' in module.params else ""
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=lldp.config.set" % (
-        ip, authkey)
+        device_ip, authkey)
 
     # 构造LLDP配置数据
     config_data = {}
 
     # 添加可选参数
-    if enable != "":
-        config_data['enable'] = enable
+    if 'status' in module.params and module.params['status'] is not None:
+        config_data['status'] = module.params['status']
+    if 'tx_hold' in module.params and module.params['tx_hold'] is not None:
+        config_data['tx_hold'] = module.params['tx_hold']
+    if 'tx_delay' in module.params and module.params['tx_delay'] is not None:
+        config_data['tx_delay'] = module.params['tx_delay']
+    if 'tx_interval' in module.params and module.params['tx_interval'] is not None:
+        config_data['tx_interval'] = module.params['tx_interval']
+    if 'reinit_delay' in module.params and module.params['reinit_delay'] is not None:
+        config_data['reinit_delay'] = module.params['reinit_delay']
+    if 'max_neighbors_per_port' in module.params and module.params['max_neighbors_per_port'] is not None:
+        config_data['max_neighbors_per_port'] = module.params['max_neighbors_per_port']
 
     # 转换为JSON格式
     post_data = json.dumps(config_data)
@@ -126,7 +135,7 @@ def lldp_config_set(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def lldp_neighbor_list(module):
+def lldp_neighbors_get(module):
     """获取LLDP邻居信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -178,9 +187,14 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'lldp_config_get', 'lldp_config_set', 'lldp_neighbor_list']),
+            'lldp_config_get', 'lldp_config_set', 'lldp_neighbors_get']),
         # LLDP参数
-        enable=dict(type='int', required=False)
+        status=dict(type='int', required=False),
+        tx_hold=dict(type='int', required=False),
+        tx_delay=dict(type='int', required=False),
+        tx_interval=dict(type='int', required=False),
+        reinit_delay=dict(type='int', required=False),
+        max_neighbors_per_port=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -196,8 +210,8 @@ def main():
         lldp_config_get(module)
     elif action == 'lldp_config_set':
         lldp_config_set(module)
-    elif action == 'lldp_neighbor_list':
-        lldp_neighbor_list(module)
+    elif action == 'lldp_neighbors_get':
+        lldp_neighbors_get(module)
 
 
 if __name__ == '__main__':

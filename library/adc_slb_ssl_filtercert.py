@@ -31,16 +31,12 @@ def slb_ssl_filtercert_list(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.filtercert.list" % (
         ip, authkey)
 
-    # 构造请求数据
-    request_data = {
-        "ip": ip,
-        "authkey": authkey
-    }
+    # 构造请求数据 - 不包含authkey（authkey已在URL中）
+    request_data = {}
 
-    # 定义可选参数列表（根据API具体需求调整）
+    # 定义可选参数列表（根据API文档）
     optional_params = [
-        'name', 'description', 'status', 'config', 'setting', 'value', 'enable', 'name', 'ip', 'port'
-        # 根据具体API需求添加更多参数
+        'type', 'name', 'months'
     ]
 
     # 添加可选参数
@@ -78,7 +74,7 @@ def slb_ssl_filtercert_list(module):
     # 使用通用响应解析函数
     if response_data:
         success, result_dict = format_adc_response_for_ansible(
-            response_data, "获取证书过滤列表", True)
+            response_data, "获取证书过滤列表", True, check_status=False)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -93,13 +89,9 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=['slb_ssl_filtercert_list']),
+        type=dict(type='str', required=False),
         name=dict(type='str', required=False),
-        description=dict(type='str', required=False),
-        status=dict(type='str', required=False),
-        config=dict(type='dict', required=False),
-        setting=dict(type='dict', required=False),
-        value=dict(type='str', required=False),
-        enable=dict(type='bool', required=False)
+        months=dict(type='str', required=False)
     )
 
     # 创建AnsibleModule实例

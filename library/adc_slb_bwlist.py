@@ -261,8 +261,12 @@ def slb_bwlist_list(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(changed=False, bwlist_list=response_data)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取黑白名单文件列表", False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
         module.fail_json(msg="获取黑白名单文件列表失败: %s" % str(e))
 

@@ -74,9 +74,11 @@ def nat_timeout_set(module):
     """设置NAT超时配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    tcp_timeout = module.params['tcp_timeout'] if 'tcp_timeout' in module.params else ""
-    udp_timeout = module.params['udp_timeout'] if 'udp_timeout' in module.params else ""
-    icmp_timeout = module.params['icmp_timeout'] if 'icmp_timeout' in module.params else ""
+    syn = module.params['syn'] if 'syn' in module.params else None
+    tcp = module.params['tcp'] if 'tcp' in module.params else None
+    udp = module.params['udp'] if 'udp' in module.params else None
+    icmp = module.params['icmp'] if 'icmp' in module.params else None
+    service_list = module.params['service_list'] if 'service_list' in module.params else None
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.timeout.set" % (
@@ -86,12 +88,16 @@ def nat_timeout_set(module):
     timeout_data = {}
 
     # 添加可选参数
-    if tcp_timeout:
-        timeout_data['tcp_timeout'] = tcp_timeout
-    if udp_timeout:
-        timeout_data['udp_timeout'] = udp_timeout
-    if icmp_timeout:
-        timeout_data['icmp_timeout'] = icmp_timeout
+    if syn is not None:
+        timeout_data['syn'] = syn
+    if tcp is not None:
+        timeout_data['tcp'] = tcp
+    if udp is not None:
+        timeout_data['udp'] = udp
+    if icmp is not None:
+        timeout_data['icmp'] = icmp
+    if service_list is not None:
+        timeout_data['service_list'] = service_list
 
     # 转换为JSON格式
     post_data = json.dumps(timeout_data)
@@ -140,9 +146,11 @@ def main():
         action=dict(type='str', required=True, choices=[
             'nat_timeout_get', 'nat_timeout_set']),
         # NAT超时配置参数
-        tcp_timeout=dict(type='int', required=False),
-        udp_timeout=dict(type='int', required=False),
-        icmp_timeout=dict(type='int', required=False)
+        syn=dict(type='int', required=False),
+        tcp=dict(type='int', required=False),
+        udp=dict(type='int', required=False),
+        icmp=dict(type='int', required=False),
+        service_list=dict(type='list', required=False, elements='dict')
     )
 
     # 创建AnsibleModule实例

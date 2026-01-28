@@ -147,9 +147,9 @@ def slb_ssl_certificate_add(module):
 
     # 定义可选参数列表（根据API具体需求调整）
     optional_params = [
-        'name', 'common_name', 'type', 'division', 'organization', 'locality',
+        'name', 'issuer', 'common_name', 'type', 'division', 'organization', 'locality',
         'state', 'country', 'email', 'password', 'confirm_password', 'key_size',
-        'md_type', 'padding_type', 'ecc_group', 'subjectaltname'
+        'md_type', 'days', 'subjectaltname_type', 'subjectaltname', 'padding_type', 'ecc_group'
     ]
 
     # 添加可选参数
@@ -523,6 +523,7 @@ def main():
                     'slb_ssl_certificate_del', 'slb_ssl_pfx_upload', 'slb_ssl_key_upload', 'slb_ssl_crl_upload']),
         name=dict(type='str', required=False),
         file_path=dict(type='str', required=False),
+        issuer=dict(type='str', required=False),
         common_name=dict(type='str', required=False),
         type=dict(type='int', required=False),
         division=dict(type='str', required=False),
@@ -535,9 +536,11 @@ def main():
         confirm_password=dict(type='str', required=False, no_log=True),
         key_size=dict(type='int', required=False),
         md_type=dict(type='int', required=False),
+        days=dict(type='int', required=False),
+        subjectaltname_type=dict(type='int', required=False),
+        subjectaltname=dict(type='str', required=False),
         padding_type=dict(type='str', required=False),
         ecc_group=dict(type='str', required=False),
-        subjectaltname=dict(type='dict', required=False),
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
         config=dict(type='dict', required=False),

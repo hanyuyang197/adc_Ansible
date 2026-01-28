@@ -73,23 +73,28 @@ def slb_syn_cookie_get(module):
 
 def slb_syn_cookie_edit(module):
     """设置全局SYN Cookie配置"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable'] if 'enable' in module.params else ""
-    threshold = module.params['threshold'] if 'threshold' in module.params else ""
+    sfnum_cfg = module.params['sfnum_cfg'] if 'sfnum_cfg' in module.params else ""
+    sfnum_enable = module.params['sfnum_enable'] if 'sfnum_enable' in module.params else ""
+    sfnum_relieve = module.params['sfnum_relieve'] if 'sfnum_relieve' in module.params else ""
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.syn_cookie.edit" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造SYN Cookie配置数据
-    config_data = {}
+    # 构造SYN Cookie配置数据 - 按照API要求嵌套在synflood对象中
+    config_data = {
+        "synflood": {}
+    }
 
     # 添加可选参数
-    if enable != "":
-        config_data['enable'] = enable
-    if threshold != "":
-        config_data['threshold'] = threshold
+    if sfnum_cfg != "":
+        config_data['synflood']['sfnum_cfg'] = sfnum_cfg
+    if sfnum_enable != "":
+        config_data['synflood']['sfnum_enable'] = sfnum_enable
+    if sfnum_relieve != "":
+        config_data['synflood']['sfnum_relieve'] = sfnum_relieve
 
     # 转换为JSON格式
     post_data = json.dumps(config_data)
@@ -194,9 +199,13 @@ def slb_vs_syn_cookie_get(module):
 
 def slb_vs_syn_cookie_edit(module):
     """设置每虚拟服务SYN Cookie配置"""
-    ip = module.params['ip']
+    device_ip = module.params['ip']
     authkey = module.params['authkey']
     vs_name = module.params['vs_name'] if 'vs_name' in module.params else ""
+    sfnum_cfg = module.params['sfnum_cfg'] if 'sfnum_cfg' in module.params else ""
+    sfnum_enable = module.params['sfnum_enable'] if 'sfnum_enable' in module.params else ""
+    sfnum_relieve = module.params['sfnum_relieve'] if 'sfnum_relieve' in module.params else ""
+    sfnum_interval = module.params['sfnum_interval'] if 'sfnum_interval' in module.params else ""
 
     # 检查必需参数
     if not vs_name:
@@ -204,18 +213,23 @@ def slb_vs_syn_cookie_edit(module):
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.vs.syn_cookie.edit" % (
-        ip, authkey)
+        device_ip, authkey)
 
-    # 构造SYN Cookie配置数据
+    # 构造SYN Cookie配置数据 - 按照API要求嵌套在vs_synflood对象中
     config_data = {
-        "vs_name": vs_name
+        "vs_name": vs_name,
+        "vs_synflood": {}
     }
 
     # 添加可选参数
-    if 'enable' in module.params and module.params['enable'] != "":
-        config_data['enable'] = module.params['enable']
-    if 'threshold' in module.params and module.params['threshold'] != "":
-        config_data['threshold'] = module.params['threshold']
+    if sfnum_cfg != "":
+        config_data['vs_synflood']['sfnum_cfg'] = sfnum_cfg
+    if sfnum_enable != "":
+        config_data['vs_synflood']['sfnum_enable'] = sfnum_enable
+    if sfnum_relieve != "":
+        config_data['vs_synflood']['sfnum_relieve'] = sfnum_relieve
+    if sfnum_interval != "":
+        config_data['vs_synflood']['sfnum_interval'] = sfnum_interval
 
     # 转换为JSON格式
     post_data = json.dumps(config_data)
@@ -265,8 +279,10 @@ def main():
             'slb_syn_cookie_get', 'slb_syn_cookie_edit',
             'slb_vs_syn_cookie_get', 'slb_vs_syn_cookie_edit']),
         # SYN Cookie参数
-        enable=dict(type='int', required=False),
-        threshold=dict(type='int', required=False),
+        sfnum_cfg=dict(type='int', required=False),
+        sfnum_enable=dict(type='int', required=False),
+        sfnum_relieve=dict(type='int', required=False),
+        sfnum_interval=dict(type='int', required=False),
         vs_name=dict(type='str', required=False)
     )
 

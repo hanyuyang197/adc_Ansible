@@ -33,7 +33,7 @@ def vrrp_track_route_del(module):
 
     # 构造请求数据
     request_data = {
-        "ip": ip,
+        "device_ip": ip,
         "authkey": authkey
     }
 
@@ -148,7 +148,7 @@ def vrrp_track_route_add(module):
 
     # 构造请求数据
     request_data = {
-        "ip": ip,
+        "device_ip": ip,
         "authkey": authkey,
         "group_id": group_id,
         "priority": priority,
@@ -210,7 +210,7 @@ def vrrp_track_route_edit(module):
 
     # 构造请求数据
     request_data = {
-        "ip": ip,
+        "device_ip": ip,
         "authkey": authkey,
         "group_id": group_id,
         "priority": priority,

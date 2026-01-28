@@ -339,7 +339,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'route_static_ipv4_list', 'route_static_ipv4_get', 'route_static_ipv4_add', 'route_static_ipv4_edit', 'route_static_ipv4_del'])
+            'route_static_ipv4_list', 'route_static_ipv4_get', 'route_static_ipv4_add', 'route_static_ipv4_edit', 'route_static_ipv4_del']),
         # IPv4静态路由参数
         destination=dict(type='str', required=False),
         netmask=dict(type='str', required=False),

@@ -33,7 +33,7 @@ def vrrp_cfgsync_peer_del(module):
 
     # 构造请求数据
     request_data = {
-        "ip": ip,
+        "device_ip": ip,
         "authkey": authkey
     }
 
@@ -150,7 +150,7 @@ def vrrp_cfgsync_peer_add(module):
 
     # 构造请求数据
     request_data = {
-        "ip": ip,
+        "device_ip": ip,
         "authkey": authkey,
         "name": name,
         "ip": ip_addr,
@@ -211,7 +211,7 @@ def vrrp_cfgsync_peer_get(module):
 
     # 构造请求数据
     request_data = {
-        "ip": ip,
+        "device_ip": ip,
         "authkey": authkey,
         "name": name
     }
@@ -272,7 +272,7 @@ def vrrp_cfgsync_peer_edit(module):
 
     # 构造请求数据
     request_data = {
-        "ip": ip,
+        "device_ip": ip,
         "authkey": authkey,
         "name": name,
         "ip": ip_addr,

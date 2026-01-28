@@ -60,6 +60,8 @@ def admin_user_add(module):
         user_data['role'] = module.params['role']
     if 'partition' in module.params and module.params['partition'] is not None:
         user_data['partition'] = module.params['partition']
+    if 'locked' in module.params and module.params['locked'] is not None:
+        user_data['locked'] = module.params['locked']
 
     # 转换为JSON格式
     post_data = json.dumps(user_data)
@@ -243,6 +245,8 @@ def admin_user_edit(module):
         user_data['role'] = module.params['role']
     if 'partition' in module.params and module.params['partition'] is not None:
         user_data['partition'] = module.params['partition']
+    if 'locked' in module.params and module.params['locked'] is not None:
+        user_data['locked'] = module.params['locked']
 
     # 转换为JSON格式
     post_data = json.dumps(user_data)
@@ -598,6 +602,7 @@ def main():
         trust_mask=dict(type='str', required=False),
         role=dict(type='str', required=False),
         partition=dict(type='str', required=False),
+        locked=dict(type='int', required=False),
         # 用户配置参数
         pwdtimeout=dict(type='int', required=False),
         pwdlength=dict(type='int', required=False),

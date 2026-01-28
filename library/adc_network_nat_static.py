@@ -74,11 +74,16 @@ def nat_static_get(module):
     """获取静态NAT详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    id = module.params['id'] if 'id' in module.params else ""
+    origin_ip = module.params['origin_ip'] if 'origin_ip' in module.params else ""
+    nat_ip = module.params['nat_ip'] if 'nat_ip' in module.params else ""
+    protocol = module.params['protocol'] if 'protocol' in module.params else ""
+    origin_port = module.params['origin_port'] if 'origin_port' in module.params else ""
+    nat_port = module.params['nat_port'] if 'nat_port' in module.params else ""
+    port_num = module.params['port_num'] if 'port_num' in module.params else ""
 
     # 检查必需参数
-    if not id:
-        module.fail_json(msg="获取静态NAT详情需要提供id参数")
+    if not origin_ip or not nat_ip or not protocol:
+        module.fail_json(msg="获取静态NAT详情需要提供origin_ip、nat_ip和protocol参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.static.get" % (
@@ -86,8 +91,18 @@ def nat_static_get(module):
 
     # 构造请求数据
     static_data = {
-        "id": id
+        "origin_ip": origin_ip,
+        "nat_ip": nat_ip,
+        "protocol": protocol
     }
+
+    # PAT协议需要端口参数
+    if protocol in [6, 17]:
+        if not origin_port or not nat_port or not port_num:
+            module.fail_json(msg="PAT协议需要提供origin_port、nat_port和port_num参数")
+        static_data['origin_port'] = origin_port
+        static_data['nat_port'] = nat_port
+        static_data['port_num'] = port_num
 
     # 转换为JSON格式
     post_data = json.dumps(static_data)
@@ -135,13 +150,13 @@ def nat_static_add(module):
     """添加静态NAT"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    id = module.params['id'] if 'id' in module.params else ""
-    ip_addr = module.params['ip_addr'] if 'ip_addr' in module.params else ""
+    origin_ip = module.params['origin_ip'] if 'origin_ip' in module.params else ""
     nat_ip = module.params['nat_ip'] if 'nat_ip' in module.params else ""
+    protocol = module.params['protocol'] if 'protocol' in module.params else ""
 
     # 检查必需参数
-    if not id or not ip_addr or not nat_ip:
-        module.fail_json(msg="添加静态NAT需要提供id、ip_addr和nat_ip参数")
+    if not origin_ip or not nat_ip or not protocol:
+        module.fail_json(msg="添加静态NAT需要提供origin_ip、nat_ip和protocol参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.static.add" % (
@@ -149,14 +164,45 @@ def nat_static_add(module):
 
     # 构造静态NAT数据
     static_data = {
-        "id": id,
-        "ip_addr": ip_addr,
-        "nat_ip": nat_ip
+        "origin_ip": origin_ip,
+        "nat_ip": nat_ip,
+        "protocol": protocol
     }
 
+    # PAT协议需要端口参数
+    if protocol in [1, 6, 17]:
+        origin_port = module.params['origin_port'] if 'origin_port' in module.params else ""
+        nat_port = module.params['nat_port'] if 'nat_port' in module.params else ""
+        port_num = module.params['port_num'] if 'port_num' in module.params else ""
+        if not origin_port or not nat_port or not port_num:
+            module.fail_json(msg="PAT协议需要提供origin_port、nat_port和port_num参数")
+        static_data['origin_port'] = origin_port
+        static_data['nat_port'] = nat_port
+        static_data['port_num'] = port_num
+
     # 添加可选参数
+    if 'vrrp_id' in module.params and module.params['vrrp_id'] is not None:
+        static_data['vrrp_id'] = module.params['vrrp_id']
+    if 'application' in module.params and module.params['application'] is not None:
+        static_data['application'] = module.params['application']
+    if 'priority' in module.params and module.params['priority'] is not None:
+        static_data['priority'] = module.params['priority']
+    if 'if_type' in module.params and module.params['if_type'] is not None:
+        static_data['if_type'] = module.params['if_type']
+    if 'if_slot' in module.params and module.params['if_slot'] is not None:
+        static_data['if_slot'] = module.params['if_slot']
+    if 'if_port' in module.params and module.params['if_port'] is not None:
+        static_data['if_port'] = module.params['if_port']
+    if 'if_ve' in module.params and module.params['if_ve'] is not None:
+        static_data['if_ve'] = module.params['if_ve']
+    if 'if_trunk' in module.params and module.params['if_trunk'] is not None:
+        static_data['if_trunk'] = module.params['if_trunk']
+    if 'disable' in module.params and module.params['disable'] is not None:
+        static_data['disable'] = module.params['disable']
     if 'description' in module.params and module.params['description'] is not None:
         static_data['description'] = module.params['description']
+    if 'index' in module.params and module.params['index'] is not None:
+        static_data['index'] = module.params['index']
 
     # 转换为JSON格式
     post_data = json.dumps(static_data)
@@ -201,28 +247,73 @@ def nat_static_edit(module):
     """编辑静态NAT"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    id = module.params['id'] if 'id' in module.params else ""
+    origin_ip = module.params['origin_ip'] if 'origin_ip' in module.params else ""
+    nat_ip = module.params['nat_ip'] if 'nat_ip' in module.params else ""
+    protocol = module.params['protocol'] if 'protocol' in module.params else ""
 
     # 检查必需参数
-    if not id:
-        module.fail_json(msg="编辑静态NAT需要提供id参数")
+    if not origin_ip or not nat_ip or not protocol:
+        module.fail_json(msg="编辑静态NAT需要提供origin_ip、nat_ip和protocol参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.static.edit" % (
         ip, authkey)
 
-    # 构造静态NAT数据
+    # 获取旧值参数（用于标识要编辑的记录）
+    old_origin_ip = module.params['old_origin_ip'] if 'old_origin_ip' in module.params else ""
+    old_nat_ip = module.params['old_nat_ip'] if 'old_nat_ip' in module.params else ""
+    old_protocol = module.params['old_protocol'] if 'old_protocol' in module.params else ""
+    old_origin_port = module.params['old_origin_port'] if 'old_origin_port' in module.params else ""
+    old_nat_port = module.params['old_nat_port'] if 'old_nat_port' in module.params else ""
+    old_port_num = module.params['old_port_num'] if 'old_port_num' in module.params else ""
+
+    # 构造静态NAT数据（使用旧值作为查找标识）
     static_data = {
-        "id": id
+        "old_origin_ip": old_origin_ip if old_origin_ip else origin_ip,
+        "origin_ip": origin_ip,
+        "old_nat_ip": old_nat_ip if old_nat_ip else nat_ip,
+        "nat_ip": nat_ip,
+        "old_protocol": old_protocol if old_protocol else protocol,
+        "protocol": protocol
     }
 
+    # PAT协议需要端口参数
+    if protocol in [6, 17]:
+        origin_port = module.params['origin_port'] if 'origin_port' in module.params else ""
+        nat_port = module.params['nat_port'] if 'nat_port' in module.params else ""
+        port_num = module.params['port_num'] if 'port_num' in module.params else ""
+        if not origin_port or not nat_port or not port_num:
+            module.fail_json(msg="PAT协议需要提供origin_port、nat_port和port_num参数")
+        static_data['old_origin_port'] = old_origin_port if old_origin_port else origin_port
+        static_data['origin_port'] = origin_port
+        static_data['old_nat_port'] = old_nat_port if old_nat_port else nat_port
+        static_data['nat_port'] = nat_port
+        static_data['old_port_num'] = old_port_num if old_port_num else port_num
+        static_data['port_num'] = port_num
+
     # 添加可选参数
-    if 'ip_addr' in module.params and module.params['ip_addr'] is not None:
-        static_data['ip_addr'] = module.params['ip_addr']
-    if 'nat_ip' in module.params and module.params['nat_ip'] is not None:
-        static_data['nat_ip'] = module.params['nat_ip']
+    if 'vrrp_id' in module.params and module.params['vrrp_id'] is not None:
+        static_data['vrrp_id'] = module.params['vrrp_id']
+    if 'application' in module.params and module.params['application'] is not None:
+        static_data['application'] = module.params['application']
+    if 'priority' in module.params and module.params['priority'] is not None:
+        static_data['priority'] = module.params['priority']
+    if 'if_type' in module.params and module.params['if_type'] is not None:
+        static_data['if_type'] = module.params['if_type']
+    if 'if_slot' in module.params and module.params['if_slot'] is not None:
+        static_data['if_slot'] = module.params['if_slot']
+    if 'if_port' in module.params and module.params['if_port'] is not None:
+        static_data['if_port'] = module.params['if_port']
+    if 'if_ve' in module.params and module.params['if_ve'] is not None:
+        static_data['if_ve'] = module.params['if_ve']
+    if 'if_trunk' in module.params and module.params['if_trunk'] is not None:
+        static_data['if_trunk'] = module.params['if_trunk']
+    if 'disable' in module.params and module.params['disable'] is not None:
+        static_data['disable'] = module.params['disable']
     if 'description' in module.params and module.params['description'] is not None:
         static_data['description'] = module.params['description']
+    if 'index' in module.params and module.params['index'] is not None:
+        static_data['index'] = module.params['index']
 
     # 转换为JSON格式
     post_data = json.dumps(static_data)
@@ -267,11 +358,13 @@ def nat_static_del(module):
     """删除静态NAT"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    id = module.params['id'] if 'id' in module.params else ""
+    origin_ip = module.params['origin_ip'] if 'origin_ip' in module.params else ""
+    nat_ip = module.params['nat_ip'] if 'nat_ip' in module.params else ""
+    protocol = module.params['protocol'] if 'protocol' in module.params else ""
 
     # 检查必需参数
-    if not id:
-        module.fail_json(msg="删除静态NAT需要提供id参数")
+    if not origin_ip or not nat_ip or not protocol:
+        module.fail_json(msg="删除静态NAT需要提供origin_ip、nat_ip和protocol参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.static.del" % (
@@ -279,8 +372,21 @@ def nat_static_del(module):
 
     # 构造请求数据
     static_data = {
-        "id": id
+        "origin_ip": origin_ip,
+        "nat_ip": nat_ip,
+        "protocol": protocol
     }
+
+    # PAT协议需要端口参数
+    if protocol in [6, 17]:
+        origin_port = module.params['origin_port'] if 'origin_port' in module.params else ""
+        nat_port = module.params['nat_port'] if 'nat_port' in module.params else ""
+        port_num = module.params['port_num'] if 'port_num' in module.params else ""
+        if not origin_port or not nat_port or not port_num:
+            module.fail_json(msg="PAT协议需要提供origin_port、nat_port和port_num参数")
+        static_data['origin_port'] = origin_port
+        static_data['nat_port'] = nat_port
+        static_data['port_num'] = port_num
 
     # 转换为JSON格式
     post_data = json.dumps(static_data)
@@ -321,31 +427,48 @@ def nat_static_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def nat_static_statistics_get(module):
+def nat_static_statis(module):
     """获取NAT静态映射统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    statis_type = module.params['statis_type'] if 'statis_type' in module.params else 0
+    limit = module.params['limit'] if 'limit' in module.params else 0
+    index = module.params['index'] if 'index' in module.params else 0
+    searchbk = module.params['searchbk'] if 'searchbk' in module.params else ""
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.static.statis" % (
         ip, authkey)
 
+    # 构造请求数据
+    statis_data = {
+        "type": statis_type,
+        "limit": limit,
+        "index": index,
+        "searchbk": searchbk
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(statis_data)
+
     # 初始化响应数据
     response_data = ""
 
     try:
-        # 根据Python版本处理请求
+        # 根据Python版本处理编码
         if sys.version_info[0] >= 3:
             # Python 3
             import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='GET')
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
             import urllib2 as urllib_request
-            req = urllib_request.Request(url)
-            req.get_method = lambda: 'GET'
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -367,7 +490,7 @@ def nat_static_statistics_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def nat_static_statistics_clear(module):
+def nat_static_clear(module):
     """清除NAT静态映射统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -422,12 +545,36 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
             'nat_static_list', 'nat_static_get', 'nat_static_add', 'nat_static_edit', 'nat_static_del',
-            'nat_static_statistics_get', 'nat_static_statistics_clear']),
-        # 静态NAT参数
-        id=dict(type='int', required=False),
-        ip_addr=dict(type='str', required=False),
+            'nat_static_statis', 'nat_static_clear']),
+        # 静态NAT参数（API实际使用）
+        origin_ip=dict(type='str', required=False),
         nat_ip=dict(type='str', required=False),
-        description=dict(type='str', required=False)
+        protocol=dict(type='int', required=False, choices=[0, 1, 6, 17]),
+        origin_port=dict(type='int', required=False),
+        nat_port=dict(type='int', required=False),
+        port_num=dict(type='int', required=False),
+        vrrp_id=dict(type='int', required=False),
+        application=dict(type='int', required=False),
+        priority=dict(type='int', required=False, choices=[0, 1]),
+        if_type=dict(type='int', required=False, choices=[0, 1, 2, 3]),
+        if_slot=dict(type='int', required=False),
+        if_port=dict(type='int', required=False),
+        if_ve=dict(type='int', required=False),
+        if_trunk=dict(type='int', required=False),
+        disable=dict(type='int', required=False, choices=[0, 1]),
+        description=dict(type='str', required=False),
+        index=dict(type='int', required=False),
+        # 编辑操作需要提供旧值
+        old_origin_ip=dict(type='str', required=False),
+        old_nat_ip=dict(type='str', required=False),
+        old_protocol=dict(type='int', required=False),
+        old_origin_port=dict(type='int', required=False),
+        old_nat_port=dict(type='int', required=False),
+        old_port_num=dict(type='int', required=False),
+        # 统计信息查询参数
+        statis_type=dict(type='int', required=False, choices=[0, 1, 2]),
+        limit=dict(type='int', required=False),
+        searchbk=dict(type='str', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -449,10 +596,10 @@ def main():
         nat_static_edit(module)
     elif action == 'nat_static_del':
         nat_static_del(module)
-    elif action == 'nat_static_statistics_get':
-        nat_static_statistics_get(module)
-    elif action == 'nat_static_statistics_clear':
-        nat_static_statistics_clear(module)
+    elif action == 'nat_static_statis':
+        nat_static_statis(module)
+    elif action == 'nat_static_clear':
+        nat_static_clear(module)
 
 
 if __name__ == '__main__':

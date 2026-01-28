@@ -842,8 +842,6 @@ def main():
         lldp_attr=dict(type='int', required=False),
         hardware=dict(type='str', required=False),
         mtu=dict(type='int', required=False),
-        ip_addr=dict(type='str', required=False),
-        netmask=dict(type='str', required=False),
         list_type=dict(type='str', required=False, choices=[
                        'normal', 'withcommon', 'withused', 'self']),
         # VE接口参数

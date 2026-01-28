@@ -133,12 +133,70 @@ def vrrp_floating_ip_list(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def vrrp_floating_ip_add(module):
+    """添加vrrp浮动地址"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    group_id = module.params['group_id']
+    floating_ip = module.params['floating_ip']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.floating_ip.add" % (
+        ip, authkey)
+
+    # 构造请求数据
+    request_data = {
+        "ip": ip,
+        "authkey": authkey,
+        "group_id": group_id,
+        "floating_ip": floating_ip
+    }
+
+    # 转换为JSON格式
+    post_data = json.dumps(request_data)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理编码
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="添加vrrp浮动地址失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "添加vrrp浮动地址", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
 def main():
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['vrrp_floating_ip_del', 'vrrp_floating_ip_list']),
+        action=dict(type='str', required=True, choices=['vrrp_floating_ip_del', 'vrrp_floating_ip_list', 'vrrp_floating_ip_add']),
         group_id=dict(type='int', required=False),
         floating_ip=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -154,7 +212,10 @@ def main():
     # 创建AnsibleModule实例
     module = AnsibleModule(
         argument_spec=module_args,
-        supports_check_mode=False
+        supports_check_mode=False,
+        required_if=[
+            ['action', 'vrrp_floating_ip_add', ['group_id', 'floating_ip']]
+        ]
     )
 
     # 根据action执行相应操作
@@ -164,6 +225,8 @@ def main():
         vrrp_floating_ip_del(module)
     elif action == 'vrrp_floating_ip_list':
         vrrp_floating_ip_list(module)
+    elif action == 'vrrp_floating_ip_add':
+        vrrp_floating_ip_add(module)
 
 
 if __name__ == '__main__':

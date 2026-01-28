@@ -126,9 +126,12 @@ def system_domaintable_file_download(module):
     file_name = module.params['file_name']
     dest_path = module.params['dest_path']
 
-    # 构造请求URL - 包含name参数
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.domaintable.file.download&file_name=%s" % (
-        ip, authkey, file_name)
+    # 构造请求URL - 只包含authkey和action参数
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.domaintable.file.download" % (
+        ip, authkey)
+
+    # 构造请求体
+    request_body = json.dumps({"data": [{"name": file_name}]})
 
     try:
         # 根据Python版本处理请求
@@ -136,7 +139,8 @@ def system_domaintable_file_download(module):
             # Python 3
             import urllib.request as urllib_request
 
-            req = urllib_request.Request(url, method='GET')
+            req = urllib_request.Request(url, data=request_body.encode('utf-8'), method='POST')
+            req.add_header('Content-Type', 'application/json')
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -148,8 +152,9 @@ def system_domaintable_file_download(module):
             # Python 2
             import urllib2 as urllib_request
 
-            req = urllib_request.Request(url)
-            req.get_method = lambda: 'GET'
+            req = urllib_request.Request(url, data=request_body)
+            req.add_header('Content-Type', 'application/json')
+            req.get_method = lambda: 'POST'
             response = urllib_request.urlopen(req)
             response_data = response.read()
 

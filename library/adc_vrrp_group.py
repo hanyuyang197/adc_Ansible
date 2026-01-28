@@ -153,6 +153,9 @@ def vrrp_group_edit(module):
     vrid = module.params['vrid']
     failback_first_device = module.params['failback_first_device']
     order_list = module.params['order_list']
+    preempt_th = module.params['preempt_th']
+    preempt_dis = module.params['preempt_dis']
+    priority_threshold = module.params['priority_threshold']
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.group.edit" % (
@@ -176,6 +179,12 @@ def vrrp_group_edit(module):
         request_data["failback_first_device"] = failback_first_device
     if order_list is not None:
         request_data["order_list"] = order_list
+    if preempt_th is not None:
+        request_data["preempt_th"] = preempt_th
+    if preempt_dis is not None:
+        request_data["preempt_dis"] = preempt_dis
+    if priority_threshold is not None:
+        request_data["priority_threshold"] = priority_threshold
 
     # 转换为JSON格式
     post_data = json.dumps(request_data)
@@ -282,7 +291,10 @@ def main():
         value=dict(type='str', required=False),
         enable=dict(type='bool', required=False),
         name=dict(type='str', required=False),
-        port=dict(type='int', required=False)
+        port=dict(type='int', required=False),
+        preempt_th=dict(type='int', required=False),
+        preempt_dis=dict(type='int', required=False),
+        priority_threshold=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例

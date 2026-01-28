@@ -65,8 +65,12 @@ def slb_connmulti_list(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(changed=False, connmulti_list=response_data)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "连接复用模板列表", False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
         module.fail_json(msg="连接复用模板列表获取失败: %s" % str(e))
 
@@ -81,9 +85,12 @@ def slb_connmulti_list_withcommon(module):
 
     try:
         response_data = send_request(url)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(
-            chchanged=False, connmulti_list_withcommon=response_data)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "连接复用模板获取 common 和本分区", False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
         module.fail_json(msg="连接复用模板获取 common 和本分区失败: %s" % str(e))
 
@@ -108,8 +115,12 @@ def slb_connmulti_get(module):
 
     try:
         response_data = send_request(url, post_data)
-        # 直接返回响应数据，不解析为特定格式
-        module.exit_json(changed=False, connmulti_data=response_data)
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取连接复用模板", False)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
     except Exception as e:
         module.fail_json(msg="获取连接复用模板失败: %s" % str(e))
 

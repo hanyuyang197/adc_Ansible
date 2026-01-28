@@ -364,7 +364,7 @@ def main():
         action=dict(type='str', required=True, choices=[
             'nat_map_list', 'nat_map_add', 'nat_map_del', 'nat_ipv6_map_list', 'nat_ipv6_map_add', 'nat_ipv6_map_del']),
         # NAT映射参数
-        acl=dict(type='int', required=False),
+        acl=dict(required=False),  # 支持int和str类型
         nat_pool=dict(type='str', required=False),
         acl_name=dict(type='str', required=False)
     )
