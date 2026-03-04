@@ -229,6 +229,8 @@ def network_vlan_edit(module):
         vlan_data['path_persist'] = module.params['path_persist']
     if 've_if' in module.params and module.params['ve_if'] is not None:
         vlan_data['ve_if'] = module.params['ve_if']
+    if 'mcast_limit' in module.params and module.params['mcast_limit'] is not None:
+        vlan_data['mcast_limit'] = module.params['mcast_limit']
 
     # 添加接口列表（如果有提供）
     if 'interface_list' in module.params and module.params['interface_list'] is not None:
@@ -347,6 +349,7 @@ def main():
         description=dict(type='str', required=False),
         l2_fwd_disable=dict(type='int', required=False),
         path_persist=dict(type='int', required=False),
+        mcast_limit=dict(type='int', required=False),  # 组播限制
         ve_if=dict(type='int', required=False),
         interface_list=dict(type='list', required=False),
         trunk_list=dict(type='list', required=False)

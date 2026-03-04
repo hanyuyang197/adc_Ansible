@@ -141,15 +141,15 @@ def slb_connmulti_add(module):
         "name": name
     }
 
-    # 添加可选参数
+    # 添加可选参数（与API文档保持一致）
     if module.params['enable'] is not None:
         connmulti_data['enable'] = module.params['enable']
-    if module.params['multi_num'] is not None:
-        connmulti_data['multi_num'] = module.params['multi_num']
+    if module.params['limit'] is not None:
+        connmulti_data['limit'] = module.params['limit']
     if module.params['timeout'] is not None:
         connmulti_data['timeout'] = module.params['timeout']
-    if module.params['desc_connmulti'] is not None:
-        connmulti_data['desc_connmulti'] = module.params['desc_connmulti']
+    if module.params['description'] is not None:
+        connmulti_data['description'] = module.params['description']
 
     post_data = json.dumps(connmulti_data)
 
@@ -181,15 +181,15 @@ def slb_connmulti_edit(module):
         "name": name
     }
 
-    # 添加可选参数
+    # 添加可选参数（与API文档保持一致）
     if module.params['enable'] is not None:
         connmulti_data['enable'] = module.params['enable']
-    if module.params['multi_num'] is not None:
-        connmulti_data['multi_num'] = module.params['multi_num']
+    if module.params['limit'] is not None:
+        connmulti_data['limit'] = module.params['limit']
     if module.params['timeout'] is not None:
         connmulti_data['timeout'] = module.params['timeout']
-    if module.params['desc_connmulti'] is not None:
-        connmulti_data['desc_connmulti'] = module.params['desc_connmulti']
+    if module.params['description'] is not None:
+        connmulti_data['description'] = module.params['description']
 
     post_data = json.dumps(connmulti_data)
 
@@ -244,12 +244,12 @@ def main():
             'slb_connmulti_list', 'slb_connmulti_list_withcommon', 'slb_connmulti_get',
             'slb_connmulti_add', 'slb_connmulti_edit', 'slb_connmulti_del'
         ]),
-        # 连接复用模板参数
+        # 连接复用模板参数（与API文档保持一致）
         name=dict(type='str', required=False),
+        description=dict(type='str', required=False),
         enable=dict(type='int', required=False, choices=[0, 1]),
-        multi_num=dict(type='int', required=False),
-        timeout=dict(type='int', required=False),
-        desc_connmulti=dict(type='str', required=False)
+        limit=dict(type='int', required=False),
+        timeout=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例

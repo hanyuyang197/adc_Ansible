@@ -26,13 +26,13 @@ def slb_ssl_certkey_match(module):
     """校验证书和私钥配对"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    name = module.params['name']
+    cert_name = module.params['cert_name']
     key_name = module.params['key_name']
     password = module.params.get('password')
 
-    # 构建URL参数
-    url_params = "authkey=%s&action=slb.ssl.certkey.match&name=%s&key_name=%s" % (
-        authkey, name, key_name)
+    # 构建URL参数（与API文档保持一致）
+    url_params = "authkey=%s&action=slb.ssl.certkey.match&cert_name=%s&key_name=%s" % (
+        authkey, cert_name, key_name)
     if password:
         url_params += "&password=%s" % password
 
@@ -65,12 +65,12 @@ def slb_ssl_certkey_match(module):
 
 
 def main():
-    # 定义模块参数
+    # 定义模块参数（与API文档保持一致）
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=['slb_ssl_certkey_match']),
-        name=dict(type='str', required=True),
+        cert_name=dict(type='str', required=True),
         key_name=dict(type='str', required=True),
         password=dict(type='str', required=False, no_log=True)
     )

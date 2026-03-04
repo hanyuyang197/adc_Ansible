@@ -180,7 +180,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=['system_domaintable_file_upload', 'system_domaintable_file_download']),
-        name=dict(type='str', required=True),  # 文件名
+        file_name=dict(type='str', required=True),  # 文件名
         file_path=dict(type='str', required=False),  # 上传时的本地文件路径
         dest_path=dict(type='str', required=False),  # 下载时的目标路径
     )

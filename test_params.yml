@@ -1,0 +1,13 @@
+---
+- name: 测试未定义参数
+  hosts: localhost
+  gather_facts: no
+  vars:
+    ip: "192.168.1.1"
+    authkey: "test"
+  tasks:
+    - name: 传入未在 module_args 中定义的参数
+      test_params:
+        name: "test_name"
+        undefined_param: "这个参数未在 module_args 中定义"
+        another_undefined: 123

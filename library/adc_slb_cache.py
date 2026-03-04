@@ -97,17 +97,16 @@ def slb_cache_add(module):
         "name": name
     }
 
-    # 添加可选参数
-    if module.params['enable'] is not None:
-        cache_data['enable'] = module.params['enable']
-    if module.params['cache_size'] is not None:
-        cache_data['cache_size'] = module.params['cache_size']
-    if module.params['cache_time'] is not None:
-        cache_data['cache_time'] = module.params['cache_time']
-    if module.params['cache_type'] is not None:
-        cache_data['cache_type'] = module.params['cache_type']
-    if module.params['desc_cache'] is not None:
-        cache_data['desc_cache'] = module.params['desc_cache']
+    # 添加可选参数（与API文档保持一致）
+    optional_params = [
+        'age', 'size_max', 'object_min', 'object_max', 
+        'handle_reload_req', 'cache_host', 'no_cache', 
+        'no_age_header', 'no_via_header', 'cache_policy', 'description'
+    ]
+    
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            cache_data[param] = module.params[param]
 
     post_data = json.dumps(cache_data)
 
@@ -139,17 +138,16 @@ def slb_cache_edit(module):
         "name": name
     }
 
-    # 添加可选参数
-    if module.params['enable'] is not None:
-        cache_data['enable'] = module.params['enable']
-    if module.params['cache_size'] is not None:
-        cache_data['cache_size'] = module.params['cache_size']
-    if module.params['cache_time'] is not None:
-        cache_data['cache_time'] = module.params['cache_time']
-    if module.params['cache_type'] is not None:
-        cache_data['cache_type'] = module.params['cache_type']
-    if module.params['desc_cache'] is not None:
-        cache_data['desc_cache'] = module.params['desc_cache']
+    # 添加可选参数（与API文档保持一致）
+    optional_params = [
+        'age', 'size_max', 'object_min', 'object_max', 
+        'handle_reload_req', 'cache_host', 'no_cache', 
+        'no_age_header', 'no_via_header', 'cache_policy', 'description'
+    ]
+    
+    for param in optional_params:
+        if param in module.params and module.params[param] is not None:
+            cache_data[param] = module.params[param]
 
     post_data = json.dumps(cache_data)
 
@@ -204,13 +202,19 @@ def main():
             'slb_cache_list', 'slb_cache_list_withcommon', 'slb_cache_get',
             'slb_cache_add', 'slb_cache_edit', 'slb_cache_del'
         ]),
-        # 缓存模板参数
+        # 缓存模板参数（与API文档保持一致）
         name=dict(type='str', required=False),
-        enable=dict(type='int', required=False, choices=[0, 1]),
-        cache_size=dict(type='int', required=False),
-        cache_time=dict(type='int', required=False),
-        cache_type=dict(type='str', required=False),
-        desc_cache=dict(type='str', required=False)
+        description=dict(type='str', required=False),
+        age=dict(type='int', required=False),
+        size_max=dict(type='int', required=False),
+        object_min=dict(type='int', required=False),
+        object_max=dict(type='int', required=False),
+        handle_reload_req=dict(type='int', required=False),
+        cache_host=dict(type='int', required=False),
+        no_cache=dict(type='int', required=False),
+        no_age_header=dict(type='int', required=False),
+        no_via_header=dict(type='int', required=False),
+        cache_policy=dict(type='list', required=False, elements='dict')
     )
 
     # 创建AnsibleModule实例

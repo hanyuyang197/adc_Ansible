@@ -203,7 +203,7 @@ def slb_profile_http_add(module):
         'clientip_insert_replace', 'retry_503', 'websocket', 'node_select_fail_response_504',
         'cookie_encrypt_name', 'cookie_encrypt_password', 'req_header_del', 'rsp_header_del',
         'req_header_insert', 'rsp_header_insert', 'url_class', 'host_class',
-        'url_hash', 'url_hash_len', 'url_hash_offset', 'redirect_modify',
+        'url_hash', 'url_hash_len', 'url_hash_offset', 'url_class_log_interval', 'redirect_modify',
         'redirect_modify_https', 'redirect_modify_https_port', 'cookie_select',
         'cookie_expire', 'cookie_expire_enable', 'compress', 'compress_keep_header',
         'compress_level', 'compress_min_len', 'chunking_request', 'chunking_response',
@@ -313,6 +313,8 @@ def slb_profile_http_edit(module):
         profile_data['url_hash_len'] = module.params['url_hash_len']
     if 'url_hash_offset' in module.params and module.params['url_hash_offset'] is not None:
         profile_data['url_hash_offset'] = module.params['url_hash_offset']
+    if 'url_class_log_interval' in module.params and module.params['url_class_log_interval'] is not None:
+        profile_data['url_class_log_interval'] = module.params['url_class_log_interval']
     if 'redirect_modify' in module.params and module.params['redirect_modify'] is not None:
         profile_data['redirect_modify'] = module.params['redirect_modify']
     if 'redirect_modify_https' in module.params and module.params['redirect_modify_https'] is not None:
@@ -478,6 +480,7 @@ def main():
         url_hash=dict(type='int', required=False),
         url_hash_len=dict(type='int', required=False),
         url_hash_offset=dict(type='int', required=False),
+        url_class_log_interval=dict(type='int', required=False),
         redirect_modify=dict(type='list', required=False),
         redirect_modify_https=dict(type='int', required=False),
         redirect_modify_https_port=dict(type='int', required=False),

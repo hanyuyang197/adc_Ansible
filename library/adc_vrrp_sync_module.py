@@ -26,6 +26,8 @@ def vrrp_sync_module_set(module):
     """编辑vrrp同步模块"""
     device_ip = module.params['ip']
     authkey = module.params['authkey']
+    module_param = module.params.get('module')  # 获取module参数
+    modules_param = module.params.get('modules')  # 获取modules参数
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.sync.module.set" % (
@@ -39,7 +41,7 @@ def vrrp_sync_module_set(module):
 
     # 定义可选参数列表（根据API具体需求调整）
     optional_params = [
-        'module', 'description', 'status', 'config', 'setting', 'value', 'enable', 'name', 'port'
+        'description', 'status', 'config', 'setting', 'value', 'enable', 'name', 'port'
         # 根据具体API需求添加更多参数
     ]
 
@@ -47,6 +49,13 @@ def vrrp_sync_module_set(module):
     for param in optional_params:
         if get_param_if_exists(module, param) is not None:
             request_data[param] = get_param_if_exists(module, param)
+
+    # 如果提供了modules参数，优先使用；否则使用module参数
+    # API文档使用modules参数名（复数）
+    if modules_param is not None:
+        request_data["modules"] = modules_param
+    elif module_param is not None:
+        request_data["modules"] = module_param
 
     # 转换为JSON格式
     post_data = json.dumps(request_data)
@@ -140,6 +149,7 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=['vrrp_sync_module_set', 'vrrp_sync_module_get']),
         module=dict(type='str', required=False),
+        modules=dict(type='str', required=False),  # API文档使用的参数名
         description=dict(type='str', required=False),
         status=dict(type='str', required=False),
         config=dict(type='dict', required=False),

@@ -21,16 +21,14 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
 import json
 import sys
 
-# ADC API响应解析函数
 
-
-def network_ddos_get(module):
-    """获取DDoS防护配置"""
+def network_resource_statistics_list(module):
+    """获取网络服务资源列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.ddos.get" % (
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.resource_statistics.list" % (
         ip, authkey)
 
     # 初始化响应数据
@@ -39,13 +37,11 @@ def network_ddos_get(module):
     try:
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
-            # Python 3
             import urllib.request as urllib_request
             req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
             import urllib2 as urllib_request
             req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
@@ -53,78 +49,65 @@ def network_ddos_get(module):
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="获取DDoS防护配置失败: %s" % str(e))
+        module.fail_json(msg="获取网络服务资源列表失败: %s" % str(e))
 
-    # 对于获取配置操作，直接返回响应数据，不判断success
+    # 对于获取统计列表操作，直接返回响应数据，不判断success
     if response_data:
         try:
             parsed_data = json.loads(response_data)
-            # 检查是否有错误信息
-            if 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取DDoS防护配置失败", response=parsed_data)
+            success, result_dict = format_adc_response_for_ansible(
+                response_data, "获取网络服务资源列表", False)
+            if success:
+                module.exit_json(**result_dict)
             else:
-                module.exit_json(changed=False, config=parsed_data)
+                module.fail_json(**result_dict)
         except Exception as e:
             module.fail_json(msg="解析响应失败: %s" % str(e))
     else:
         module.fail_json(msg="未收到有效响应")
 
 
-def network_ddos_set(module):
-    """设置DDoS防护配置"""
+def network_resource_statistics_list_all_partition(module):
+    """获取全部分区网络服务资源列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    enable = module.params['enable'] if 'enable' in module.params else ""
-    threshold = module.params['threshold'] if 'threshold' in module.params else ""
 
-    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.ddos.set" % (
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.resource_statistics.list.all_partition" % (
         ip, authkey)
-
-    # 构造DDoS防护配置数据
-    config_data = {}
-
-    # 添加可选参数
-    if enable != "":
-        config_data['enable'] = enable
-    if threshold != "":
-        config_data['threshold'] = threshold
-
-    # 转换为JSON格式
-    post_data = json.dumps(config_data)
 
     # 初始化响应数据
     response_data = ""
 
     try:
-        # 根据Python版本处理编码
+        # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
-            # Python 3
             import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
             import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="设置DDoS防护配置失败: %s" % str(e))
+        module.fail_json(msg="获取全部分区网络服务资源列表失败: %s" % str(e))
 
-    # 使用通用响应解析函数
+    # 对于获取统计列表操作，直接返回响应数据，不判断success
     if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "设置DDoS防护配置", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
+        try:
+            parsed_data = json.loads(response_data)
+            success, result_dict = format_adc_response_for_ansible(
+                response_data, "获取全部分区网络服务资源列表", False)
+            if success:
+                module.exit_json(**result_dict)
+            else:
+                module.fail_json(**result_dict)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
     else:
         module.fail_json(msg="未收到有效响应")
 
@@ -135,10 +118,8 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'network_ddos_get', 'network_ddos_set']),
-        # DDoS防护参数
-        enable=dict(type='int', required=False),
-        threshold=dict(type='int', required=False)
+            'network_resource_statistics_list',
+            'network_resource_statistics_list_all_partition'])
     )
 
     # 创建AnsibleModule实例
@@ -150,10 +131,10 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'network_ddos_get':
-        network_ddos_get(module)
-    elif action == 'network_ddos_set':
-        network_ddos_set(module)
+    if action == 'network_resource_statistics_list':
+        network_resource_statistics_list(module)
+    elif action == 'network_resource_statistics_list_all_partition':
+        network_resource_statistics_list_all_partition(module)
 
 
 if __name__ == '__main__':

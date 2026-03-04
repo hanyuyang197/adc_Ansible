@@ -462,13 +462,9 @@ def slb_ssl_pfx_upload(module):
     with open(file_path, 'rb') as f:
         file_content = f.read()
 
-    # 构造表单数据 - 只包含密码（如果有），不包含authkey（authkey已在URL中）
+    # 构造表单数据 - 不包含密码（密码在URL中）
     fields = {}
     
-    # 如果有密码，添加到字段中
-    if password:
-        fields['password'] = password
-
     files = {
         'file': {
             'filename': os.path.basename(file_path) if not name else name,
@@ -479,8 +475,11 @@ def slb_ssl_pfx_upload(module):
 
     body, boundary = create_form_data(fields, files)
 
-    # 构造请求URL - 添加authkey参数
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.pfx.upload" % (ip, authkey)
+    # 构造请求URL - 添加authkey和password参数（password必须在URL中）
+    if password:
+        url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.pfx.upload&password=%s" % (ip, authkey, password)
+    else:
+        url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.pfx.upload" % (ip, authkey)
 
     try:
         # 根据Python版本处理请求

@@ -20,6 +20,7 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
 )
 import json
 import sys
+import os
 
 
 def system_config_add(module):
@@ -29,6 +30,8 @@ def system_config_add(module):
     file_name = module.params['file_name']
     description = module.params['description']
     flag = module.params['flag']
+    encrypt = module.params['encrypt']
+    overwrite = module.params['overwrite']
     password = module.params['password']
 
     # 检查必需参数
@@ -49,6 +52,10 @@ def system_config_add(module):
         config_data["description"] = description
     if flag is not None:
         config_data["flag"] = flag
+    if encrypt is not None:
+        config_data["encrypt"] = encrypt
+    if overwrite is not None:
+        config_data["overwrite"] = overwrite
     if password is not None:
         config_data["password"] = password
 
@@ -255,8 +262,8 @@ def system_config_backup(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name']
+    dest_path = module.params.get('dest_path')
 
-    # 构造请求URL
     if name:
         # 导出指定名称备份的配置
         url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.config.backup" % (
@@ -290,86 +297,151 @@ def system_config_backup(module):
 
         except Exception as e:
             module.fail_json(msg="配置文件导出失败: %s" % str(e))
+
+        # 使用通用响应解析函数
+        if response_data:
+            success, result_dict = format_adc_response_for_ansible(
+                response_data, "配置文件导出", False)
+            if success:
+                module.exit_json(**result_dict)
+            else:
+                module.fail_json(**result_dict)
+        else:
+            module.fail_json(msg="未收到有效响应")
     else:
-        # 下载当前设备的启动配置文件压缩包
+        # 下载当前设备的启动配置文件压缩包到本地
+        if not dest_path:
+            module.fail_json(msg="下载配置文件压缩包需要提供dest_path参数")
+
         url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.config.backup" % (
             ip, authkey)
 
-        # 初始化响应数据
-        response_data = ""
-
         try:
-            # 根据Python版本处理请求
+            # 根据Python版本处理请求并下载文件
             if sys.version_info[0] >= 3:
                 # Python 3
                 import urllib.request as urllib_request
-                req = urllib_request.Request(url, method='GET')
-                response = urllib_request.urlopen(req)
-                response_data = response.read().decode('utf-8')
+                response = urllib_request.urlopen(url)
+                content = response.read()
             else:
                 # Python 2
                 import urllib2 as urllib_request
-                req = urllib_request.Request(url)
-                req.get_method = lambda: 'GET'
-                response = urllib_request.urlopen(req)
-                response_data = response.read()
+                response = urllib_request.urlopen(url)
+                content = response.read()
+
+            # 写入文件
+            with open(dest_path, 'wb') as f:
+                f.write(content)
+
+            module.exit_json(changed=True,
+                         file_path=dest_path,
+                         file_size=len(content),
+                         msg='配置文件压缩包已下载并保存到 %s' % dest_path)
 
         except Exception as e:
-            module.fail_json(msg="配置文件导出失败: %s" % str(e))
-
-    # 使用通用响应解析函数
-    if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "配置文件导出", False)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
-    else:
-        module.fail_json(msg="未收到有效响应")
+            module.fail_json(msg="配置文件压缩包下载失败: %s" % str(e))
 
 
 def system_config_restore(module):
     """配置文件导入"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    file_path = module.params.get('file_path')
+
+    # 检查必要参数
+    if not file_path:
+        module.fail_json(msg="导入配置文件需要提供file_path参数")
+    if not os.path.exists(file_path):
+        module.fail_json(msg="配置文件不存在: %s" % file_path)
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=system.config.restore" % (
         ip, authkey)
 
-    # 初始化响应数据
-    response_data = ""
+    # 读取配置文件
+    try:
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+    except Exception as e:
+        module.fail_json(msg="读取配置文件失败: %s" % str(e))
 
     try:
-        # 根据Python版本处理请求
+        # 根据Python版本处理multipart/form-data上传
         if sys.version_info[0] >= 3:
-            # Python 3
+            # Python 3 - 使用urllib处理multipart/form-data上传
             import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='POST')
+
+            # 构建multipart/form-data请求
+            boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+            # 准备表单数据
+            body_parts = []
+            body_parts.append('--%s' % boundary)
+            body_parts.append(
+                'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+            body_parts.append('Content-Type: application/zip')
+            body_parts.append('')
+            body_parts.append('--%s--\r\n' % boundary)
+
+            # 将body_parts转换为bytes并加上文件内容
+            body_content = b''
+            for part in body_parts:
+                body_content += part.encode('utf-8') + b'\r\n'
+            body_content += file_content
+            body_content += b'\r\n--%s--\r\n' % boundary.encode('utf-8')
+
+            req = urllib_request.Request(url, data=body_content, headers={
+                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                'Content-Length': str(len(body_content))
+            })
+
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
+            # Python 2 - 使用urllib2处理multipart/form-data上传
             import urllib2 as urllib_request
-            req = urllib_request.Request(url)
-            req.get_method = lambda: 'POST'
+
+            # 构建multipart/form-data请求
+            boundary = '----WebKitFormBoundary7MA4YWxkTrZu0gW'
+
+            # 准备表单数据
+            body_parts = []
+            body_parts.append('--%s' % boundary)
+            body_parts.append(
+                'Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(file_path))
+            body_parts.append('Content-Type: application/zip')
+            body_parts.append('')
+            body_parts.append('--%s--\r\n' % boundary)
+
+            # 将body_parts转换为字符串并加上文件内容
+            body_content = ''
+            for part in body_parts:
+                body_content += part + '\r\n'
+            body_content += file_content
+            body_content += '\r\n--%s--\r\n' % boundary
+
+            req = urllib_request.Request(url, data=body_content, headers={
+                'Content-Type': 'multipart/form-data; boundary=%s' % boundary,
+                'Content-Length': str(len(body_content))
+            })
+
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
+        # 使用通用响应解析函数
+        if response_data:
+            success, result_dict = format_adc_response_for_ansible(
+                response_data, "配置文件导入", True)
+            if success:
+                result_dict['note'] = '导入后需要重新加载配置或者系统重启,使恢复的配置生效'
+                module.exit_json(**result_dict)
+            else:
+                module.fail_json(**result_dict)
+        else:
+            module.fail_json(msg="未收到有效响应")
+
     except Exception as e:
         module.fail_json(msg="配置文件导入失败: %s" % str(e))
-
-    # 使用通用响应解析函数
-    if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "配置文件导入", True)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
-    else:
-        module.fail_json(msg="未收到有效响应")
 
 
 def main():
@@ -384,8 +456,12 @@ def main():
         file_name=dict(type='str', required=False),
         description=dict(type='str', required=False),
         flag=dict(type='int', required=False),
+        encrypt=dict(type='int', required=False),  # 是否加密配置文件
+        overwrite=dict(type='int', required=False),  # 是否覆盖同名文件
         password=dict(type='str', required=False, no_log=True),
-        name=dict(type='str', required=False)
+        name=dict(type='str', required=False),
+        dest_path=dict(type='str', required=False),
+        file_path=dict(type='str', required=False)
     )
 
     # 创建AnsibleModule实例

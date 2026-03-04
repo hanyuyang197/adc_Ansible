@@ -266,7 +266,7 @@ def adc_slb_policy_add(module):
     # Only include parameters that are explicitly defined in YAML
     optional_params = [
         'match_dst_ip', 'match_overlap', 'bwlist_name', 'ruletable_name',
-        'match_client', 'header_name', 'bwlists', 'ruletables'
+        'match_client', 'header_name', 'bwlists', 'ruletables', 'pool_policys'
     ]
 
     for param in optional_params:
@@ -299,7 +299,7 @@ def adc_slb_policy_edit(module):
     # Only include parameters that are explicitly defined in YAML
     optional_params = [
         'match_dst_ip', 'match_overlap', 'bwlist_name', 'ruletable_name',
-        'match_client', 'header_name', 'bwlists', 'ruletables'
+        'match_client', 'header_name', 'bwlists', 'ruletables', 'pool_policys'
     ]
 
     for param in optional_params:
@@ -352,6 +352,7 @@ def main():
             header_name=dict(type='str', required=False),
             bwlists=dict(type='list', required=False),
             ruletables=dict(type='list', required=False),
+            pool_policys=dict(type='list', required=False, elements='dict'),
         ),
         supports_check_mode=False
     )

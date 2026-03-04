@@ -185,33 +185,29 @@ def slb_pool_add(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.add" % (
         ip, authkey)
 
-    # 构造服务池数据 - 使用与add_node相同的参数处理方式
+    # 构造服务池数据 - 手动组装成pool对象
     pool_data = {
         "pool": {}
     }
 
-    # 定义可选参数列表
-    optional_params = [
-        'name', 'protocol', 'lb_method', 'upnum', 'healthcheck',
-        'desc_pool', 'action_on_service_down', 'aux_node_log'
-    ]
+    # 添加基本参数到pool中
+    basic_params = ['name', 'protocol', 'lb_method', 'upnum', 'healthcheck', 'desc_pool',
+                    'action_on_service_down', 'aux_node_log', 'slow_ramp_time',
+                    'node_select_fail_send_rst']
 
-    # 添加基本参数
-    for param in optional_params:
+    for param in basic_params:
         if param in module.params and module.params[param] is not None:
-            pool_data['pool'][param] = module.params[param]
+            # 将下划线参数名映射为连字符（与API文档一致）
+            api_param = param.replace('_', '-')
+            pool_data['pool'][api_param] = module.params[param]
 
-    # 处理up_members_at_least参数
-    up_members_at_least = {}
-    if 'up_members_at_least_status' in module.params and module.params['up_members_at_least_status'] is not None:
-        up_members_at_least['status'] = module.params['up_members_at_least_status']
-    if 'up_members_at_least_num' in module.params and module.params['up_members_at_least_num'] is not None:
-        up_members_at_least['num'] = module.params['up_members_at_least_num']
-    if 'up_members_at_least_type' in module.params and module.params['up_members_at_least_type'] is not None:
-        up_members_at_least['type'] = module.params['up_members_at_least_type']
+    # 直接使用 up_members_at_least 对象参数
+    if 'up_members_at_least' in module.params and module.params['up_members_at_least'] is not None:
+        pool_data['pool']['up-members-at-least'] = module.params['up_members_at_least']
 
-    if up_members_at_least:
-        pool_data['pool']['up-members-at-least'] = up_members_at_least
+    # 添加 members 数组参数
+    if 'members' in module.params and module.params['members'] is not None:
+        pool_data['pool']['members'] = module.params['members']
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)
@@ -266,7 +262,7 @@ def slb_pool_edit(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.edit" % (
         ip, authkey)
 
-    # 构造服务池数据 - 使用与add_pool相同的参数处理方式
+    # 构造服务池数据 - 手动组装成pool对象
     pool_data = {
         "pool": {}
     }
@@ -274,28 +270,24 @@ def slb_pool_edit(module):
     # 添加name参数（必需）
     pool_data['pool']['name'] = name
 
-    # 定义可选参数列表
-    optional_params = [
-        'protocol', 'lb_method', 'upnum', 'healthcheck',
-        'desc_pool', 'action_on_service_down', 'aux_node_log'
-    ]
+    # 添加可选参数到pool中
+    optional_params = ['protocol', 'lb_method', 'upnum', 'healthcheck', 'desc_pool',
+                       'action_on_service_down', 'aux_node_log', 'slow_ramp_time',
+                       'node_select_fail_send_rst']
 
-    # 添加可选参数
     for param in optional_params:
         if param in module.params and module.params[param] is not None:
-            pool_data['pool'][param] = module.params[param]
+            # 将下划线参数名映射为连字符（与API文档一致）
+            api_param = param.replace('_', '-')
+            pool_data['pool'][api_param] = module.params[param]
 
-    # 处理up_members_at_least参数
-    up_members_at_least = {}
-    if 'up_members_at_least_status' in module.params and module.params['up_members_at_least_status'] is not None:
-        up_members_at_least['status'] = module.params['up_members_at_least_status']
-    if 'up_members_at_least_num' in module.params and module.params['up_members_at_least_num'] is not None:
-        up_members_at_least['num'] = module.params['up_members_at_least_num']
-    if 'up_members_at_least_type' in module.params and module.params['up_members_at_least_type'] is not None:
-        up_members_at_least['type'] = module.params['up_members_at_least_type']
+    # 直接使用 up_members_at_least 对象参数
+    if 'up_members_at_least' in module.params and module.params['up_members_at_least'] is not None:
+        pool_data['pool']['up-members-at-least'] = module.params['up_members_at_least']
 
-    if up_members_at_least:
-        pool_data['pool']['up-members-at-least'] = up_members_at_least
+    # 添加 members 数组参数
+    if 'members' in module.params and module.params['members'] is not None:
+        pool_data['pool']['members'] = module.params['members']
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)
@@ -398,38 +390,36 @@ def slb_pool_member_add(module):
     """添加节点到服务池"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    pool_name = module.params['pool_name'] if 'pool_name' in module.params else ""
-    node = module.params['node'] if 'node' in module.params else ""
+    # 使用 name 参数（与API文档一致），兼容 pool_name 别名
+    pool_name = module.params.get('name', '')
 
     # 检查必需参数
     if not pool_name:
-        module.fail_json(msg="添加节点到服务池需要提供pool_name参数")
-    if not node:
-        module.fail_json(msg="添加节点到服务池需要提供node参数")
+        module.fail_json(msg="添加节点到服务池需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.add" % (
         ip, authkey)
 
-    # 构造请求数据 - 使用与add_node相同的参数处理方式
+    # 构造请求数据 - 手动组装成member对象（与API文档结构一致）
     pool_data = {
         "name": pool_name,
         "member": {}
     }
 
-    # 定义可选参数列表
-    optional_params = [
-        'port', 'protocol', 'priority', 'weight', 'status', 'conn_limit'
-    ]
+    # 如果提供了完整的 member 对象，直接使用
+    if 'member' in module.params and module.params['member'] is not None:
+        pool_data['member'] = module.params['member']
+    else:
+        # 否则使用单独的参数构建 member 对象
+        member_params = ['nodename', 'server', 'port', 'priority', 'weight', 'status', 'conn_limit']
+        for param in member_params:
+            if param in module.params and module.params[param] is not None:
+                pool_data['member'][param] = module.params[param]
 
-    # 添加nodename和server（必需）
-    pool_data['member']['nodename'] = node
-    pool_data['member']['server'] = node
-
-    # 添加可选参数
-    for param in optional_params:
-        if param in module.params and module.params[param] is not None:
-            pool_data['member'][param] = module.params[param]
+        # 添加 member_protocol 参数（使用 member_protocol 而不是 protocol）
+        if 'member_protocol' in module.params and module.params['member_protocol'] is not None:
+            pool_data['member']['protocol'] = module.params['member_protocol']
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)
@@ -474,31 +464,36 @@ def slb_pool_member_del(module):
     """从服务池删除节点"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    pool_name = module.params['pool_name'] if 'pool_name' in module.params else ""
-    node = module.params['node'] if 'node' in module.params else ""
-    port = module.params['port'] if 'port' in module.params else 0
-    protocol = module.params['protocol'] if 'protocol' in module.params else 0
+    # 使用 name 参数（与API文档一致）
+    pool_name = module.params.get('name', '')
 
     # 检查必需参数
     if not pool_name:
-        module.fail_json(msg="从服务池删除节点需要提供pool_name参数")
-    if not node:
-        module.fail_json(msg="从服务池删除节点需要提供node参数")
+        module.fail_json(msg="从服务池删除节点需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.del" % (
         ip, authkey)
 
-    # 构造请求数据
+    # 构造请求数据 - 使用member对象（与API文档一致）
     pool_data = {
-        "name": pool_name,
-        "member": {
-            "nodename": node,
-            "server": node,
-            "port": port,
-            "protocol": protocol
-        }
+        "name": pool_name
     }
+
+    # 如果提供了完整的 member 对象，直接使用
+    if 'member' in module.params and module.params['member'] is not None:
+        pool_data['member'] = module.params['member']
+    else:
+        # 否则使用单独的参数构建 member 对象
+        pool_data['member'] = {}
+        member_params = ['nodename', 'server', 'port', 'priority', 'weight', 'status', 'conn_limit']
+        for param in member_params:
+            if param in module.params and module.params[param] is not None:
+                pool_data['member'][param] = module.params[param]
+
+        # 添加 member_protocol 参数
+        if 'member_protocol' in module.params and module.params['member_protocol'] is not None:
+            pool_data['member']['protocol'] = module.params['member_protocol']
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)
@@ -580,35 +575,33 @@ def slb_pool_member_edit(module):
     """编辑服务池成员"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    pool_name = module.params['pool_name'] if 'pool_name' in module.params else ""
-    node = module.params['node'] if 'node' in module.params else ""
+    # 使用 name 参数（与API文档一致），兼容 pool_name 别名
+    pool_name = module.params.get('name', '')
 
     if not pool_name:
-        module.fail_json(msg="编辑服务池成员需要提供pool_name参数")
-    if not node:
-        module.fail_json(msg="编辑服务池成员需要提供node参数")
+        module.fail_json(msg="编辑服务池成员需要提供name参数")
 
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.edit" % (ip, authkey)
 
-    # 构造请求数据 - 使用与add_pool_node相同的参数处理方式
+    # 构造请求数据 - 手动组装成member对象（与API文档结构一致）
     pool_data = {
         "name": pool_name,
         "member": {}
     }
 
-    # 定义可选参数列表
-    optional_params = [
-        'port', 'protocol', 'priority', 'weight', 'status', 'conn_limit'
-    ]
+    # 如果提供了完整的 member 对象，直接使用
+    if 'member' in module.params and module.params['member'] is not None:
+        pool_data['member'] = module.params['member']
+    else:
+        # 否则使用单独的参数构建 member 对象
+        member_params = ['nodename', 'server', 'port', 'priority', 'weight', 'status', 'conn_limit']
+        for param in member_params:
+            if param in module.params and module.params[param] is not None:
+                pool_data['member'][param] = module.params[param]
 
-    # 添加nodename和server（必需）
-    pool_data['member']['nodename'] = node
-    pool_data['member']['server'] = node
-
-    # 添加可选参数
-    for param in optional_params:
-        if param in module.params and module.params[param] is not None:
-            pool_data['member'][param] = module.params[param]
+        # 添加 member_protocol 参数（使用 member_protocol 而不是 protocol）
+        if 'member_protocol' in module.params and module.params['member_protocol'] is not None:
+            pool_data['member']['protocol'] = module.params['member_protocol']
 
     post_data = json.dumps(pool_data)
     response_data = ""
@@ -649,32 +642,29 @@ def slb_pool_member_onoff(module):
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.pool.member.onoff" % (ip, authkey)
 
-    # 构造请求数据 - 使用与add_node相同的参数处理方式
+    # 构造请求数据 - 与API文档结构一致
     pool_data = {
+        "name": module.params.get('name', ''),
         "member": {}
     }
 
-    # 定义可选参数列表
-    optional_params = [
-        'name', 'nodename', 'server', 'port', 'protocol', 'enable'
-    ]
-
-    # 添加基本参数
-    for param in optional_params:
-        if param in module.params and module.params[param] is not None:
-            # 特殊处理 enable 参数：转换为 0/1
-            if param == 'enable':
-                pool_data[param] = 1 if module.params[param] else 0
-            # 特殊处理 name 参数：这是服务池名称
-            elif param == 'name':
-                pool_data[param] = module.params[param]
-            # nodename 和 server 使用 node 参数
-            elif param in ['nodename', 'server']:
-                if 'node' in module.params and module.params['node'] is not None:
-                    pool_data['member'][param] = module.params['node']
-            # 其他参数放到 member 中
-            else:
+    # 如果提供了完整的 member 对象，直接使用
+    if 'member' in module.params and module.params['member'] is not None:
+        pool_data['member'] = module.params['member']
+    else:
+        # 否则使用单独的参数构建 member 对象
+        member_params = ['nodename', 'server', 'port', 'priority', 'weight', 'status', 'conn_limit']
+        for param in member_params:
+            if param in module.params and module.params[param] is not None:
                 pool_data['member'][param] = module.params[param]
+
+        # 添加 member_protocol 参数
+        if 'member_protocol' in module.params and module.params['member_protocol'] is not None:
+            pool_data['member']['protocol'] = module.params['member_protocol']
+
+    # 特殊处理 status 参数（启用/禁用状态）
+    if 'status' in module.params and module.params['status'] is not None:
+        pool_data['member']['status'] = module.params['status']
 
     # 转换为JSON格式
     post_data = json.dumps(pool_data)
@@ -711,33 +701,38 @@ def slb_pool_member_onoff(module):
 
 
 def main():
-    # 定义模块参数
+    # 定义模块参数 - 所有参数都单独定义，与API文档字段对应
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
                     'slb_pool_names_list', 'slb_pool_list', 'slb_pool_list_withcommon', 'slb_pool_get', 'slb_pool_add', 'slb_pool_edit', 'slb_pool_del', 'slb_pool_member_add', 'slb_pool_member_del', 'slb_pool_member_edit', 'slb_pool_member_onoff']),
-        # 服务池参数
+        # 服务池参数（pool对象内的字段）- Python用下划线，YAML可用连字符alias
         name=dict(type='str', required=False),
         protocol=dict(type='int', required=False),
         lb_method=dict(type='int', required=False),
         upnum=dict(type='int', required=False),
         healthcheck=dict(type='str', required=False),
         desc_pool=dict(type='str', required=False),
-        action_on_service_down=dict(type='int', required=False),
-        aux_node_log=dict(type='int', required=False),
-        # up_members_at_least参数
-        up_members_at_least_status=dict(type='int', required=False),
-        up_members_at_least_num=dict(type='int', required=False),
-        up_members_at_least_type=dict(type='int', required=False),
-        # 服务池成员参数
-        pool_name=dict(type='str', required=False),
-        node=dict(type='str', required=False),
+        action_on_service_down=dict(type='int', required=False, aliases=['action-on-service-down']),
+        aux_node_log=dict(type='int', required=False, aliases=['aux-node-log']),
+        slow_ramp_time=dict(type='int', required=False, aliases=['slow-ramp-time']),
+        node_select_fail_send_rst=dict(type='int', required=False, aliases=['node-select-fail-send-rst']),
+        # up-members-at-least 对象
+        up_members_at_least=dict(type='dict', required=False, aliases=['up-members-at-least']),
+        # members 数组（用于pool.edit）
+        members=dict(type='list', required=False, elements='dict'),
+        # 服务池成员参数（用于pool.member.add/edit）
+        nodename=dict(type='str', required=False),
+        server=dict(type='str', required=False),
         port=dict(type='int', required=False),
+        member_protocol=dict(type='int', required=False),
         priority=dict(type='int', required=False),
         weight=dict(type='int', required=False),
         status=dict(type='int', required=False),
-        conn_limit=dict(type='int', required=False)
+        conn_limit=dict(type='int', required=False),
+        # member 对象（用于pool.member.add/edit）
+        member=dict(type='dict', required=False),
     )
 
     # 创建AnsibleModule实例

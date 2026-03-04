@@ -827,9 +827,9 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
             'arp_ipv4_list', 'arp_ipv4_get', 'arp_ipv4_add', 'arp_ipv4_edit', 'arp_ipv4_del',
-            'arp_ipv4_statistics', 'arp_ipv4_clear',
+            'arp_ipv4_statis', 'arp_ipv4_clear',
             'arp_ipv6_list', 'arp_ipv6_get', 'arp_ipv6_add', 'arp_ipv6_edit', 'arp_ipv6_del',
-            'arp_ipv6_statistics', 'arp_ipv6_clear']),
+            'arp_ipv6_statis', 'arp_ipv6_clear']),
         # ARP参数
         ip_addr=dict(type='str', required=False),
         mac_addr=dict(type='str', required=False),

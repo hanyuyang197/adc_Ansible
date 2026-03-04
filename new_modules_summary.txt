@@ -1,0 +1,137 @@
+# ADC 新增模块和 Action 汇总文件
+# 最后更新时间: 2026-02-02
+
+## 第一批新增模块和 Action (资源统计相关)
+
+### 1. adc_slb_resource_statistics.py
+- slb_resource_statistics_list - 获取SLB资源统计信息
+
+### 2. adc_network_resource_statistics.py
+- network_resource_statistics_list - 获取网络资源统计信息
+- network_resource_statistics_list_all_partition - 获取所有分区的网络资源统计信息
+
+### 3. adc_profile_resource_statistics.py
+- profile_resource_statistics_list - 获取Profile资源统计信息
+
+### 4. adc_ssl_resource_statistics.py
+- ssl_resource_statistics_list - 获取SSL资源统计信息
+
+---
+
+## 第二批新增模块和 Action (系统管理相关)
+
+### 5. adc_system_operations.py (扩展现有模块)
+新增以下 action:
+- admin_disable_get - 获取管理员状态 (API: admin.disable.get)
+- admin_disable_edit - 禁用管理员用户 (API: admin.disable.edit)
+- admin_two_factor_authentication_get - 获取双因素认证状态 (API: admin.two_factor_authenication.get)
+- admin_two_factor_authentication_set - 开启双因素认证 (API: admin.two_factor_authenication.set)
+
+原有的 action:
+- save - 保存配置
+- operation_reboot - 系统重启 (API: system.action.reboot)
+- operation_reload - 重新加载配置 (API: system.action.reload)
+- operation_shutdown - 系统关机 (API: system.action.shutdown)
+
+### 6. adc_system_image.py (全新模块)
+- system_image_list - 获取版本镜像列表 (API: system.image.list)
+- system_image_apply - 指定镜像 (API: system.image.apply)
+- system_image_upload - 通过 FTP/TFTP 方式上传镜像 (API: system.image.upload)
+
+---
+
+## 第三批新增 Action (SLB虚拟地址相关)
+
+### 7. adc_slb_va.py (扩展现有模块)
+新增以下 action:
+- slb_va_stat_list - 获取虚拟地址状态列表 (API: slb.va.stat.list)
+- slb_va_stat_get - 获取虚拟地址状态详情 (API: slb.va.stat.get)
+- slb_va_stat_clear - 清除虚拟地址状态统计 (API: slb.va.stat.clear)
+
+原有的 action:
+- slb_va_list - 获取虚拟地址列表
+- slb_va_get - 获取虚拟地址详情
+- slb_va_add - 添加虚拟地址
+- slb_va_edit - 编辑虚拟地址
+- slb_va_del - 删除虚拟地址
+
+---
+
+## 详细参数说明
+
+### admin.disable.edit 参数
+- enable (int, 必选): 0=使用admin用户, 1=禁用admin用户
+- name (str, 必选): 用户名
+- password (str, 可选): 密码，缺省值: 不修改
+
+### admin.two_factor_authenication.set 参数
+- tfaenable (int, 必选): 0=不开启双因素认证, 1=开启双因素认证
+- admintfaenable (int, 必选): 0=不开启双因素认证, 1=开启双因素认证
+
+### system.image.apply 参数
+- file_name (str, 必选): 指定下次启动使用的镜像文件的名称
+
+### system.image.upload 参数 (FTP/TFTP)
+- host (str, 必选): FTP/TFTP 服务器的 IPv4 地址
+- location (str, 必选): 镜像名称，镜像必须处于 FTP/TFTP 的根目录
+- protocol (str, 必选): 使用的协议，仅支持 "FTP" 和 "TFTP"
+- port (int, 可选): 使用的端口号，FTP 缺省 21, TFTP 缺省 69
+- username (str, 可选): 用户名，缺省值: 空字符串
+- password (str, 可选): 密码，缺省值: 空字符串
+- use_mgmt_port (int, 可选): 使用管理口，缺省值: 0
+- reboot (int, 可选): 上传完镜像后是否自动重启，缺省值: 1
+- save_config (int, 可选): 自动重启时是否保存配置，缺省值: 0
+
+---
+
+## API Action 映射表
+
+| 模块文件 | Action 名称 | API Action | 说明 |
+|---------|------------|-----------|------|
+| adc_slb_resource_statistics.py | slb_resource_statistics_list | slb.resource_statistics.list | 获取SLB资源统计 |
+| adc_network_resource_statistics.py | network_resource_statistics_list | network.resource_statistics.list | 获取网络资源统计 |
+| adc_network_resource_statistics.py | network_resource_statistics_list_all_partition | network.resource_statistics.list.all_partition | 获取所有分区网络资源统计 |
+| adc_profile_resource_statistics.py | profile_resource_statistics_list | profile.resource_statistics.list | 获取Profile资源统计 |
+| adc_ssl_resource_statistics.py | ssl_resource_statistics_list | ssl.resource_statistics.list | 获取SSL资源统计 |
+| adc_system_operations.py | admin_disable_get | admin.disable.get | 获取管理员状态 |
+| adc_system_operations.py | admin_disable_edit | admin.disable.edit | 禁用管理员用户 |
+| adc_system_operations.py | admin_two_factor_authentication_get | admin.two_factor_authenication.get | 获取双因素认证状态 |
+| adc_system_operations.py | admin_two_factor_authentication_set | admin.two_factor_authenication.set | 设置双因素认证 |
+| adc_system_operations.py | save | save | 保存配置 |
+| adc_system_operations.py | operation_reboot | system.action.reboot | 系统重启 |
+| adc_system_operations.py | operation_reload | system.action.reload | 重新加载配置 |
+| adc_system_operations.py | operation_shutdown | system.action.shutdown | 系统关机 |
+| adc_system_image.py | system_image_list | system.image.list | 获取版本镜像列表 |
+| adc_system_image.py | system_image_apply | system.image.apply | 指定镜像 |
+| adc_system_image.py | system_image_upload | system.image.upload | 上传镜像 |
+| adc_slb_va.py | slb_va_stat_list | slb.va.stat.list | 获取虚拟地址状态列表 |
+| adc_slb_va.py | slb_va_stat_get | slb.va.stat.get | 获取虚拟地址状态详情 |
+| adc_slb_va.py | slb_va_stat_clear | slb.va.stat.clear | 清除虚拟地址状态统计 |
+| adc_system_operations.py | admin_disable_edit | admin.disable.edit | 禁用管理员用户 |
+| adc_system_operations.py | admin_two_factor_authentication_get | admin.two_factor_authenication.get | 获取双因素认证状态 |
+| adc_system_operations.py | admin_two_factor_authentication_set | admin.two_factor_authenication.set | 设置双因素认证 |
+| adc_system_operations.py | save | save | 保存配置 |
+| adc_system_operations.py | operation_reboot | system.action.reboot | 系统重启 |
+| adc_system_operations.py | operation_reload | system.action.reload | 重新加载配置 |
+| adc_system_operations.py | operation_shutdown | system.action.shutdown | 系统关机 |
+| adc_system_image.py | system_image_list | system.image.list | 获取版本镜像列表 |
+| adc_system_image.py | system_image_apply | system.image.apply | 指定镜像 |
+| adc_system_image.py | system_image_upload | system.image.upload | 上传镜像 |
+
+---
+
+## 统计信息
+
+- **新增模块数量**: 6 个 (3个现有模块扩展 + 3个全新模块)
+- **新增 Action 数量**: 19 个
+- **涉及的 API 分类**: SLB, Network, Profile, SSL, System
+- **文件位置**: c:/任务列表/8、巡检脚本集合/港交所/adc_Ansible/library/
+
+---
+
+## 备注
+
+1. 所有模块都使用 `format_adc_response_for_ansible` 通用函数来格式化响应
+2. 所有模块都支持 Python 2 和 Python 3 兼容
+3. 映射关系已更新到 `module_action_mapping.txt` 文件中
+4. 密码相关参数都标记了 `no_log=True` 以避免在日志中泄露

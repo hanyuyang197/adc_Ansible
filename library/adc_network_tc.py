@@ -579,6 +579,8 @@ def network_tc_rule_add(module):
     rule_name_final = rule_name if rule_name else rule_id
     if not tc_name or not rule_name_final:
         module.fail_json(msg="添加TC规则需要提供tc_name和rule_name(或rule_id)参数")
+    if fw_bandwidth == "" or rev_bandwidth == "" or acl == "":
+        module.fail_json(msg="添加TC规则需要提供fw_bandwidth、rev_bandwidth和acl参数（必选）")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.tc.rule.add" % (
@@ -661,6 +663,8 @@ def network_tc_rule_edit(module):
     rule_name_final = rule_name if rule_name else rule_id
     if not tc_name or not rule_name_final:
         module.fail_json(msg="编辑TC规则需要提供tc_name和rule_name(或rule_id)参数")
+    if fw_bandwidth == "" or rev_bandwidth == "" or acl == "":
+        module.fail_json(msg="编辑TC规则需要提供fw_bandwidth、rev_bandwidth和acl参数（必选）")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=network.tc.rule.edit" % (

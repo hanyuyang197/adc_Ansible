@@ -431,7 +431,7 @@ def nat_static_statis(module):
     """获取NAT静态映射统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    statis_type = module.params['statis_type'] if 'statis_type' in module.params else 0
+    statis_type = module.params['static_type'] if 'static_type' in module.params else 0
     limit = module.params['limit'] if 'limit' in module.params else 0
     index = module.params['index'] if 'index' in module.params else 0
     searchbk = module.params['searchbk'] if 'searchbk' in module.params else ""
@@ -499,27 +499,22 @@ def nat_static_clear(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.static.clear" % (
         ip, authkey)
 
-    # 构造空数据
-    post_data = json.dumps({})
-
     # 初始化响应数据
     response_data = ""
 
     try:
-        # 根据Python版本处理编码
+        # 根据Python版本处理请求 - 使用GET请求
         if sys.version_info[0] >= 3:
             # Python 3
             import urllib.request as urllib_request
-            post_data = post_data.encode('utf-8')
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             # Python 2
             import urllib2 as urllib_request
-            req = urllib_request.Request(url, data=post_data, headers={
-                                         'Content-Type': 'application/json'})
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -572,7 +567,7 @@ def main():
         old_nat_port=dict(type='int', required=False),
         old_port_num=dict(type='int', required=False),
         # 统计信息查询参数
-        statis_type=dict(type='int', required=False, choices=[0, 1, 2]),
+        static_type=dict(type='int', required=False, choices=[0, 1, 2]),
         limit=dict(type='int', required=False),
         searchbk=dict(type='str', required=False)
     )

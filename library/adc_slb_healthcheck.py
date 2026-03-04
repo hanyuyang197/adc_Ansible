@@ -153,7 +153,26 @@ def slb_healthcheck_add(module):
         'alias_ipv4', 'alias_ipv6', 'alias_port', 'port', 'http_version',
         'mode', 'icmp_alias_addr', 'host', 'url', 'post_data', 'post_file',
         'username', 'password', 'code', 'pattern', 'pattern_disable_str',
-        'server_fail_code', 'trans_mode', 'sslver', 'combo'
+        'server_fail_code', 'trans_mode', 'sslver', 'combo',
+        # HTTPS/SSL/HTTP2/HTTP2S相关参数
+        'header', 'sni', 'https_ca', 'https_cert', 'https_key', 'https_key_password',
+        'https_ecert', 'https_ekey', 'https_ekey_password', 'cipher_list',
+        # HTTP2/HTTP2S/SSL相关参数
+        'send_str', 'response_str', 'response_disable_str', 'send_rst',
+        # 数据库相关参数
+        'database_name', 'database_type', 'query', 'row', 'column',
+        # DNS相关参数
+        'domain', 'record_type', 'wantreturn', 'want_ipv4', 'want_ipv6', 'ip_addr', 'dns_over_tcp',
+        # LDAP相关参数
+        'base', 'filter', 'ssl',
+        # IMAP/POP3相关参数
+        'plain_text', 'login', 'cram_md5',
+        # SIP相关参数
+        'register',
+        # SNMP相关参数
+        'operation', 'oid', 'community',
+        # 自定义脚本相关参数
+        'script'
     ]
 
     # 添加基本参数
@@ -219,7 +238,26 @@ def slb_healthcheck_edit(module):
         'alias_ipv4', 'alias_ipv6', 'alias_port', 'port', 'http_version',
         'mode', 'icmp_alias_addr', 'host', 'url', 'post_data', 'post_file',
         'username', 'password', 'code', 'pattern', 'pattern_disable_str',
-        'server_fail_code', 'trans_mode', 'sslver', 'combo'
+        'server_fail_code', 'trans_mode', 'sslver', 'combo',
+        # HTTPS/SSL/HTTP2/HTTP2S相关参数
+        'header', 'sni', 'https_ca', 'https_cert', 'https_key', 'https_key_password',
+        'https_ecert', 'https_ekey', 'https_ekey_password', 'cipher_list',
+        # HTTP2/HTTP2S/SSL相关参数
+        'send_str', 'response_str', 'response_disable_str', 'send_rst',
+        # 数据库相关参数
+        'database_name', 'database_type', 'query', 'row', 'column',
+        # DNS相关参数
+        'domain', 'record_type', 'wantreturn', 'want_ipv4', 'want_ipv6', 'ip_addr', 'dns_over_tcp',
+        # LDAP相关参数
+        'base', 'filter', 'ssl',
+        # IMAP/POP3相关参数
+        'plain_text', 'login', 'cram_md5',
+        # SIP相关参数
+        'register',
+        # SNMP相关参数
+        'operation', 'oid', 'community',
+        # 自定义脚本相关参数
+        'script'
     ]
 
     # 添加基本参数
@@ -713,9 +751,12 @@ def main():
                     'slb_healthcheck_script_list', 'slb_healthcheck_script_upload', 'slb_healthcheck_script_del', 'slb_healthcheck_postfile_list', 'slb_healthcheck_postfile_upload', 'slb_healthcheck_postfile_del']),
         # 健康检查通用参数
         name=dict(type='str', required=False),
-        # hc_type=dict(type='str', required=False, choices=[
-        #     'icmp', 'http', 'https', 'tcp', 'udp', 'combo', 'arp', 'database', 'dns', 'ftp',
-        #     'imap', 'ldap', 'ntp', 'pop3', 'radius', 'rtsp', 'sip', 'smtp', 'snmp']),
+        type=dict(type='str', required=False, choices=[
+            'icmp', 'http', 'http-pro', 'https', 'http2', 'http2s', 'ssl',
+            'arp', 'database', 'dns', 'ftp', 'imap', 'ldap', 'ntp',
+            'pop3', 'radius', 'rtsp', 'sip', 'smtp', 'snmp',
+            'tcp', 'tcp-pro', 'udp', 'udp-pro', 'script', 'combo'
+        ]),
         retry=dict(type='int', required=False),
         interval=dict(type='int', required=False),
         timeout=dict(type='int', required=False),
@@ -734,7 +775,7 @@ def main():
         # ICMP类型参数
         mode=dict(type='str', required=False),
         icmp_alias_addr=dict(type='str', required=False),
-        # HTTP/HTTPS类型参数
+        # HTTP/HTTPS/HTTP2/HTTP2S类型参数
         host=dict(type='str', required=False),
         url=dict(type='str', required=False),
         post_data=dict(type='str', required=False),
@@ -747,8 +788,57 @@ def main():
         server_fail_code=dict(type='str', required=False),
         trans_mode=dict(type='int', required=False),
         sslver=dict(type='str', required=False),
+        # HTTPS/SSL相关参数
+        header=dict(type='list', required=False, elements='dict'),
+        sni=dict(type='str', required=False),
+        https_ca=dict(type='str', required=False),
+        https_cert=dict(type='str', required=False),
+        https_key=dict(type='str', required=False, no_log=True),
+        https_key_password=dict(type='str', required=False, no_log=True),
+        https_ecert=dict(type='str', required=False),
+        https_ekey=dict(type='str', required=False),
+        https_ekey_password=dict(type='str', required=False, no_log=True),
+        cipher_list=dict(type='list', required=False),
+        # HTTP2/HTTP2S/SSL相关参数
+        send_str=dict(type='str', required=False),
+        response_str=dict(type='str', required=False),
+        response_disable_str=dict(type='str', required=False),
+        send_rst=dict(type='int', required=False),
+        # 数据库类型参数
+        database_name=dict(type='str', required=False),
+        database_type=dict(type='int', required=False),
+        query=dict(type='str', required=False),
+        row=dict(type='int', required=False),
+        column=dict(type='int', required=False),
+        # DNS类型参数
+        domain=dict(type='str', required=False),
+        record_type=dict(type='str', required=False),
+        wantreturn=dict(type='str', required=False),
+        want_ipv4=dict(type='str', required=False),
+        want_ipv6=dict(type='str', required=False),
+        ip_addr=dict(type='str', required=False),
+        dns_over_tcp=dict(type='int', required=False),
+        # LDAP类型参数
+        base=dict(type='str', required=False),
+        filter=dict(type='str', required=False),
+        ssl=dict(type='int', required=False),
+        # NTP类型参数（无需额外参数）
+        # IMAP/POP3类型参数
+        plain_text=dict(type='int', required=False),
+        login=dict(type='int', required=False),
+        cram_md5=dict(type='int', required=False),
+        # SIP类型参数
+        register=dict(type='int', required=False),
+        # SMTP/RADIUS类型参数
+        # RTSP类型参数
+        # SNMP类型参数
+        operation=dict(type='str', required=False),
+        oid=dict(type='str', required=False),
+        community=dict(type='str', required=False),
         # Combo类型参数
         combo=dict(type='str', required=False),
+        # 自定义脚本类型参数
+        script=dict(type='str', required=False),
         # 脚本上传参数
         script_name=dict(type='str', required=False),
         script_content=dict(type='str', required=False),

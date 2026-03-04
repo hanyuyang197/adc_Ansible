@@ -39,7 +39,7 @@ def vrrp_cfgsync_peer_del(module):
 
     # 定义可选参数列表（根据API具体需求调整）
     optional_params = [
-        'name', 'ip_addr', 'port', 'user', 'password', 'save', 'description', 'status', 'config', 'setting', 'value', 'enable', 'group'
+        'name', 'ip_addr', 'port', 'user', 'password', 'save', 'description', 'status', 'config', 'setting', 'value', 'enable', 'group', 'role'
         # 根据具体API需求添加更多参数
     ]
 
@@ -143,6 +143,7 @@ def vrrp_cfgsync_peer_add(module):
     user = module.params['user']
     password = module.params['password']
     save = module.params['save']
+    role = module.params.get('role')  # 获取role参数
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.cfgsync.peer.add" % (
@@ -159,6 +160,10 @@ def vrrp_cfgsync_peer_add(module):
         "password": password,
         "save": save
     }
+
+    # 如果提供了role参数，添加到请求数据中
+    if role is not None:
+        request_data["role"] = role
 
     # 转换为JSON格式
     post_data = json.dumps(request_data)
@@ -265,6 +270,7 @@ def vrrp_cfgsync_peer_edit(module):
     user = module.params['user']
     password = module.params['password']
     save = module.params['save']
+    role = module.params.get('role')  # 获取role参数
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.cfgsync.peer.edit" % (
@@ -281,6 +287,10 @@ def vrrp_cfgsync_peer_edit(module):
         "password": password,
         "save": save
     }
+
+    # 如果提供了role参数，添加到请求数据中
+    if role is not None:
+        request_data["role"] = role
 
     # 转换为JSON格式
     post_data = json.dumps(request_data)
@@ -340,7 +350,8 @@ def main():
         setting=dict(type='dict', required=False),
         value=dict(type='str', required=False),
         enable=dict(type='bool', required=False),
-        group=dict(type='str', required=False)
+        group=dict(type='str', required=False),
+        role=dict(type='str', required=False)  # 响应参数，保留兼容性
     )
 
     # 创建AnsibleModule实例

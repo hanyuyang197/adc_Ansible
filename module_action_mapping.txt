@@ -1,0 +1,161 @@
+# ADC 模块和 Action 映射文件
+# 格式: 模块名 = action1, action2, action3,...
+
+# SLB 模块
+adc_slb_resource_statistics.py = slb_resource_statistics_list
+adc_slb_bwlist.py = slb_bwlist_upload, slb_bwlist_del, slb_bwlist_list
+adc_slb_cache.py = slb_cache_add, slb_cache_del, slb_cache_edit, slb_cache_list, slb_cache_get
+adc_slb_connmulti.py = slb_connmulti_list, slb_connmulti_list_withcommon, slb_connmulti_get, slb_connmulti_add, slb_connmulti_edit, slb_connmulti_del
+adc_slb_erule.py = slb_erule_add, slb_erule_del, slb_erule_edit, slb_erule_list, slb_erule_get
+adc_slb_healthcheck.py = slb_healthcheck_add, slb_healthcheck_del, slb_healthcheck_edit, slb_healthcheck_list, slb_healthcheck_get
+adc_slb_healthtest.py = slb_healthtest_add, slb_healthtest_del, slb_healthtest_edit, slb_healthtest_get, slb_healthtest_list
+adc_slb_node.py = slb_node_add, slb_node_del, slb_node_edit, slb_node_list, slb_node_get
+adc_slb_node_port.py = slb_nodeport_add, slb_nodeport_del, slb_nodeport_edit, slb_nodeport_list, slb_nodeport_get
+adc_slb_passive_health_check.py = slb_passivehealthcheck_add, slb_passivehealthcheck_del, slb_passivehealthcheck_edit, slb_passivehealthcheck_list, slb_passivehealthcheck_get
+adc_slb_persist.py = slb_persist_cookie_add, slb_persist_cookie_del, slb_persist_cookie_edit, slb_persist_cookie_get, slb_persist_cookie_list
+adc_slb_persist.py = slb_persist_srcip_add, slb_persist_srcip_del, slb_persist_srcip_edit, slb_persist_srcip_get, slb_persist_srcip_list
+adc_slb_persist.py = slb_persist_dstip_add, slb_persist_dstip_del, slb_persist_dstip_edit, slb_persist_dstip_get, slb_persist_dstip_list
+adc_slb_persist.py = slb_persist_sslid_add, slb_persist_sslid_del, slb_persist_sslid_edit, slb_persist_sslid_get, slb_persist_sslid_list
+adc_slb_policy.py = slb_policy_add, slb_policy_del, slb_policy_edit, slb_policy_list, slb_policy_get
+adc_slb_pool.py = slb_pool_add, slb_pool_del, slb_pool_edit, slb_pool_list, slb_pool_get
+adc_slb_profile.py = slb_profile_add, slb_profile_del, slb_profile_edit, slb_profile_list, slb_profile_get
+adc_slb_profile_dns.py = slb_profile_dns_add, slb_profile_dns_del, slb_profile_dns_edit, slb_profile_dns_get, slb_profile_dns_list
+adc_slb_profile_dnslog.py = slb_profile_dnslog_add, slb_profile_dnslog_del, slb_profile_dnslog_edit, slb_profile_dnslog_get, slb_profile_dnslog_list
+adc_slb_profile_fastl4.py = slb_profile_fastl4_add, slb_profile_fastl4_del, slb_profile_fastl4_edit, slb_profile_fastl4_get, slb_profile_fastl4_list
+adc_slb_profile_ftp.py = slb_profile_ftp_add, slb_profile_ftp_del, slb_profile_ftp_edit, slb_profile_ftp_get, slb_profile_ftp_list
+adc_slb_profile_http_hostswitch.py = slb_profile_http_hostswitch_add, slb_profile_http_hostswitch_del, slb_profile_http_hostswitch_edit, slb_profile_http_hostswitch_get, slb_profile_http_hostswitch_list
+adc_slb_profile_http.py = slb_profile_http_add, slb_profile_http_del, slb_profile_http_edit, slb_profile_http_get, slb_profile_http_list
+adc_slb_profile_http2.py = slb_profile_http2_add, slb_profile_http2_del, slb_profile_http2_edit, slb_profile_http2_get, slb_profile_http2_list
+adc_slb_profile_natlog.py = slb_profile_natlog_add, slb_profile_natlog_del, slb_profile_natlog_edit, slb_profile_natlog_get, slb_profile_natlog_list
+adc_slb_profile_request_log.py = slb_profile_requestlog_add, slb_profile_requestlog_del, slb_profile_requestlog_edit, slb_profile_requestlog_get, slb_profile_requestlog_list
+adc_slb_profile_rtsp.py = slb_profile_rtsp_add, slb_profile_rtsp_del, slb_profile_rtsp_edit, slb_profile_rtsp_get, slb_profile_rtsp_list
+adc_slb_profile_sip.py = slb_profile_sip_add, slb_profile_sip_del, slb_profile_sip_edit, slb_profile_sip_get, slb_profile_sip_list
+adc_slb_profile_smtp.py = slb_profile_smtp_add, slb_profile_smtp_del, slb_profile_smtp_edit, slb_profile_smtp_get, slb_profile_smtp_list
+adc_slb_profile_tcp.py = slb_profile_tcp_add, slb_profile_tcp_del, slb_profile_tcp_edit, slb_profile_tcp_get, slb_profile_tcp_list
+adc_slb_profile_udp.py = slb_profile_udp_add, slb_profile_udp_del, slb_profile_udp_edit, slb_profile_udp_get, slb_profile_udp_list
+adc_slb_profile_vs.py = slb_profile_vs_add, slb_profile_vs_del, slb_profile_vs_edit, slb_profile_vs_get, slb_profile_vs_list
+adc_slb_ruletable.py = slb_ruletable_add, slb_ruletable_del, slb_ruletable_edit, slb_ruletable_list, slb_ruletable_get
+adc_slb_ruletable_dns.py = slb_ruletable_dns_add, slb_ruletable_dns_del, slb_ruletable_dns_edit, slb_ruletable_dns_get, slb_ruletable_dns_list
+adc_slb_ruletable_string.py = slb_ruletable_string_add, slb_ruletable_string_del, slb_ruletable_string_edit, slb_ruletable_string_get, slb_ruletable_string_list
+adc_slb_ruletable_file.py = slb_ruletable_file_add, slb_ruletable_file_del, slb_ruletable_file_edit, slb_ruletable_file_get, slb_ruletable_file_list
+adc_slb_ssl_certificate.py = slb_ssl_certificate_add, slb_ssl_certificate_del, slb_ssl_certificate_edit, slb_ssl_certificate_list, slb_ssl_certificate_get
+adc_slb_ssl_certkey_match.py = slb_ssl_certkey_match_add, slb_ssl_certkey_match_del, slb_ssl_certkey_match_get, slb_ssl_certkey_match_list
+adc_slb_ssl_crl.py = slb_ssl_crl_add, slb_ssl_crl_del, slb_ssl_crl_edit, slb_ssl_crl_list, slb_ssl_crl_get
+adc_slb_ssl_enckey_cfca_upload.py = slb_ssl_enckey_cfca_upload, slb_ssl_enckey_cfca_del
+adc_slb_ssl_filtercert.py = slb_ssl_filtercert_add, slb_ssl_filtercert_del, slb_ssl_filtercert_edit, slb_ssl_filtercert_get, slb_ssl_filtercert_list
+adc_slb_ssl_key.py = slb_ssl_key_add, slb_ssl_key_del, slb_ssl_key_edit, slb_ssl_key_get, slb_ssl_key_list
+adc_slb_sslclient.py = slb_sslclient_add, slb_sslclient_del, slb_sslclient_edit, slb_sslclient_get, slb_sslclient_list
+adc_slb_sslserver.py = slb_sslserver_add, slb_sslserver_del, slb_sslserver_edit, slb_sslserver_get, slb_sslserver_list
+adc_slb_stat.py = slb_stat_list, slb_stat_get, slb_stat_clear
+adc_slb_va.py = slb_va_add, slb_va_del, slb_va_edit, slb_va_list, slb_va_get, slb_va_stat_list, slb_va_stat_get, slb_va_stat_clear
+adc_slb_va_vs.py = slb_vavs_add, slb_vavs_del, slb_vavs_edit, slb_vavs_get, slb_vavs_list
+
+# Network 模块
+adc_network_acl_ipv4_ext.py = acl_ipv4_ext_add, acl_ipv4_ext_del, acl_ipv4_ext_edit, acl_ipv4_ext_get, acl_ipv4_ext_list
+adc_network_acl_ipv4_std.py = acl_ipv4_std_add, acl_ipv4_std_del, acl_ipv4_std_edit, acl_ipv4_std_get, acl_ipv4_std_list
+adc_network_acl_ipv6.py = acl_ipv6_add, acl_ipv6_del, acl_ipv6_edit, acl_ipv6_get, acl_ipv6_list
+adc_network_arp.py = arp_ipv4_add, arp_ipv4_del, arp_ipv4_edit, arp_ipv4_get, arp_ipv4_list
+adc_network_bgp.py = bgp_add, bgp_del, bgp_edit, bgp_get, bgp_list
+adc_network_ddos.py = ddos_add, ddos_del, ddos_edit, ddos_get, ddos_list
+adc_network_interface.py = interface_add, interface_del, interface_edit, interface_get, interface_list, interface_add_ip, interface_del_ip, interface_edit_ip, interface_get_ip, interface_list_ip
+adc_network_lldp.py = lldp_add, lldp_del, lldp_edit, lldp_get, lldp_list
+adc_network_mode.py = mode_set, mode_get
+adc_network_nat_global.py = nat_global_set, nat_global_get
+adc_network_nat_map.py = nat_map_add, nat_map_del, nat_map_list, nat_ipv6_map_add, nat_ipv6_map_del, nat_ipv6_map_list
+adc_network_nat_network.py = nat_network_add, nat_network_del, nat_network_edit, nat_network_get, nat_network_list
+adc_network_nat_pool.py = nat_pool_add, nat_pool_del, nat_pool_edit, nat_pool_get, nat_pool_list
+adc_network_nat_pool_group.py = nat_poolgroup_add, nat_poolgroup_del, nat_poolgroup_edit, nat_poolgroup_get, nat_poolgroup_list
+adc_network_nat_pool_stats.py = nat_poolstats_get
+adc_network_nat_policy.py = nat_policy_add, nat_policy_del, nat_policy_edit, nat_policy_get, nat_policy_list
+adc_network_nat_static.py = nat_static_add, nat_static_del, nat_static_edit, nat_static_get, nat_static_list, nat_ipv6_static_add, nat_ipv6_static_del, nat_ipv6_static_edit, nat_ipv6_static_get, nat_ipv6_static_list
+adc_network_nat_timeout.py = nat_timeout_set, nat_timeout_get
+adc_network_ospf.py = ospf_add, ospf_del, ospf_edit, ospf_get, ospf_list
+adc_network_port_list_profile.py = portlistprofile_add, portlistprofile_del, portlistprofile_edit, portlistprofile_get, portlistprofile_list
+adc_network_route_static_ctrl_ipv4.py = route_static_ctrl_ipv4_add, route_static_ctrl_ipv4_del, route_static_ctrl_ipv4_edit, route_static_ctrl_ipv4_get, route_static_ctrl_ipv4_list
+adc_network_route_static_ctrl_ipv6.py = route_static_ctrl_ipv6_add, route_static_ctrl_ipv6_del, route_static_ctrl_ipv6_edit, route_static_ctrl_ipv6_get, route_static_ctrl_ipv6_list
+adc_network_route_static_ipv4.py = route_static_ipv4_add, route_static_ipv4_del, route_static_ipv4_edit, route_static_ipv4_get, route_static_ipv4_list
+adc_network_route_static_ipv6.py = route_static_ipv6_add, route_static_ipv6_del, route_static_ipv6_edit, route_static_ipv6_get, route_static_ipv6_list
+adc_network_route_static_mgmt_ipv4.py = route_static_mgmt_ipv4_add, route_static_mgmt_ipv4_del, route_static_mgmt_ipv4_edit, route_static_mgmt_ipv4_get, route_static_mgmt_ipv4_list
+adc_network_route_static_mgmt_ipv6.py = route_static_mgmt_ipv6_add, route_static_mgmt_ipv6_del, route_static_mgmt_ipv6_edit, route_static_mgmt_ipv6_get, route_static_mgmt_ipv6_list
+adc_network_resource_statistics.py = network_resource_statistics_list, network_resource_statistics_list_all_partition
+adc_network_syn_cookie.py = syn_cookie_add, syn_cookie_del, syn_cookie_edit, syn_cookie_get, syn_cookie_list
+adc_network_tc.py = tc_add, tc_del, tc_edit, tc_get, tc_list
+adc_network_trunk.py = trunk_add, trunk_del, trunk_edit, trunk_get, trunk_list
+adc_network_vlan.py = vlan_add, vlan_del, vlan_edit, vlan_get, vlan_list
+
+# System 模块
+adc_system_aaa.py = aaa_add, aaa_del, aaa_edit, aaa_get, aaa_list
+adc_system_banner.py = banner_set, banner_get
+adc_system_client_lock.py = client_lock_add, client_lock_del, client_lock_edit, client_lock_get, client_lock_list
+adc_system_config_file.py = configfile_add, configfile_del, configfile_get, configfile_list, configfile_import, configfile_export
+adc_system_dns.py = dns_set, dns_get
+adc_system_domain_table.py = domaintable_add, domaintable_del, domaintable_edit, domaintable_get, domaintable_list
+adc_system_domaintable_file.py = domaintablefile_add, domaintablefile_del, domaintablefile_get, domaintablefile_list
+adc_system_global_config.py = global_config_set, global_config_get
+adc_system_ha_vrrp.py = vrrp_add, vrrp_del, vrrp_edit, vrrp_get, vrrp_list
+adc_system_hostname.py = hostname_set, hostname_get
+adc_system_hosts.py = hosts_add, hosts_del, hosts_edit, hosts_get, hosts_list
+adc_system_log_alarm.py = log_alarm_list, log_alarm_get
+adc_system_log_config.py = log_config_set, log_config_get
+adc_system_log_send.py = log_send
+adc_system_ntp.py = ntp_add, ntp_del, ntp_edit, ntp_get, ntp_list
+adc_system_operations.py = save, operation_reboot, operation_reload, operation_shutdown, admin_disable_get, admin_disable_edit, admin_two_factor_authentication_get, admin_two_factor_authentication_set
+adc_system_partition.py = partition_add, partition_del, partition_edit, partition_get, partition_list
+adc_system_ports.py = ports_list, ports_get
+adc_system_security_banner.py = security_banner_add, security_banner_del, security_banner_get, security_banner_list
+adc_system_smtp.py = smtp_add, smtp_del, smtp_edit, smtp_get, smtp_list
+adc_system_snmp_v3.py = snmpv3_add, snmpv3_del, snmpv3_edit, snmpv3_get, snmpv3_list
+adc_system_snmp.py = snmp_add, snmp_del, snmp_edit, snmp_get, snmp_list
+adc_system_sys_cert.py = sys_cert_add, sys_cert_del, sys_cert_get, sys_cert_list
+adc_system_sys_csr.py = sys_csr_add, sys_csr_del, sys_csr_get, sys_csr_list
+adc_system_time.py = time_set, time_get
+adc_system_timerange.py = timerange_add, timerange_del, timerange_edit, timerange_get, timerange_list
+adc_system_user.py = user_add, user_del, user_edit, user_get, user_list
+adc_system_web_cert.py = web_cert_add, web_cert_del, web_cert_get, web_cert_list
+adc_system_web_ciphers.py = web_cipher_add, web_cipher_del, web_cipher_get, web_cipher_list
+adc_system_web_session.py = web_session_set, web_session_get
+adc_system_image.py = system_image_list, system_image_apply, system_image_upload
+
+# VRRP 模块
+adc_vrrp_cfgsync_action_pull_push.py = cfgsync_pull, cfgsync_push
+adc_vrrp_cfgsync_action_sync.py = cfgsync_sync
+adc_vrrp_cfgsync_auto.py = cfgsync_auto_set, cfgsync_auto_get
+adc_vrrp_cfgsync_flag.py = cfgsync_flag_set, cfgsync_flag_get
+adc_vrrp_cfgsync_notify.py = cfgsync_notify_set, cfgsync_notify_get
+adc_vrrp_cfgsync_peer.py = cfgsync_peer_add, cfgsync_peer_del, cfgsync_peer_edit, cfgsync_peer_get, cfgsync_peer_list
+adc_vrrp_floating_ip.py = floating_ip_add, floating_ip_del, floating_ip_edit, floating_ip_get, floating_ip_list
+adc_vrrp_force_offline.py = force_offline
+adc_vrrp_group.py = vrrp_add, vrrp_del, vrrp_edit, vrrp_get, vrrp_list
+adc_vrrp_heart_all.py = vrrp_heart_all_get, vrrp_heart_all_set
+adc_vrrp_heart_eth.py = vrrp_heart_eth_get, vrrp_heart_eth_set
+adc_vrrp_heart_trunk.py = vrrp_heart_trunk_get, vrrp_heart_trunk_set
+adc_vrrp_heart_mgmt_statis.py = vrrp_heart_mgmt_statis_get
+adc_vrrp_l3_peer.py = l3_peer_enable, l3_peer_add, l3_peer_del, l3_peer_get, l3_peer_list
+adc_vrrp_l3peer_enable.py = l3peer_enable_set, l3peer_enable_get
+adc_vrrp_manually_active.py = manually_active
+adc_vrrp_manually_standby.py = manually_standby
+adc_vrrp_mgmt_peer.py = vrrp_mgmt_peer_set, vrrp_mgmt_peer_get
+adc_vrrp_sync_module.py = sync_module_set, sync_module_get
+adc_vrrp_track_ethernet.py = track_ethernet_set, track_ethernet_get, track_ethernet_list
+adc_vrrp_track_gateway.py = track_gateway_set, track_gateway_get
+adc_vrrp_track_pool.py = track_pool_set, track_pool_get
+adc_vrrp_track_route.py = track_route_set, track_route_get
+adc_vrrp_track_trunk.py = track_trunk_set, track_trunk_get
+adc_vrrp_track_vlan.py = track_vlan_set, track_vlan_get
+
+# WAF 模块
+adc_waf_profile.py = waf_profile_add, waf_profile_del, waf_profile_edit, waf_profile_get, waf_profile_list
+adc_waf_rule.py = waf_rule_add, waf_rule_del, waf_rule_edit, waf_rule_get, waf_rule_list
+adc_waf_vserver.py = waf_vserver_add, waf_vserver_del, waf_vserver_edit, waf_vserver_get, waf_vserver_list
+
+# Profile 资源统计模块
+adc_profile_resource_statistics.py = profile_resource_statistics_list
+
+# SSL 资源统计模块
+adc_ssl_resource_statistics.py = ssl_resource_statistics_list
+
+# Port List Profile 模块
+adc_port_list_profile.py = portlistprofileitem_add, portlistprofileitem_del, portlistprofileitem_edit, portlistprofileitem_get, portlistprofileitem_list
+
+# 资源池模块
+adc_pool_list_profile.py = poollistprofile_add, poollistprofile_del, poollistprofile_edit, poollistprofile_get, poollistprofile_list

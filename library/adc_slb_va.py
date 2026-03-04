@@ -489,6 +489,48 @@ def adc_slb_va_stat_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
+def adc_slb_va_stat_clear(module):
+    """清除虚拟地址状态统计"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.va.stat.clear" % (ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="清除虚拟地址状态统计失败: %s" % str(e))
+
+    # 使用通用响应解析函数
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "清除虚拟地址状态统计", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
 
 
 
@@ -499,7 +541,7 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
                     'slb_va_list', 'slb_va_get', 'slb_va_add', 'slb_va_edit', 'slb_va_del',
-                    'slb_va_stat_list', 'slb_va_stat_get']),
+                    'slb_va_stat_list', 'slb_va_stat_get', 'slb_va_stat_clear']),
         # 虚拟地址参数
         name=dict(type='str', required=False),
         va_type=dict(type='str', required=False, choices=[
@@ -549,6 +591,8 @@ def main():
         adc_slb_va_stat_list(module)
     elif action == 'slb_va_stat_get':
         adc_slb_va_stat_get(module)
+    elif action == 'slb_va_stat_clear':
+        adc_slb_va_stat_clear(module)
 
 
 

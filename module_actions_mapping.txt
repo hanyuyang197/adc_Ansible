@@ -773,12 +773,12 @@ adc_system_snmp_v3:
 adc_system_sys_cert:
   - system_sys_cert_get
   - system_sys_cert_relevance
-  - system_sys_csr_get
-  - system_sys_csr_list
 
 adc_system_sys_csr:
   - system_sys_csr_add
   - system_sys_csr_del
+  - system_sys_csr_get
+  - system_sys_csr_list
 
 adc_system_time:
   - system_time_get

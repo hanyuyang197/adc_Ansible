@@ -77,6 +77,8 @@ def interface_mgmt_set(module):
     ip_addr = module.params['ip_addr'] if 'ip_addr' in module.params else ""
     netmask = module.params['netmask'] if 'netmask' in module.params else ""
     gateway = module.params['gateway'] if 'gateway' in module.params else ""
+    ipv4_gw = module.params.get('ipv4_gw')
+    ipv6_gw = module.params.get('ipv6_gw')
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.mgmt.set" % (
@@ -92,6 +94,10 @@ def interface_mgmt_set(module):
         config_data['netmask'] = netmask
     if gateway:
         config_data['gateway'] = gateway
+    if ipv4_gw is not None:
+        config_data['ipv4_gw'] = ipv4_gw
+    if ipv6_gw is not None:
+        config_data['ipv6_gw'] = ipv6_gw
 
     # 转换为JSON格式
     post_data = json.dumps(config_data)
@@ -254,19 +260,34 @@ def interface_ethernet_edit(module):
     """编辑以太网接口配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    interface_name = module.params['interface_name'] if 'interface_name' in module.params else ""
+    slot = module.params.get('slot')
+    port = module.params.get('port')
+    interface_name = module.params.get('interface_name')
 
     # 检查必需参数
-    if not interface_name:
-        module.fail_json(msg="编辑以太网接口配置需要提供interface_name参数")
+    if slot is None and port is None and interface_name:
+        # 如果提供了 interface_name，自动解析为 slot 和 port
+        try:
+            parts = interface_name.split('/')
+            if len(parts) == 2:
+                slot = int(parts[0])
+                port = int(parts[1])
+            else:
+                module.fail_json(msg="interface_name 格式错误，应为 'slot/port' 格式，例如 '1/1'")
+        except ValueError:
+            module.fail_json(msg="interface_name 格式错误，slot 和 port 应为数字")
+
+    if slot is None or port is None:
+        module.fail_json(msg="编辑以太网接口配置需要提供 slot 和 port 参数，或使用 interface_name 参数（格式：'slot/port'）")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ethernet.edit" % (
         ip, authkey)
 
-    # 构造以太网接口配置数据
+    # 构造以太网接口配置数据（使用 API 要求的 slot 和 port）
     interface_data = {
-        "interface_name": interface_name
+        "slot": slot,
+        "port": port
     }
 
     # 添加可选参数
@@ -314,8 +335,16 @@ def interface_ethernet_edit(module):
         interface_data['ipv6_acl'] = module.params['ipv6_acl']
     if 'speed' in module.params and module.params['speed'] is not None:
         interface_data['speed'] = module.params['speed']
+    if 'duplexity' in module.params and module.params['duplexity'] is not None:
+        interface_data['duplexity'] = module.params['duplexity']
     if 'duplex' in module.params and module.params['duplex'] is not None:
-        interface_data['duplex'] = module.params['duplex']
+        # 向后兼容，将字符串转换为数字
+        duplex_map = {'full': 0, 'half': 1, 'auto': 2}
+        duplex_val = module.params['duplex'].lower()
+        if duplex_val in duplex_map:
+            interface_data['duplexity'] = duplex_map[duplex_val]
+        else:
+            interface_data['duplexity'] = int(duplex_val)
     if 'flow_control' in module.params and module.params['flow_control'] is not None:
         interface_data['flow_control'] = module.params['flow_control']
     if 'permit_wildcard' in module.params and module.params['permit_wildcard'] is not None:
@@ -384,7 +413,7 @@ def interface_ethernet_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def interface_ethernet_stat_get(module):
+def interface_ethernet_statis(module):
     """获取以太网接口统计信息"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -495,19 +524,24 @@ def interface_ve_get(module):
     """获取VE接口详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    ve_id = module.params['ve_id'] if 've_id' in module.params else ""
+    port_num = module.params.get('port_num')
+    ve_id = module.params.get('ve_id')
 
     # 检查必需参数
-    if not ve_id:
-        module.fail_json(msg="获取VE接口详情需要提供ve_id参数")
+    if port_num is None and ve_id:
+        # 向后兼容：如果提供了 ve_id，将其作为 port_num 使用
+        port_num = int(ve_id)
+
+    if port_num is None:
+        module.fail_json(msg="获取VE接口详情需要提供 port_num 参数（或使用 ve_id 参数）")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ve.get" % (
         ip, authkey)
 
-    # 构造请求数据
+    # 构造请求数据（使用 API 要求的 port_num）
     ve_data = {
-        "ve_id": ve_id
+        "port_num": port_num
     }
 
     # 转换为JSON格式
@@ -556,19 +590,24 @@ def interface_ve_edit(module):
     """编辑VE接口配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    ve_id = module.params['ve_id'] if 've_id' in module.params else ""
+    port_num = module.params.get('port_num')
+    ve_id = module.params.get('ve_id')
 
     # 检查必需参数
-    if not ve_id:
-        module.fail_json(msg="编辑VE接口配置需要提供ve_id参数")
+    if port_num is None and ve_id:
+        # 向后兼容：如果提供了 ve_id，将其作为 port_num 使用
+        port_num = int(ve_id)
+
+    if port_num is None:
+        module.fail_json(msg="编辑VE接口配置需要提供 port_num 参数（或使用 ve_id 参数）")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.ve.edit" % (
         ip, authkey)
 
-    # 构造VE接口配置数据
+    # 构造VE接口配置数据（使用 API 要求的 port_num）
     ve_data = {
-        "ve_id": ve_id
+        "port_num": port_num
     }
 
     # 添加可选参数
@@ -670,19 +709,24 @@ def interface_trunk_get(module):
     """获取TRUNK接口详情"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    trunk_id = module.params['trunk_id'] if 'trunk_id' in module.params else ""
+    port_num = module.params.get('port_num')
+    trunk_id = module.params.get('trunk_id')
 
     # 检查必需参数
-    if not trunk_id:
-        module.fail_json(msg="获取TRUNK接口详情需要提供trunk_id参数")
+    if port_num is None and trunk_id:
+        # 向后兼容：如果提供了 trunk_id，将其作为 port_num 使用
+        port_num = int(trunk_id)
+
+    if port_num is None:
+        module.fail_json(msg="获取TRUNK接口详情需要提供 port_num 参数（或使用 trunk_id 参数）")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.trunk.get" % (
         ip, authkey)
 
-    # 构造请求数据
+    # 构造请求数据（使用 API 要求的 port_num）
     trunk_data = {
-        "trunk_id": trunk_id
+        "port_num": port_num
     }
 
     # 转换为JSON格式
@@ -731,19 +775,24 @@ def interface_trunk_edit(module):
     """编辑TRUNK接口配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    trunk_id = module.params['trunk_id'] if 'trunk_id' in module.params else ""
+    port_num = module.params.get('port_num')
+    trunk_id = module.params.get('trunk_id')
 
     # 检查必需参数
-    if not trunk_id:
-        module.fail_json(msg="编辑TRUNK接口配置需要提供trunk_id参数")
+    if port_num is None and trunk_id:
+        # 向后兼容：如果提供了 trunk_id，将其作为 port_num 使用
+        port_num = int(trunk_id)
+
+    if port_num is None:
+        module.fail_json(msg="编辑TRUNK接口配置需要提供 port_num 参数（或使用 trunk_id 参数）")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=interface.trunk.edit" % (
         ip, authkey)
 
-    # 构造TRUNK接口配置数据
+    # 构造TRUNK接口配置数据（使用 API 要求的 port_num）
     trunk_data = {
-        "trunk_id": trunk_id
+        "port_num": port_num
     }
 
     # 添加可选参数
@@ -798,15 +847,19 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
             'interface_mgmt_get', 'interface_mgmt_set',
-            'interface_ethernet_list', 'interface_ethernet_get', 'interface_ethernet_edit', 'interface_ethernet_statistics_get',
+            'interface_ethernet_list', 'interface_ethernet_get', 'interface_ethernet_edit', 'interface_ethernet_statis',
             'interface_ve_list', 'interface_ve_get', 'interface_ve_edit',
             'interface_trunk_list', 'interface_trunk_get', 'interface_trunk_edit']),
         # 管理接口参数
         ip_addr=dict(type='str', required=False),
         netmask=dict(type='str', required=False),
         gateway=dict(type='str', required=False),
+        ipv4_gw=dict(type='str', required=False),
+        ipv6_gw=dict(type='str', required=False),
         # 以太网接口参数
-        interface_name=dict(type='str', required=False),
+        slot=dict(type='int', required=False),  # 槽位 0-8
+        port=dict(type='int', required=False),  # 端口 0-7
+        interface_name=dict(type='str', required=False),  # 向后兼容，格式 "slot/port"
         status=dict(type='int', required=False),
         description=dict(type='str', required=False),
         management_services=dict(type='list', required=False),
@@ -829,7 +882,8 @@ def main():
         ipv6_local_anycast=dict(type='int', required=False),
         ipv6_acl=dict(type='str', required=False),
         speed=dict(type='str', required=False),
-        duplex=dict(type='str', required=False),
+        duplexity=dict(type='int', required=False),  # 双工模式：0=full, 1=half, 2=auto
+        duplex=dict(type='str', required=False),  # 向后兼容
         flow_control=dict(type='int', required=False),
         permit_wildcard=dict(type='int', required=False),
         grat_arp=dict(type='int', required=False),
@@ -845,10 +899,12 @@ def main():
         list_type=dict(type='str', required=False, choices=[
                        'normal', 'withcommon', 'withused', 'self']),
         # VE接口参数
-        ve_id=dict(type='int', required=False),
+        port_num=dict(type='int', required=False),  # VE接口序号 2-4094
+        ve_id=dict(type='int', required=False),  # 向后兼容
         vlan_id=dict(type='int', required=False),
         # TRUNK接口参数
-        trunk_id=dict(type='int', required=False),
+        port_num=dict(type='int', required=False),  # TRUNK接口序号 1-8
+        trunk_id=dict(type='int', required=False),  # 向后兼容
         interface_list=dict(type='list', required=False)
     )
 
@@ -871,8 +927,8 @@ def main():
         interface_ethernet_get(module)
     elif action == 'interface_ethernet_edit':
         interface_ethernet_edit(module)
-    elif action == 'interface_ethernet_statistics_get':
-        interface_ethernet_stat_get(module)
+    elif action == 'interface_ethernet_statis':
+        interface_ethernet_statis(module)
     elif action == 'interface_ve_list':
         interface_ve_list(module)
     elif action == 'interface_ve_get':

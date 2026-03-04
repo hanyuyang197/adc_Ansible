@@ -32,9 +32,16 @@ def slb_passive_health_check_add(module):
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.add" % (ip, authkey)
 
-    # 构造请求数据 - 只包含非None的参数
+    # 构造请求数据 - 只包含非None的参数（与API文档保持一致）
     healthcheck_data = {}
-    optional_params = ['name', 'type', 'interval', 'timeout', 'retry', 'port', 'send', 'receive']
+    optional_params = [
+        'name', 'description',
+        'inband_check', 'inband_retry', 'inband_reassign',
+        'rst_check', 'rst_num', 'rst_interval', 'rst_log',
+        'zerowin_check', 'zerowin_num',
+        'rsptime_check', 'rsptime_delconn', 'rsptime_log',
+        'rsptime_interval', 'rsptime_maxdelay', 'rsptime_maxcnt'
+    ]
 
     for param in optional_params:
         if module.params.get(param) is not None:
@@ -184,9 +191,16 @@ def slb_passive_health_check_edit(module):
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.passive-health-check.edit" % (ip, authkey)
 
-    # 构造请求数据 - 只包含非None的参数
+    # 构造请求数据 - 只包含非None的参数（与API文档保持一致）
     healthcheck_data = {}
-    optional_params = ['name', 'type', 'interval', 'timeout', 'retry', 'port', 'send', 'receive']
+    optional_params = [
+        'name', 'description',
+        'inband_check', 'inband_retry', 'inband_reassign',
+        'rst_check', 'rst_num', 'rst_interval', 'rst_log',
+        'zerowin_check', 'zerowin_num',
+        'rsptime_check', 'rsptime_delconn', 'rsptime_log',
+        'rsptime_interval', 'rsptime_maxdelay', 'rsptime_maxcnt'
+    ]
 
     for param in optional_params:
         if module.params.get(param) is not None:
@@ -332,19 +346,29 @@ def slb_passive_health_check_list_withcommon(module):
 
 def main():
     """主函数"""
-    # 定义模块参数
+    # 定义模块参数（与API文档保持一致）
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True),
+        # 被动健康检查参数（与API文档完全一致）
         name=dict(type='str', required=False),
-        type=dict(type='str', required=False),
-        interval=dict(type='int', required=False),
-        timeout=dict(type='int', required=False),
-        retry=dict(type='int', required=False),
-        port=dict(type='int', required=False),
-        send=dict(type='str', required=False),
-        receive=dict(type='str', required=False)
+        description=dict(type='str', required=False),
+        inband_check=dict(type='int', required=False),
+        inband_retry=dict(type='int', required=False),
+        inband_reassign=dict(type='int', required=False),
+        rst_check=dict(type='int', required=False),
+        rst_num=dict(type='int', required=False),
+        rst_interval=dict(type='int', required=False),
+        rst_log=dict(type='int', required=False),
+        zerowin_check=dict(type='int', required=False),
+        zerowin_num=dict(type='int', required=False),
+        rsptime_check=dict(type='int', required=False),
+        rsptime_delconn=dict(type='int', required=False),
+        rsptime_log=dict(type='int', required=False),
+        rsptime_interval=dict(type='int', required=False),
+        rsptime_maxdelay=dict(type='int', required=False),
+        rsptime_maxcnt=dict(type='int', required=False)
     )
 
     # 创建模块

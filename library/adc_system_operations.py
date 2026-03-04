@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def system_save_config(module):
+def save(module):
     """保存配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -56,6 +56,175 @@ def system_save_config(module):
     if response_data:
         success, result_dict = format_adc_response_for_ansible(
             response_data, "保存配置", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def admin_disable_get(module):
+    """获取管理员状态"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=admin.disable.get" % (ip, authkey)
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='POST')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'POST'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取管理员状态失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取管理员状态", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def admin_disable_edit(module):
+    """禁用管理员用户"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    enable = module.params['enable']
+    name = module.params['name']
+    password = module.params.get('password')
+
+    # 构造请求数据
+    disable_data = {
+        'enable': enable,
+        'name': name
+    }
+
+    # password是可选参数
+    if password is not None:
+        disable_data['password'] = password
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=admin.disable.edit" % (ip, authkey)
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = json.dumps(disable_data)
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            post_data = json.dumps(disable_data)
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="禁用管理员用户失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "禁用管理员用户", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def admin_two_factor_authentication_get(module):
+    """获取双因素认证状态"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=admin.two_factor_authentication.get" % (ip, authkey)
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='POST')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'POST'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取双因素认证状态失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "获取双因素认证状态", True)
+        if success:
+            module.exit_json(**result_dict)
+        else:
+            module.fail_json(**result_dict)
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
+def admin_two_factor_authentication_set(module):
+    """开启双因素认证"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+    tfaenable = module.params['tfaenable']
+    admintfaenable = module.params['admintfaenable']
+
+    # 构造请求数据
+    tfa_data = {
+        'tfaenable': tfaenable,
+        'admintfaenable': admintfaenable
+    }
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=admin.two_factor_authentication.set" % (ip, authkey)
+
+    try:
+        if sys.version_info[0] >= 3:
+            import urllib.request as urllib_request
+            post_data = json.dumps(tfa_data)
+            post_data = post_data.encode('utf-8')
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            import urllib2 as urllib_request
+            post_data = json.dumps(tfa_data)
+            req = urllib_request.Request(url, data=post_data, headers={
+                                         'Content-Type': 'application/json'})
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="开启双因素认证失败: %s" % str(e))
+
+    if response_data:
+        success, result_dict = format_adc_response_for_ansible(
+            response_data, "开启双因素认证", True)
         if success:
             module.exit_json(**result_dict)
         else:
@@ -235,9 +404,18 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'system_save_config', 'system_action_reboot', 'system_action_reload', 'system_action_shutdown']),
+            'save', 'system_action_reboot', 'system_action_reload', 'system_action_shutdown',
+            'admin_disable_get', 'admin_disable_edit', 'admin_two_factor_authentication_get',
+            'admin_two_factor_authentication_set']),
         # 系统操作参数
-        save=dict(type='int', required=False)
+        save=dict(type='int', required=False),
+        # admin.disable.edit 参数
+        enable=dict(type='int', required=False),
+        name=dict(type='str', required=False),
+        password=dict(type='str', required=False, no_log=True),
+        # admin.two_factor_authentication.set 参数
+        tfaenable=dict(type='int', required=False),
+        admintfaenable=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -249,14 +427,22 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'system_save_config':
-        system_save_config(module)
+    if action == 'save':
+        save(module)
     elif action == 'system_action_reboot':
         system_action_reboot(module)
     elif action == 'system_action_reload':
         system_action_reload(module)
     elif action == 'system_action_shutdown':
         system_action_shutdown(module)
+    elif action == 'admin_disable_get':
+        admin_disable_get(module)
+    elif action == 'admin_disable_edit':
+        admin_disable_edit(module)
+    elif action == 'admin_two_factor_authentication_get':
+        admin_two_factor_authentication_get(module)
+    elif action == 'admin_two_factor_authentication_set':
+        admin_two_factor_authentication_set(module)
 
 
 if __name__ == '__main__':

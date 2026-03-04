@@ -136,12 +136,10 @@ def nat_pool_add(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     name = module.params['name'] if 'name' in module.params else ""
-    ip_start = module.params['ip_start'] if 'ip_start' in module.params else ""
-    ip_end = module.params['ip_end'] if 'ip_end' in module.params else ""
 
     # 检查必需参数
-    if not name or not ip_start or not ip_end:
-        module.fail_json(msg="添加NAT地址池需要提供name、ip_start和ip_end参数")
+    if not name:
+        module.fail_json(msg="添加NAT地址池需要提供name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=nat.pool.add" % (
@@ -149,9 +147,7 @@ def nat_pool_add(module):
 
     # 构造NAT地址池数据 - 按照API文档要求使用外部"pool"对象包装
     pool_object = {
-        "name": name,
-        "ip_start": ip_start,
-        "ip_end": ip_end
+        "name": name
     }
 
     # 添加可选参数到pool对象
@@ -163,6 +159,18 @@ def nat_pool_add(module):
         pool_object['vrid'] = module.params['vrid']
     if 'ip_rr' in module.params and module.params['ip_rr'] is not None:
         pool_object['ip_rr'] = module.params['ip_rr']
+    if 'description' in module.params and module.params['description'] is not None:
+        pool_object['description'] = module.params['description']
+    if 'ipv6_global_gateway' in module.params and module.params['ipv6_global_gateway'] is not None:
+        pool_object['ipv6_global_gateway'] = module.params['ipv6_global_gateway']
+
+    # 添加member_list（IPv4成员列表）
+    if 'member_list' in module.params and module.params['member_list'] is not None:
+        pool_object['member_list'] = module.params['member_list']
+
+    # 添加ipv6_member_list（IPv6成员列表）
+    if 'ipv6_member_list' in module.params and module.params['ipv6_member_list'] is not None:
+        pool_object['ipv6_member_list'] = module.params['ipv6_member_list']
 
     # 按照API文档要求，使用外部"pool"对象包装
     pool_data = {
@@ -228,10 +236,6 @@ def nat_pool_edit(module):
     }
 
     # 添加可选参数到pool对象
-    if 'ip_start' in module.params and module.params['ip_start'] is not None:
-        pool_object['ip_start'] = module.params['ip_start']
-    if 'ip_end' in module.params and module.params['ip_end'] is not None:
-        pool_object['ip_end'] = module.params['ip_end']
     if 'ip_type' in module.params and module.params['ip_type'] is not None:
         pool_object['ip_type'] = module.params['ip_type']
     if 'global_gateway' in module.params and module.params['global_gateway'] is not None:
@@ -240,6 +244,18 @@ def nat_pool_edit(module):
         pool_object['vrid'] = module.params['vrid']
     if 'ip_rr' in module.params and module.params['ip_rr'] is not None:
         pool_object['ip_rr'] = module.params['ip_rr']
+    if 'description' in module.params and module.params['description'] is not None:
+        pool_object['description'] = module.params['description']
+    if 'ipv6_global_gateway' in module.params and module.params['ipv6_global_gateway'] is not None:
+        pool_object['ipv6_global_gateway'] = module.params['ipv6_global_gateway']
+
+    # 添加member_list（IPv4成员列表）
+    if 'member_list' in module.params and module.params['member_list'] is not None:
+        pool_object['member_list'] = module.params['member_list']
+
+    # 添加ipv6_member_list（IPv6成员列表）
+    if 'ipv6_member_list' in module.params and module.params['ipv6_member_list'] is not None:
+        pool_object['ipv6_member_list'] = module.params['ipv6_member_list']
 
     # 按照API文档要求，使用外部"pool"对象包装
     pool_data = {
@@ -352,12 +368,14 @@ def main():
             'nat_pool_list', 'nat_pool_get', 'nat_pool_add', 'nat_pool_edit', 'nat_pool_del']),
         # NAT地址池参数
         name=dict(type='str', required=False),
-        ip_start=dict(type='str', required=False),
-        ip_end=dict(type='str', required=False),
         ip_type=dict(type='int', required=False),
         global_gateway=dict(type='str', required=False),
         vrid=dict(type='int', required=False),
-        ip_rr=dict(type='int', required=False)
+        ip_rr=dict(type='int', required=False),
+        description=dict(type='str', required=False),
+        ipv6_global_gateway=dict(type='str', required=False),
+        member_list=dict(type='list', required=False, elements='dict'),
+        ipv6_member_list=dict(type='list', required=False, elements='dict')
     )
 
     # 创建AnsibleModule实例

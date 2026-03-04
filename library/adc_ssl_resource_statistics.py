@@ -22,14 +22,14 @@ import json
 import sys
 
 
-def vrrp_heart_mgmt_statis(module):
-    """获取VRRP管理口心跳统计"""
-    device_ip = module.params['ip']
+def ssl_resource_statistics_list(module):
+    """获取SSL资源统计列表"""
+    ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.heart_mgmt.statis" % (
-        device_ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=ssl.resource_statistics.list" % (
+        ip, authkey)
 
     # 初始化响应数据
     response_data = ""
@@ -37,13 +37,11 @@ def vrrp_heart_mgmt_statis(module):
     try:
         # 根据Python版本处理请求
         if sys.version_info[0] >= 3:
-            # Python 3
             import urllib.request as urllib_request
             req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
-            # Python 2
             import urllib2 as urllib_request
             req = urllib_request.Request(url)
             req.get_method = lambda: 'GET'
@@ -51,17 +49,18 @@ def vrrp_heart_mgmt_statis(module):
             response_data = response.read()
 
     except Exception as e:
-        module.fail_json(msg="获取VRRP管理口心跳统计失败: %s" % str(e))
+        module.fail_json(msg="获取SSL资源统计列表失败: %s" % str(e))
 
-    # 对于获取操作，直接返回响应数据
+    # 对于获取统计列表操作，直接返回响应数据，不判断success
     if response_data:
         try:
             parsed_data = json.loads(response_data)
-            # 检查是否有错误信息
-            if isinstance(parsed_data, dict) and 'errmsg' in parsed_data and parsed_data['errmsg']:
-                module.fail_json(msg="获取VRRP管理口心跳统计失败", response=parsed_data)
+            success, result_dict = format_adc_response_for_ansible(
+                response_data, "获取SSL资源统计列表", False)
+            if success:
+                module.exit_json(**result_dict)
             else:
-                module.exit_json(changed=False, config=parsed_data)
+                module.fail_json(**result_dict)
         except Exception as e:
             module.fail_json(msg="解析响应失败: %s" % str(e))
     else:
@@ -73,7 +72,8 @@ def main():
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
-        action=dict(type='str', required=True, choices=['vrrp_heart_mgmt_statis'])
+        action=dict(type='str', required=True, choices=[
+            'ssl_resource_statistics_list'])
     )
 
     # 创建AnsibleModule实例
@@ -85,8 +85,8 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'vrrp_heart_mgmt_statis':
-        vrrp_heart_mgmt_statis(module)
+    if action == 'ssl_resource_statistics_list':
+        ssl_resource_statistics_list(module)
 
 
 if __name__ == '__main__':
