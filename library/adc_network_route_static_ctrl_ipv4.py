@@ -1,5 +1,6 @@
-import sys
-import json
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.horizon.modules.plugins.module_utils.adc_common import (
     make_adc_request,
@@ -17,11 +18,8 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
     adc_response_to_ansible_result,
     format_adc_response_for_ansible
 )
-s  # !/usr/bin/python
-# -*- coding: utf-8 -*-
-
-
-# ADC API响应解析函数
+import json
+import sys
 
 
 def route_static_ctrl_ipv4_list(module):

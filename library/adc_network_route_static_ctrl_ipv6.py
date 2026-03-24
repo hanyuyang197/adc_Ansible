@@ -21,8 +21,6 @@ from ansible_collections.horizon.modules.plugins.module_utils.adc_common import 
 import json
 import sys
 
-# ADC API响应解析函数
-
 
 def route_static_ctrl_ipv6_list(module):
     """获取IPv6静态控制路由列表"""
@@ -339,7 +337,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'route_static_ctrl_ipv6_list', 'route_static_ctrl_ipv6_get', 'route_static_ctrl_ipv6_add', 'route_static_ctrl_ipv6_edit', 'route_static_ctrl_ipv6_del'])
+            'route_static_ctrl_ipv6_list', 'route_static_ctrl_ipv6_get', 'route_static_ctrl_ipv6_add', 'route_static_ctrl_ipv6_edit', 'route_static_ctrl_ipv6_del']),
         # IPv6静态控制路由参数
         destination=dict(type='str', required=False),
         prefix_len=dict(type='int', required=False),

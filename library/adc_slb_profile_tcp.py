@@ -201,7 +201,8 @@ def slb_profile_tcp_add(module):
     optional_params = [
         'description', 'timeout', 'reset_timeout', 'start_win_size',
         'half_close_timeout', 'insertcip', 'generate_isn', 'rstnode',
-        'rstclient', 'timestamp', 'loose_initiation', 'loose_close', 'time_wait'
+        'rstclient', 'timestamp', 'loose_initiation', 'loose_close', 'time_wait',
+        'server_rst_retry', 'insertcip_synonly'
     ]
 
     # 添加可选参数
@@ -294,6 +295,10 @@ def slb_profile_tcp_edit(module):
         profile_data['loose_close'] = module.params['loose_close']
     if 'time_wait' in module.params and module.params['time_wait'] is not None:
         profile_data['time_wait'] = module.params['time_wait']
+    if 'server_rst_retry' in module.params and module.params['server_rst_retry'] is not None:
+        profile_data['server_rst_retry'] = module.params['server_rst_retry']
+    if 'insertcip_synonly' in module.params and module.params['insertcip_synonly'] is not None:
+        profile_data['insertcip_synonly'] = module.params['insertcip_synonly']
 
     # 转换为JSON格式
     post_data = json.dumps(profile_data)
@@ -414,7 +419,9 @@ def main():
         timestamp=dict(type='int', required=False),
         loose_initiation=dict(type='int', required=False),
         loose_close=dict(type='int', required=False),
-        time_wait=dict(type='int', required=False)
+        time_wait=dict(type='int', required=False),
+        server_rst_retry=dict(type='int', required=False),  # 服务器重置重试状态；0：关闭，1：开启
+        insertcip_synonly=dict(type='int', required=False)  # 仅 syn插入客户端 ip；0禁用，1使能
     )
 
     # 创建AnsibleModule实例
