@@ -193,13 +193,10 @@ def slb_profile_http_add(module):
         ip, authkey)
 
     # 构造模板数据 - 只包含在YAML中明确定义的参数
-    profile_data = {
-        "name": name
-    }
 
     # 定义可选参数列表
-    optional_params = [
-        'description', 'fallback_url', 'force_reselect', 'clientip_insert',
+    module_list = [
+        'name', 'description', 'fallback_url', 'force_reselect', 'clientip_insert',
         'clientip_insert_replace', 'retry_503', 'websocket', 'node_select_fail_response_504',
         'cookie_encrypt_name', 'cookie_encrypt_password', 'req_header_del', 'rsp_header_del',
         'req_header_insert', 'rsp_header_insert', 'url_class', 'host_class',
@@ -209,15 +206,17 @@ def slb_profile_http_add(module):
         'compress_level', 'compress_min_len', 'chunking_request', 'chunking_response',
         'compress_content_type', 'compress_content_type_exclude', 'compress_url_exclude',
         'req_header_insert_cert', 'req_url_insert_cert', 'req_cookie_insert_cert', 'client_cert_code'
+        'max_header_size', 'oversize_client_headers', 'oversize_server_headers',
+        'max_header_count', 'excess_client_headers', 'excess_server_headers',
+        'compress_algorithm'
+
     ]
 
     # 添加可选参数
-    for param in optional_params:
-        if param in module.params and module.params[param] is not None:
-            profile_data[param] = module.params[param]
+    request_data = build_params_with_optional(module,module_list,[])
 
     # 转换为JSON格式
-    post_data = json.dumps(profile_data)
+    post_data = json.dumps(request_data)
 
     # 初始化响应数据
     response_data = ""
@@ -270,92 +269,28 @@ def slb_profile_http_edit(module):
         ip, authkey)
 
     # 构造模板数据
-    profile_data = {
-        "name": name
-    }
+    module_list = [
+        'name', 'description', 'fallback_url', 'force_reselect', 'clientip_insert',
+        'clientip_insert_replace', 'retry_503', 'websocket', 'node_select_fail_response_504',
+        'cookie_encrypt_name', 'cookie_encrypt_password', 'req_header_del', 'rsp_header_del',
+        'req_header_insert', 'rsp_header_insert', 'url_class', 'host_class',
+        'url_hash', 'url_hash_len', 'url_hash_offset', 'url_class_log_interval', 'redirect_modify',
+        'redirect_modify_https', 'redirect_modify_https_port', 'cookie_select',
+        'cookie_expire', 'cookie_expire_enable', 'compress', 'compress_keep_header',
+        'compress_level', 'compress_min_len', 'chunking_request', 'chunking_response',
+        'compress_content_type', 'compress_content_type_exclude', 'compress_url_exclude',
+        'req_header_insert_cert', 'req_url_insert_cert', 'req_cookie_insert_cert', 'client_cert_code'
+        'max_header_size', 'oversize_client_headers', 'oversize_server_headers',
+        'max_header_count', 'excess_client_headers', 'excess_server_headers',
+        'compress_algorithm'
+
+    ]
 
     # 添加可选参数
-    if 'description' in module.params and module.params['description'] is not None:
-        profile_data['description'] = module.params['description']
-    if 'fallback_url' in module.params and module.params['fallback_url'] is not None:
-        profile_data['fallback_url'] = module.params['fallback_url']
-    if 'force_reselect' in module.params and module.params['force_reselect'] is not None:
-        profile_data['force_reselect'] = module.params['force_reselect']
-    if 'clientip_insert' in module.params and module.params['clientip_insert'] is not None:
-        profile_data['clientip_insert'] = module.params['clientip_insert']
-    if 'clientip_insert_replace' in module.params and module.params['clientip_insert_replace'] is not None:
-        profile_data['clientip_insert_replace'] = module.params['clientip_insert_replace']
-    if 'retry_503' in module.params and module.params['retry_503'] is not None:
-        profile_data['retry_503'] = module.params['retry_503']
-    if 'websocket' in module.params and module.params['websocket'] is not None:
-        profile_data['websocket'] = module.params['websocket']
-    if 'node_select_fail_response_504' in module.params and module.params['node_select_fail_response_504'] is not None:
-        profile_data['node_select_fail_response_504'] = module.params['node_select_fail_response_504']
-    if 'cookie_encrypt_name' in module.params and module.params['cookie_encrypt_name'] is not None:
-        profile_data['cookie_encrypt_name'] = module.params['cookie_encrypt_name']
-    if 'cookie_encrypt_password' in module.params and module.params['cookie_encrypt_password'] is not None:
-        profile_data['cookie_encrypt_password'] = module.params['cookie_encrypt_password']
-    if 'req_header_del' in module.params and module.params['req_header_del'] is not None:
-        profile_data['req_header_del'] = module.params['req_header_del']
-    if 'rsp_header_del' in module.params and module.params['rsp_header_del'] is not None:
-        profile_data['rsp_header_del'] = module.params['rsp_header_del']
-    if 'req_header_insert' in module.params and module.params['req_header_insert'] is not None:
-        profile_data['req_header_insert'] = module.params['req_header_insert']
-    if 'rsp_header_insert' in module.params and module.params['rsp_header_insert'] is not None:
-        profile_data['rsp_header_insert'] = module.params['rsp_header_insert']
-    if 'url_class' in module.params and module.params['url_class'] is not None:
-        profile_data['url_class'] = module.params['url_class']
-    if 'host_class' in module.params and module.params['host_class'] is not None:
-        profile_data['host_class'] = module.params['host_class']
-    if 'url_hash' in module.params and module.params['url_hash'] is not None:
-        profile_data['url_hash'] = module.params['url_hash']
-    if 'url_hash_len' in module.params and module.params['url_hash_len'] is not None:
-        profile_data['url_hash_len'] = module.params['url_hash_len']
-    if 'url_hash_offset' in module.params and module.params['url_hash_offset'] is not None:
-        profile_data['url_hash_offset'] = module.params['url_hash_offset']
-    if 'url_class_log_interval' in module.params and module.params['url_class_log_interval'] is not None:
-        profile_data['url_class_log_interval'] = module.params['url_class_log_interval']
-    if 'redirect_modify' in module.params and module.params['redirect_modify'] is not None:
-        profile_data['redirect_modify'] = module.params['redirect_modify']
-    if 'redirect_modify_https' in module.params and module.params['redirect_modify_https'] is not None:
-        profile_data['redirect_modify_https'] = module.params['redirect_modify_https']
-    if 'redirect_modify_https_port' in module.params and module.params['redirect_modify_https_port'] is not None:
-        profile_data['redirect_modify_https_port'] = module.params['redirect_modify_https_port']
-    if 'cookie_select' in module.params and module.params['cookie_select'] is not None:
-        profile_data['cookie_select'] = module.params['cookie_select']
-    if 'cookie_expire' in module.params and module.params['cookie_expire'] is not None:
-        profile_data['cookie_expire'] = module.params['cookie_expire']
-    if 'cookie_expire_enable' in module.params and module.params['cookie_expire_enable'] is not None:
-        profile_data['cookie_expire_enable'] = module.params['cookie_expire_enable']
-    if 'compress' in module.params and module.params['compress'] is not None:
-        profile_data['compress'] = module.params['compress']
-    if 'compress_keep_header' in module.params and module.params['compress_keep_header'] is not None:
-        profile_data['compress_keep_header'] = module.params['compress_keep_header']
-    if 'compress_level' in module.params and module.params['compress_level'] is not None:
-        profile_data['compress_level'] = module.params['compress_level']
-    if 'compress_min_len' in module.params and module.params['compress_min_len'] is not None:
-        profile_data['compress_min_len'] = module.params['compress_min_len']
-    if 'chunking_request' in module.params and module.params['chunking_request'] is not None:
-        profile_data['chunking_request'] = module.params['chunking_request']
-    if 'chunking_response' in module.params and module.params['chunking_response'] is not None:
-        profile_data['chunking_response'] = module.params['chunking_response']
-    if 'compress_content_type' in module.params and module.params['compress_content_type'] is not None:
-        profile_data['compress_content_type'] = module.params['compress_content_type']
-    if 'compress_content_type_exclude' in module.params and module.params['compress_content_type_exclude'] is not None:
-        profile_data['compress_content_type_exclude'] = module.params['compress_content_type_exclude']
-    if 'compress_url_exclude' in module.params and module.params['compress_url_exclude'] is not None:
-        profile_data['compress_url_exclude'] = module.params['compress_url_exclude']
-    if 'req_header_insert_cert' in module.params and module.params['req_header_insert_cert'] is not None:
-        profile_data['req_header_insert_cert'] = module.params['req_header_insert_cert']
-    if 'req_url_insert_cert' in module.params and module.params['req_url_insert_cert'] is not None:
-        profile_data['req_url_insert_cert'] = module.params['req_url_insert_cert']
-    if 'req_cookie_insert_cert' in module.params and module.params['req_cookie_insert_cert'] is not None:
-        profile_data['req_cookie_insert_cert'] = module.params['req_cookie_insert_cert']
-    if 'client_cert_code' in module.params and module.params['client_cert_code'] is not None:
-        profile_data['client_cert_code'] = module.params['client_cert_code']
+    request_data = build_params_with_optional(module,module_list,[])
 
     # 转换为JSON格式
-    post_data = json.dumps(profile_data)
+    post_data = json.dumps(request_data)
 
     # 初始化响应数据
     response_data = ""
@@ -499,7 +434,15 @@ def main():
         req_header_insert_cert=dict(type='list', required=False),
         req_url_insert_cert=dict(type='list', required=False),
         req_cookie_insert_cert=dict(type='list', required=False),
-        client_cert_code=dict(type='list', required=False)
+        client_cert_code=dict(type='list', required=False),
+        max_header_size=dict(type='raw', required=False),
+        oversize_client_headers=dict(type='raw', required=False),
+        oversize_server_headers=dict(type='raw', required=False),
+        max_header_count=dict(type='raw', required=False),
+        excess_client_headers=dict(type='raw', required=False),
+        excess_server_headers=dict(type='raw', required=False),
+        compress_algorithm=dict(type='raw', required=False),
+
     )
 
     # 创建AnsibleModule实例

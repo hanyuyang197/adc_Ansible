@@ -31,87 +31,49 @@ def send_request(url, data=None, method='GET'):
     """发送HTTP请求到ADC设备"""
     import sys
     response_data = None
-    try:
-        if method == 'POST' and data:
-            data_json = json.dumps(data)
-            data_bytes = data_json.encode('utf-8')
 
-            if sys.version_info[0] >= 3:
-                # Python 3
-                import urllib.request as urllib_request
-                req = urllib_request.Request(url, data=data_bytes)
-                req.add_header('Content-Type', 'application/json')
-            else:
-                # Python 2
-                import urllib2 as urllib_request
-                req = urllib_request.Request(url, data=data_bytes)
-                req.add_header('Content-Type', 'application/json')
+    if method == 'POST' and data:
+        data_json = json.dumps(data)
+        data_bytes = data_json.encode('utf-8')
+
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, data=data_bytes)
+            req.add_header('Content-Type', 'application/json')
         else:
-            if sys.version_info[0] >= 3:
-                # Python 3
-                import urllib.request as urllib_request
-                req = urllib_request.Request(url)
-            else:
-                # Python 2
-                import urllib2 as urllib_request
-                req = urllib_request.Request(url)
-
-        response = urllib_request.urlopen(req)
-        response_data = response.read()
-
-        # 正确处理响应数据的编码
-        if isinstance(response_data, bytes):
-            # 尝试UTF-8解码，如果失败则使用latin1作为后备
-            try:
-                response_text = response_data.decode('utf-8')
-            except UnicodeDecodeError:
-                response_text = response_data.decode('latin1')
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url, data=data_bytes)
+            req.add_header('Content-Type', 'application/json')
+    else:
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url)
         else:
-            response_text = response_data
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
 
-        # 安全地解析JSON响应
-        try:
-            result = json.loads(response_text)
-        except json.JSONDecodeError:
-            # 如果不是有效的JSON格式，返回原始响应
-            return {
-                'result': 'error',
-                'errcode': 'JSON_PARSE_ERROR',
-                'errmsg': f'响应不是有效的JSON格式: {response_text}'
-            }
+    response = urllib_request.urlopen(req)
+    response_data = response.read()
 
-        # 标准化响应格式
-        # 成功响应保持原样
-        # 错误响应标准化为 {"result":"error","errcode":"REQUEST_ERROR","errmsg":"..."}
-        if isinstance(result, dict) and 'status' in result and result['status'] is False:
-            # 修复Unicode解码错误：确保错误消息正确处理中文字符
-            error_msg = result.get('msg', '')
-            if isinstance(error_msg, bytes):
-                try:
-                    error_msg = error_msg.decode('utf-8')
-                except UnicodeDecodeError:
-                    error_msg = error_msg.decode('latin1')
+    # 正确处理响应数据的编码
+    # if isinstance(response_data, bytes):
+    #     # 尝试UTF-8解码，如果失败则使用latin1作为后备
+    #     try:
+    #         response_text = response_data.decode('utf-8')
+    #     except UnicodeDecodeError:
+    #         response_text = response_data.decode('latin1')
+    # else:
+    #     response_text = response_data
 
-            return {
-                'result': 'error',
-                'errcode': 'REQUEST_ERROR',
-                'errmsg': error_msg if error_msg else '请求失败'
-            }
-        else:
-            return result
-    except UnicodeDecodeError as e:
-        # 如果解码失败，直接返回错误信息
-        return {
-            'result': 'error',
-            'errcode': 'UNICODE_DECODE_ERROR',
-            'errmsg': f'响应解码失败: {str(e)}'
-        }
-    except Exception as e:
-        return {
-            'result': 'error',
-            'errcode': 'REQUEST_EXCEPTION',
-            'errmsg': str(e)
-        }
+    # 安全地解析JSON响应
+
+    return format_adc_response_for_ansible(
+            response_data, "vrrp", True)
+
 
 
 DOCUMENTATION = r'''
@@ -365,20 +327,9 @@ def vrrp_global_get(module):
         ip, authkey)
 
     # Make API call
-    response = send_request(url, method='GET')
+    return send_request(url, method='GET')
 
-    if isinstance(response, dict):
-        if response.get('result', '').lower() == 'success':
-            # 成功响应
-            return True, {'global_config': response.get('data', {})}
-        elif 'errcode' in response and response['errcode']:
-            # 错误响应
-            return False, {'msg': "获取VRRP全局配置失败: %s" % response.get('errmsg', '未知错误')}
-        else:
-            # 直接返回数据
-            return True, {'global_config': response}
-    else:
-        return False, {'msg': '响应数据格式错误'}
+
 
 
 def vrrp_global_set(module):
@@ -410,21 +361,8 @@ def vrrp_global_set(module):
         params['cluster_id'] = module.params['cluster_id']
 
     # Make API call
-    response = send_request(url, params, method='POST')
+    return send_request(url, params, method='POST')
 
-    # Format response
-    if isinstance(response, dict):
-        if response.get('result', '').lower() == 'success':
-            # 成功响应
-            return True, {'msg': 'VRRP全局配置设置成功'}
-        elif 'errcode' in response and response['errcode']:
-            # 错误响应
-            return False, {'msg': "设置VRRP全局配置失败: %s" % response.get('errmsg', '未知错误')}
-        else:
-            # 直接返回数据
-            return True, {'response': response}
-    else:
-        return False, {'msg': '响应数据格式错误'}
 
 
 def vrrp_group_add(module):
@@ -463,21 +401,8 @@ def vrrp_group_add(module):
         params['manually_standby'] = module.params['manually_standby']
 
     # Make API call
-    response = send_request(url, params, method='POST')
+    return send_request(url, params, method='POST')
 
-    # Format response
-    if isinstance(response, dict):
-        if response.get('result', '').lower() == 'success':
-            # 成功响应
-            return True, {'msg': 'VRRP组添加成功'}
-        elif 'errcode' in response and response['errcode']:
-            # 错误响应
-            return False, {'msg': "添加VRRP组失败: %s" % response.get('errmsg', '未知错误')}
-        else:
-            # 直接返回数据
-            return True, {'response': response}
-    else:
-        return False, {'msg': '响应数据格式错误'}
 
 
 def vrrp_group_list(module):
@@ -490,20 +415,9 @@ def vrrp_group_list(module):
         ip, authkey)
 
     # Make API call
-    response = send_request(url, method='GET')
+    return send_request(url, method='GET')
 
-    if isinstance(response, dict):
-        if response.get('result', '').lower() == 'success':
-            # 成功响应
-            return True, {'groups': response.get('data', [])}
-        elif 'errcode' in response and response['errcode']:
-            # 错误响应
-            return False, {'msg': "获取VRRP组列表失败: %s" % response.get('errmsg', '未知错误')}
-        else:
-            # 直接返回数据
-            return True, {'groups': response}
-    else:
-        return False, {'msg': '响应数据格式错误'}
+
 
 
 def vrrp_heart_eth_add(module):
@@ -536,21 +450,8 @@ def vrrp_heart_eth_add(module):
             msg="vlan_id is required for add heartbeat_eth action")
 
     # Make API call
-    response = send_request(url, params, method='POST')
+    return send_request(url, params, method='POST')
 
-    # Format response
-    if isinstance(response, dict):
-        if response.get('result', '').lower() == 'success':
-            # 成功响应
-            return True, {'msg': '以太网心跳接口添加成功'}
-        elif 'errcode' in response and response['errcode']:
-            # 错误响应
-            return False, {'msg': "添加以太网心跳接口失败: %s" % response.get('errmsg', '未知错误')}
-        else:
-            # 直接返回数据
-            return True, {'response': response}
-    else:
-        return False, {'msg': '响应数据格式错误'}
 
 
 def vrrp_floating_ip_add(module):
@@ -578,21 +479,7 @@ def vrrp_floating_ip_add(module):
             msg="floating_ip is required for add floating_ip action")
 
     # Make API call
-    response = send_request(url, params, method='POST')
-
-    # Format response
-    if isinstance(response, dict):
-        if response.get('result', '').lower() == 'success':
-            # 成功响应
-            return True, {'msg': '浮动IP添加成功'}
-        elif 'errcode' in response and response['errcode']:
-            # 错误响应
-            return False, {'msg': "添加浮动IP失败: %s" % response.get('errmsg', '未知错误')}
-        else:
-            # 直接返回数据
-            return True, {'response': response}
-    else:
-        return False, {'msg': '响应数据格式错误'}
+    return send_request(url, params, method='POST')
 
 
 def vrrp_force_offline_set(module):
@@ -616,21 +503,8 @@ def vrrp_force_offline_set(module):
         params['all_partitions'] = module.params['all_partitions']
 
     # Make API call
-    response = send_request(url, params, method='POST')
+    return send_request(url, params, method='POST')
 
-    # Format response
-    if isinstance(response, dict):
-        if response.get('result', '').lower() == 'success':
-            # 成功响应
-            return True, {'msg': '强制离线设置成功'}
-        elif 'errcode' in response and response['errcode']:
-            # 错误响应
-            return False, {'msg': "设置强制离线失败: %s" % response.get('errmsg', '未知错误')}
-        else:
-            # 直接返回数据
-            return True, {'response': response}
-    else:
-        return False, {'msg': '响应数据格式错误'}
 
 
 def vrrp_track_gateway_add(module):
@@ -665,21 +539,7 @@ def vrrp_track_gateway_add(module):
             msg="track_ip is required for add gateway_track action")
 
     # Make API call
-    response = send_request(url, params, method='POST')
-
-    # Format response
-    if isinstance(response, dict):
-        if response.get('result', '').lower() == 'success':
-            # 成功响应
-            return True, {'msg': '网关跟踪添加成功'}
-        elif 'errcode' in response and response['errcode']:
-            # 错误响应
-            return False, {'msg': "添加网关跟踪失败: %s" % response.get('errmsg', '未知错误')}
-        else:
-            # 直接返回数据
-            return True, {'response': response}
-    else:
-        return False, {'msg': '响应数据格式错误'}
+    return send_request(url, params, method='POST')
 
 
 def main():
@@ -741,33 +601,30 @@ def main():
     if module.check_mode:
         module.exit_json(changed=False)
 
-    try:
-        # Perform requested action based on VRRP component
-        if action == 'vrrp_global_get':
-            changed, result = vrrp_global_get(module)
-        elif action == 'vrrp_global_set':
-            changed, result = vrrp_global_set(module)
-        elif action == 'vrrp_group_add':
-            changed, result = vrrp_group_add(module)
-        elif action == 'vrrp_group_list':
-            changed, result = vrrp_group_list(module)
-        elif action == 'vrrp_heart_eth_add':
-            changed, result = vrrp_heart_eth_add(module)
-        elif action == 'vrrp_floating_ip_add':
-            changed, result = vrrp_floating_ip_add(module)
-        elif action == 'vrrp_force_offline_set':
-            changed, result = vrrp_force_offline_set(module)
-        elif action == 'vrrp_track_gateway_add':
-            changed, result = vrrp_track_gateway_add(module)
+    # Perform requested action based on VRRP component
+    if action == 'vrrp_global_get':
+        success, result_dict = vrrp_global_get(module)
+    elif action == 'vrrp_global_set':
+        success, result_dict = vrrp_global_set(module)
+    elif action == 'vrrp_group_add':
+        success, result_dict = vrrp_group_add(module)
+    elif action == 'vrrp_group_list':
+        success, result_dict = vrrp_group_list(module)
+    elif action == 'vrrp_heart_eth_add':
+        success, result_dict = vrrp_heart_eth_add(module)
+    elif action == 'vrrp_floating_ip_add':
+        success, result_dict = vrrp_floating_ip_add(module)
+    elif action == 'vrrp_force_offline_set':
+        success, result_dict = vrrp_force_offline_set(module)
+    elif action == 'vrrp_track_gateway_add':
+        success, result_dict = vrrp_track_gateway_add(module)
 
-        # Exit with result
-        if 'msg' in result and '失败' in result['msg']:
-            module.fail_json(msg=result['msg'])
-        else:
-            module.exit_json(changed=changed, **result)
+    if success:
+        module.exit_json(**result_dict)
+    else:
+        module.fail_json(**result_dict)
 
-    except Exception as e:
-        module.fail_json(msg="An error occurred: %s" % str(e))
+
 
 
 if __name__ == '__main__':

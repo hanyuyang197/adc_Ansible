@@ -305,7 +305,7 @@ def slb_sslclient_add(module):
         'cert', 'chain_cert', 'key', 'password', 'dcert', 'dchain_cert',
         'dkey', 'dpassword', 'ecert', 'ekey', 'epassword', 'resume_mode',
         'cache_num', 'cache_timeout', 'disable_renegotiate', 'disable_ssl30',
-        'disable_tls10', 'disable_tls11', 'disable_tls12'
+        'disable_tls10', 'disable_tls11', 'disable_tls12','enable_renegotiate','sni_list'
     ]
 
     for param in optional_params:
@@ -340,7 +340,7 @@ def slb_sslclient_edit(module):
         'cert', 'chain_cert', 'key', 'password', 'dcert', 'dchain_cert',
         'dkey', 'dpassword', 'ecert', 'ekey', 'epassword', 'resume_mode',
         'cache_num', 'cache_timeout', 'disable_renegotiate', 'disable_ssl30',
-        'disable_tls10', 'disable_tls11', 'disable_tls12'
+        'disable_tls10', 'disable_tls11', 'disable_tls12','enable_renegotiate','sni_list'
     ]
 
     for param in optional_params:
@@ -404,6 +404,8 @@ def main():
             disable_tls10=dict(type='int', required=False),
             disable_tls11=dict(type='int', required=False),
             disable_tls12=dict(type='int', required=False),
+            enable_renegotiate=dict(type='raw', required=False),
+            sni_list=dict(type='raw', required=False),
         ),
         supports_check_mode=False
     )

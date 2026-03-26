@@ -26,10 +26,13 @@ def ssl_resource_statistics_list(module):
     """获取SSL资源统计列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
+    action = module.params['action']
 
     # 构造请求URL
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=ssl.resource_statistics.list" % (
         ip, authkey)
+    if action == "ssl_resource_statistics_list_all_partition":
+        url += ".all_partition"
 
     # 初始化响应数据
     response_data = ""
@@ -73,7 +76,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'ssl_resource_statistics_list'])
+            'ssl_resource_statistics_list', 'ssl_resource_statistics_list_all_partition'])
     )
 
     # 创建AnsibleModule实例
@@ -87,7 +90,8 @@ def main():
 
     if action == 'ssl_resource_statistics_list':
         ssl_resource_statistics_list(module)
-
+    elif action == 'ssl_resource_statistics_list_all_partition':
+        ssl_resource_statistics_list(module)
 
 if __name__ == '__main__':
     main()

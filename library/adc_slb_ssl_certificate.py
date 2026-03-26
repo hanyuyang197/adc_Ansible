@@ -75,6 +75,7 @@ def slb_ssl_certificate_upload(module):
     authkey = module.params['authkey']
     file_path = module.params['file_path']
     name = module.params.get('name')
+    overwrite = module.params.get('overwrite', 0)
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
@@ -98,7 +99,7 @@ def slb_ssl_certificate_upload(module):
     body, boundary = create_form_data(fields, files)
 
     # 构造请求URL - 添加正确的action参数
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.certificate.upload" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.certificate.upload%s&overwrite=%d" % (ip, authkey,overwrite)
 
     try:
         # 根据Python版本处理请求
@@ -330,6 +331,7 @@ def slb_ssl_key_upload(module):
     authkey = module.params['authkey']
     file_path = module.params['file_path']
     name = module.params.get('name')
+    overwrite = module.params.get('overwrite', 0)
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
@@ -353,7 +355,7 @@ def slb_ssl_key_upload(module):
     body, boundary = create_form_data(fields, files)
 
     # 构造请求URL - 添加authkey参数
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.key.upload" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.key.upload&overwrite=%d" % (ip, authkey,overwrite)
 
     try:
         # 根据Python版本处理请求
@@ -391,6 +393,7 @@ def slb_ssl_crl_upload(module):
     authkey = module.params['authkey']
     file_path = module.params['file_path']
     name = module.params.get('name')
+    overwrite = module.params.get('overwrite', 0)
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
@@ -414,7 +417,7 @@ def slb_ssl_crl_upload(module):
     body, boundary = create_form_data(fields, files)
 
     # 构造请求URL - 添加authkey参数
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.crl.upload" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.crl.upload&overwrite=%d" % (ip, authkey,overwrite)
 
     try:
         # 根据Python版本处理请求
@@ -453,6 +456,7 @@ def slb_ssl_pfx_upload(module):
     file_path = module.params['file_path']
     name = module.params.get('name')
     password = module.params.get('password')
+    overwrite = module.params.get('overwrite', 0)
 
     # 检查文件是否存在
     if not os.path.exists(file_path):
@@ -476,10 +480,12 @@ def slb_ssl_pfx_upload(module):
     body, boundary = create_form_data(fields, files)
 
     # 构造请求URL - 添加authkey和password参数（password必须在URL中）
-    if password:
-        url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.pfx.upload&password=%s" % (ip, authkey, password)
-    else:
-        url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.pfx.upload" % (ip, authkey)
+    # if password:
+    #     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.pfx.upload&password=%s" % (ip, authkey, password)
+    # else:
+    #     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.pfx.upload" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.ssl.pfx.upload&password=%s&overwrite=%d" % (ip, authkey, password,overwrite)
+    
 
     try:
         # 根据Python版本处理请求
@@ -545,7 +551,9 @@ def main():
         config=dict(type='dict', required=False),
         setting=dict(type='dict', required=False),
         value=dict(type='str', required=False),
-        enable=dict(type='bool', required=False)
+        enable=dict(type='bool', required=False),
+        overwrite=dict(type='int', required=False),
+
     )
 
     # 创建AnsibleModule实例

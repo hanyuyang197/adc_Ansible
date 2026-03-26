@@ -28,8 +28,10 @@ def slb_ssl_enckey_cfca_upload(module):
     ip = module.params['ip']
     authkey = module.params['authkey']
     sign_file_name = module.params['sign_file_name']
+    name = module.params['name']
     sign_file_password = module.params.get('sign_file_password')
     file_path = module.params['file_path']
+    overwrite = module.params.get('overwrite', 0)
 
     # 验证文件是否存在
     if not os.path.exists(file_path):
@@ -61,7 +63,7 @@ def slb_ssl_enckey_cfca_upload(module):
         # 添加文件字段
         body_parts.append(('--' + boundary).encode('utf-8'))
         body_parts.append(('Content-Disposition: form-data; name="file"; filename="%s"' %
-                    os.path.basename(file_path)).encode('utf-8'))
+                    os.path.basename(file_path)).encode('utf-8')) if not name else name
         body_parts.append(b'Content-Type: application/octet-stream')
         body_parts.append(b'')
         # 内容已经是字节类型，直接使用
@@ -73,8 +75,8 @@ def slb_ssl_enckey_cfca_upload(module):
         body_bytes = CRLF.join(body_parts)
 
         # 构建URL参数
-        url_params = "authkey=%s&action=slb.ssl.enckey.cfca.upload&sign_file_name=%s" % (
-            authkey, sign_file_name)
+        url_params = "authkey=%s&action=slb.ssl.enckey.cfca.upload&sign_file_name=%s&overwrite=%d" % (
+            authkey, sign_file_name,overwrite)
         if sign_file_password:
             url_params += "&sign_file_password=%s" % sign_file_password
 
@@ -110,8 +112,11 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=['slb_ssl_enckey_cfca_upload']),
         sign_file_name=dict(type='str', required=True),
+        name=dict(type='str', required=True),
         sign_file_password=dict(type='str', required=False, no_log=True),
-        file_path=dict(type='str', required=True)
+        file_path=dict(type='str', required=True),
+        overwrite=dict(type='int', required=False),
+
     )
 
     # 创建AnsibleModule实例

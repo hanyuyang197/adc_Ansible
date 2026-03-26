@@ -210,12 +210,15 @@ def interface_ethernet_get(module):
         ip, authkey)
 
     # 构造请求数据
-    interface_data = {
-        "interface_name": interface_name
-    }
+    module_list = [
+        'slot',  # 槽位 0-8
+        'port',  # 端口 0-7
+
+    ]
+    request_data = build_params_with_optional(module,module_list,[])
 
     # 转换为JSON格式
-    post_data = json.dumps(interface_data)
+    post_data = json.dumps(request_data)
 
     # 初始化响应数据
     response_data = ""
@@ -902,8 +905,7 @@ def main():
         port_num=dict(type='int', required=False),  # VE接口序号 2-4094
         ve_id=dict(type='int', required=False),  # 向后兼容
         vlan_id=dict(type='int', required=False),
-        # TRUNK接口参数
-        port_num=dict(type='int', required=False),  # TRUNK接口序号 1-8
+        # # TRUNK接口参数
         trunk_id=dict(type='int', required=False),  # 向后兼容
         interface_list=dict(type='list', required=False)
     )

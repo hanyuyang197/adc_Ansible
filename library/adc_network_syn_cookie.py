@@ -76,9 +76,7 @@ def slb_syn_cookie_edit(module):
     device_ip = module.params['ip']
     authkey = module.params['authkey']
     synflood = module.params.get('synflood', {})
-    sfnum_cfg = module.params.get('sfnum_cfg')
-    sfnum_enable = module.params.get('sfnum_enable')
-    sfnum_relieve = module.params.get('sfnum_relieve')
+
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.syn_cookie.edit" % (
@@ -92,13 +90,6 @@ def slb_syn_cookie_edit(module):
     if synflood:
         config_data['synflood'] = synflood
 
-    # 向后兼容：如果提供了扁平参数，添加到synflood对象中
-    if sfnum_cfg is not None:
-        config_data['synflood']['sfnum_cfg'] = sfnum_cfg
-    if sfnum_enable is not None:
-        config_data['synflood']['sfnum_enable'] = sfnum_enable
-    if sfnum_relieve is not None:
-        config_data['synflood']['sfnum_relieve'] = sfnum_relieve
 
     # 转换为JSON格式
     post_data = json.dumps(config_data)
@@ -143,20 +134,21 @@ def slb_vs_syn_cookie_get(module):
     """获取每虚拟服务SYN Cookie配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    vs_name = module.params['vs_name'] if 'vs_name' in module.params else ""
+    synflood = module.params.get('synflood', {})
+
 
     # 检查必需参数
-    if not vs_name:
-        module.fail_json(msg="获取每虚拟服务SYN Cookie配置需要提供vs_name参数")
 
     # 构造请求URL (使用兼容Python 2.7的字符串格式化)
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.vs.syn_cookie.get" % (
         ip, authkey)
 
     # 构造请求数据
-    config_data = {
-        "vs_name": vs_name
-    }
+    config_data = {"synflood": {}}
+
+    # 如果提供了synflood对象，直接使用
+    if synflood:
+        config_data['synflood'] = synflood
 
     # 转换为JSON格式
     post_data = json.dumps(config_data)

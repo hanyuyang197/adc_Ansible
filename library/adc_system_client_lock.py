@@ -22,7 +22,7 @@ import json
 import sys
 
 
-def client_lock_set(module):
+def client_locked_set(module):
     """设置客户端锁定配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -85,7 +85,7 @@ def client_lock_set(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def client_lock_get(module):
+def client_locked_get(module):
     """获取客户端锁定配置"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -131,7 +131,7 @@ def client_lock_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def client_lock_list(module):
+def client_locked_list(module):
     """获取锁定客户端列表"""
     ip = module.params['ip']
     authkey = module.params['authkey']
@@ -240,7 +240,7 @@ def main():
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-            'client_lock_set', 'client_lock_get', 'client_lock_list', 'client_locked_unlock']),
+            'client_locked_set', 'client_locked_get', 'client_locked_list', 'client_locked_unlock']),
         # 客户端锁定配置参数
         interval=dict(type='int', required=False),
         maxnum=dict(type='int', required=False),
@@ -259,12 +259,12 @@ def main():
     # 根据action执行相应操作
     action = module.params['action']
 
-    if action == 'client_lock_set':
-        client_lock_set(module)
-    elif action == 'client_lock_get':
-        client_lock_get(module)
-    elif action == 'client_lock_list':
-        client_lock_list(module)
+    if action == 'client_locked_set':
+        client_locked_set(module)
+    elif action == 'client_locked_get':
+        client_locked_get(module)
+    elif action == 'client_locked_list':
+        client_locked_list(module)
     elif action == 'client_locked_unlock':
         client_locked_unlock(module)
 

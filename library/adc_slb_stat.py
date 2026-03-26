@@ -313,6 +313,50 @@ def adc_slb_pool_stat_clear(module):
 
 
 
+def adc_slb_session_list(module):
+    """获取会话列表"""
+    ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL (使用兼容Python 2.7的字符串格式化)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=slb.session.list" % (ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+        # 对于获取列表操作，直接返回响应数据，不判断success
+        if response_data:
+            try:
+                parsed_data = json.loads(response_data)
+                # 检查是否有错误信息
+                if 'errmsg' in parsed_data and parsed_data['errmsg']:
+                    module.fail_json(msg="获取会话列表失败", response=parsed_data)
+                else:
+                    module.exit_json(changed=False, pool_stats=parsed_data)
+            except Exception as e:
+                module.fail_json(msg="解析响应失败: %s" % str(e))
+        else:
+            module.fail_json(msg="未收到有效响应")
+
+    except Exception as e:
+        module.fail_json(msg="获取会话列表失败: %s" % str(e))
+
 
 
 def adc_slb_session_clear(module):

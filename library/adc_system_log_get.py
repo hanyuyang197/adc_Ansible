@@ -35,12 +35,15 @@ def system_log_service_list(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=log.service.list" % (ip, authkey)
 
     # 构造请求数据
-    request_data = {
-        "direct": direct,
-        "index": index,
-        "limit": limit,
-        "level": level
-    }
+
+    module_list = [
+        "direct",
+        "index",
+        "limit",
+        "level"
+
+    ]
+    request_data = build_params_with_optional(module,module_list,[])
 
     # 转换为JSON格式
     post_data = json.dumps(request_data)
@@ -90,14 +93,15 @@ def system_log_audit_list(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=log.audit.list" % (ip, authkey)
 
     # 构造请求数据
-    request_data = {
-        "direct": direct,
-        "index": index,
-        "limit": limit,
-        "start_time": start_time,
-        "time_range": time_range,
-        "user_name": user_name
-    }
+    module_list = [
+        "direct",
+        "index",
+        "limit",
+        "start_time",
+        "time_range",
+        "user_name"
+    ]
+    request_data = build_params_with_optional(module,module_list,[])
 
     # 转换为JSON格式
     post_data = json.dumps(request_data)
@@ -121,15 +125,17 @@ def system_log_audit_list(module):
         module.fail_json(msg="获取审计日志列表失败: %s" % str(e))
 
     # 使用通用响应解析函数
-    if response_data:
-        success, result_dict = format_adc_response_for_ansible(
-            response_data, "获取审计日志列表", False)
-        if success:
-            module.exit_json(**result_dict)
-        else:
-            module.fail_json(**result_dict)
-    else:
-        module.fail_json(msg="未收到有效响应")
+    module.exit_json(changed=False, cache_list=response_data)
+
+    # if response_data:
+    #     success, result_dict = format_adc_response_for_ansible(
+    #         response_data, "获取审计日志列表", False)
+    #     if success:
+    #         module.exit_json(**result_dict)
+    #     else:
+    #         module.fail_json(**result_dict)
+    # else:
+    #     module.fail_json(msg="未收到有效响应")
 
 
 def system_log_nat_list(module):
@@ -144,12 +150,12 @@ def system_log_nat_list(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=log.nat.list" % (ip, authkey)
 
     # 构造请求数据
-    request_data = {
-        "direct": direct,
-        "index": index,
-        "limit": limit
-    }
-
+    module_list = [
+        "direct",
+        "index",
+        "limit"
+    ]
+    request_data = build_params_with_optional(module,module_list,[])
     # 转换为JSON格式
     post_data = json.dumps(request_data)
 
@@ -195,11 +201,12 @@ def system_log_dns_list(module):
     url = "http://%s/adcapi/v2.0/?authkey=%s&action=log.dns.list" % (ip, authkey)
 
     # 构造请求数据
-    request_data = {
-        "direct": direct,
-        "index": index,
-        "limit": limit
-    }
+    module_list = [
+        "direct",
+        "index",
+        "limit"
+    ]
+    request_data = build_params_with_optional(module,module_list,[])
 
     # 转换为JSON格式
     post_data = json.dumps(request_data)
@@ -640,13 +647,13 @@ def main():
                     'log_service_clear', 'log_audit_clear', 'log_nat_clear', 'log_dns_clear',
                     'log_service_download', 'log_audit_download', 'log_nat_download', 'log_dns_download',
                     'log_coredump_download', 'log_system_download']),
-        direct=dict(type='int', choices=[0, 1, 2, 3], default=0),
-        index=dict(type='int', default=0),
-        limit=dict(type='int', default=30),
-        level=dict(type='int', choices=[0, 1, 2, 3, 4, 5, 6, 7], default=7),
-        start_time=dict(type='int', default=0),
-        time_range=dict(type='int', default=0),
-        user_name=dict(type='str', default=''),
+        direct=dict(type='int', choices=[0, 1, 2, 3]),
+        index=dict(type='int'),
+        limit=dict(type='int'),
+        level=dict(type='int', choices=[0, 1, 2, 3, 4, 5, 6, 7]),
+        start_time=dict(type='int'),
+        time_range=dict(type='int'),
+        user_name=dict(type='str'),
         dest_path=dict(type='str', default=None),
     )
 

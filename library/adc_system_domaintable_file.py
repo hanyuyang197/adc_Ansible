@@ -123,7 +123,7 @@ def system_domaintable_file_download(module):
     """下载域名表文件"""
     ip = module.params['ip']
     authkey = module.params['authkey']
-    file_name = module.params['file_name']
+    name = module.params['name']
     dest_path = module.params['dest_path']
 
     # 构造请求URL - 只包含authkey和action参数
@@ -131,7 +131,7 @@ def system_domaintable_file_download(module):
         ip, authkey)
 
     # 构造请求体
-    request_body = json.dumps({"data": [{"name": file_name}]})
+    request_body = json.dumps({"data": [{"name": name}]})
 
     try:
         # 根据Python版本处理请求
@@ -181,6 +181,7 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=['system_domaintable_file_upload', 'system_domaintable_file_download']),
         file_name=dict(type='str', required=True),  # 文件名
+        name=dict(type='str', required=True),  # 文件名
         file_path=dict(type='str', required=False),  # 上传时的本地文件路径
         dest_path=dict(type='str', required=False),  # 下载时的目标路径
     )

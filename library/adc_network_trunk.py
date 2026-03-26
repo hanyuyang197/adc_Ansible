@@ -146,18 +146,26 @@ def network_trunk_add(module):
         ip, authkey)
 
     # 构造TRUNK数据
-    trunk_data = {
-        "id": id,
-        "type": module.params['type'] if 'type' in module.params else 0,
-        "status": module.params['status'] if 'status' in module.params else 1
-    }
-
-    # 添加接口列表（如果有提供）
-    if 'interface_list' in module.params and module.params['interface_list']:
-        trunk_data['interface_list'] = module.params['interface_list']
+    module_list = [
+                    'id',
+                    'type',
+                    'status',
+                    'slot',
+                    'port',
+                    'enable',
+                    'mode',
+                    'timeout',
+                    'priority',
+                    'interface_list',
+                    'link_select_policy',
+                    'not_optimize_on_a_stick',
+                    'session_rr_disable',
+                    'transmit_method',
+    ]
+    request_data = build_params_with_optional(module,module_list,[])
 
     # 转换为JSON格式
-    post_data = json.dumps(trunk_data)
+    post_data = json.dumps(request_data)
 
     # 初始化响应数据
     response_data = ""
@@ -210,21 +218,26 @@ def network_trunk_edit(module):
         ip, authkey)
 
     # 构造TRUNK数据
-    trunk_data = {
-        "id": id,
-        "type": module.params['type'] if 'type' in module.params else 0
-    }
-
-    # 添加可选参数
-    if 'status' in module.params and module.params['status'] is not None:
-        trunk_data['status'] = module.params['status']
-
-    # 添加接口列表（如果有提供）
-    if 'interface_list' in module.params and module.params['interface_list'] is not None:
-        trunk_data['interface_list'] = module.params['interface_list']
+    module_list = [
+                    'id',
+                    'type',
+                    'status',
+                    'slot',
+                    'port',
+                    'enable',
+                    'mode',
+                    'timeout',
+                    'priority',
+                    'interface_list',
+                    'link_select_policy',
+                    'not_optimize_on_a_stick',
+                    'session_rr_disable',
+                    'transmit_method',
+    ]
+    request_data = build_params_with_optional(module,module_list,[])
 
     # 转换为JSON格式
-    post_data = json.dumps(trunk_data)
+    post_data = json.dumps(request_data)
 
     # 初始化响应数据
     response_data = ""
@@ -330,8 +343,18 @@ def main():
         # TRUNK参数
         id=dict(type='int', required=False),
         type=dict(type='int', required=False),
+        enable=dict(type='int', required=False),
+        mode=dict(type='int', required=False),
+        timeout=dict(type='int', required=False),
+        priority=dict(type='int', required=False),
         status=dict(type='int', required=False),
-        interface_list=dict(type='list', required=False)
+        slot=dict(type='int', required=False),  # 槽位 0-8
+        port=dict(type='int', required=False),  # 端口 0-7
+        interface_list=dict(type='list', required=False),
+        link_select_policy=dict(type='raw', required=False),
+        not_optimize_on_a_stick=dict(type='raw', required=False),
+        session_rr_disable=dict(type='raw', required=False),
+        transmit_method=dict(type='raw', required=False),
     )
 
     # 创建AnsibleModule实例

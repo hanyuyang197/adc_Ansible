@@ -172,7 +172,7 @@ def slb_healthcheck_add(module):
         # SNMP相关参数
         'operation', 'oid', 'community',
         # 自定义脚本相关参数
-        'script'
+        'script', 'accept_rcode', 'answer_contains'
     ]
 
     # 添加基本参数
@@ -257,7 +257,7 @@ def slb_healthcheck_edit(module):
         # SNMP相关参数
         'operation', 'oid', 'community',
         # 自定义脚本相关参数
-        'script'
+        'script', 'accept_rcode', 'answer_contains'
     ]
 
     # 添加基本参数
@@ -844,7 +844,10 @@ def main():
         script_content=dict(type='str', required=False),
         # 后置文件参数
         file_name=dict(type='str', required=False),
-        file_path=dict(type='str', required=False)  # 上传时的本地文件路径
+        file_path=dict(type='str', required=False),  # 上传时的本地文件路径
+        #
+        accept_rcode=dict(type='raw', required=False),
+        answer_contains=dict(type='raw', required=False),
     )
 
     # 创建AnsibleModule实例

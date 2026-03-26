@@ -75,13 +75,13 @@ def admin_disable_get(module):
     try:
         if sys.version_info[0] >= 3:
             import urllib.request as urllib_request
-            req = urllib_request.Request(url, method='POST')
+            req = urllib_request.Request(url, method='GET')
             response = urllib_request.urlopen(req)
             response_data = response.read().decode('utf-8')
         else:
             import urllib2 as urllib_request
             req = urllib_request.Request(url)
-            req.get_method = lambda: 'POST'
+            req.get_method = lambda: 'GET'
             response = urllib_request.urlopen(req)
             response_data = response.read()
 
@@ -151,13 +151,13 @@ def admin_disable_edit(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def admin_two_factor_authentication_get(module):
+def admin_two_factor_authenication_get(module):
     """获取双因素认证状态"""
     ip = module.params['ip']
     authkey = module.params['authkey']
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=admin.two_factor_authentication.get" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=admin.two_factor_authenication.get" % (ip, authkey)
 
     try:
         if sys.version_info[0] >= 3:
@@ -186,21 +186,21 @@ def admin_two_factor_authentication_get(module):
         module.fail_json(msg="未收到有效响应")
 
 
-def admin_two_factor_authentication_set(module):
+def admin_two_factor_authenication_set(module):
     """开启双因素认证"""
     ip = module.params['ip']
     authkey = module.params['authkey']
     tfaenable = module.params['tfaenable']
-    admintfaenable = module.params['admintfaenable']
+    adminfaenable = module.params['adminfaenable']
 
     # 构造请求数据
     tfa_data = {
         'tfaenable': tfaenable,
-        'admintfaenable': admintfaenable
+        'adminfaenable': adminfaenable
     }
 
     # 构造请求URL
-    url = "http://%s/adcapi/v2.0/?authkey=%s&action=admin.two_factor_authentication.set" % (ip, authkey)
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=admin.two_factor_authenication.set" % (ip, authkey)
 
     try:
         if sys.version_info[0] >= 3:
@@ -405,17 +405,17 @@ def main():
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
             'save', 'system_action_reboot', 'system_action_reload', 'system_action_shutdown',
-            'admin_disable_get', 'admin_disable_edit', 'admin_two_factor_authentication_get',
-            'admin_two_factor_authentication_set']),
+            'admin_disable_get', 'admin_disable_edit', 'admin_two_factor_authenication_get',
+            'admin_two_factor_authenication_set']),
         # 系统操作参数
         save=dict(type='int', required=False),
         # admin.disable.edit 参数
         enable=dict(type='int', required=False),
         name=dict(type='str', required=False),
         password=dict(type='str', required=False, no_log=True),
-        # admin.two_factor_authentication.set 参数
+        # admin.two_factor_authenication.set 参数
         tfaenable=dict(type='int', required=False),
-        admintfaenable=dict(type='int', required=False)
+        adminfaenable=dict(type='int', required=False)
     )
 
     # 创建AnsibleModule实例
@@ -439,10 +439,10 @@ def main():
         admin_disable_get(module)
     elif action == 'admin_disable_edit':
         admin_disable_edit(module)
-    elif action == 'admin_two_factor_authentication_get':
-        admin_two_factor_authentication_get(module)
-    elif action == 'admin_two_factor_authentication_set':
-        admin_two_factor_authentication_set(module)
+    elif action == 'admin_two_factor_authenication_get':
+        admin_two_factor_authenication_get(module)
+    elif action == 'admin_two_factor_authenication_set':
+        admin_two_factor_authenication_set(module)
 
 
 if __name__ == '__main__':

@@ -239,13 +239,60 @@ def vrrp_mgmt_peer_del(module):
         module.fail_json(msg="未收到有效响应")
 
 
+
+def vrrp_heart_mgmt_statis(module):
+    """获取VRRP管理口心跳统计"""
+    device_ip = module.params['ip']
+    authkey = module.params['authkey']
+
+    # 构造请求URL
+    url = "http://%s/adcapi/v2.0/?authkey=%s&action=vrrp.heart_mgmt.statis" % (
+        device_ip, authkey)
+
+    # 初始化响应数据
+    response_data = ""
+
+    try:
+        # 根据Python版本处理请求
+        if sys.version_info[0] >= 3:
+            # Python 3
+            import urllib.request as urllib_request
+            req = urllib_request.Request(url, method='GET')
+            response = urllib_request.urlopen(req)
+            response_data = response.read().decode('utf-8')
+        else:
+            # Python 2
+            import urllib2 as urllib_request
+            req = urllib_request.Request(url)
+            req.get_method = lambda: 'GET'
+            response = urllib_request.urlopen(req)
+            response_data = response.read()
+
+    except Exception as e:
+        module.fail_json(msg="获取VRRP管理口心跳统计失败: %s" % str(e))
+
+    # 对于获取操作，直接返回响应数据
+    if response_data:
+        try:
+            parsed_data = json.loads(response_data)
+            # 检查是否有错误信息
+            if isinstance(parsed_data, dict) and 'errmsg' in parsed_data and parsed_data['errmsg']:
+                module.fail_json(msg="获取VRRP管理口心跳统计失败", response=parsed_data)
+            else:
+                module.exit_json(changed=False, config=parsed_data)
+        except Exception as e:
+            module.fail_json(msg="解析响应失败: %s" % str(e))
+    else:
+        module.fail_json(msg="未收到有效响应")
+
+
 def main():
     # 定义模块参数
     module_args = dict(
         ip=dict(type='str', required=True),
         authkey=dict(type='str', required=True, no_log=True),
         action=dict(type='str', required=True, choices=[
-                    'vrrp_mgmt_peer_list', 'vrrp_mgmt_peer_add', 'vrrp_mgmt_peer_get', 'vrrp_mgmt_peer_del']),
+                    'vrrp_mgmt_peer_list', 'vrrp_mgmt_peer_add', 'vrrp_mgmt_peer_get', 'vrrp_mgmt_peer_del','vrrp_heart_mgmt_statis']),
         name=dict(type='str', required=False),
         ip_addr=dict(type='str', required=False),
         description=dict(type='str', required=False),
@@ -275,6 +322,8 @@ def main():
         vrrp_mgmt_peer_get(module)
     elif action == 'vrrp_mgmt_peer_del':
         vrrp_mgmt_peer_del(module)
+    elif action == 'vrrp_heart_mgmt_statis':
+        vrrp_heart_mgmt_statis(module)
 
 
 if __name__ == '__main__':
